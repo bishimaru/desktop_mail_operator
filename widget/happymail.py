@@ -20,6 +20,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException
 import base64
 import json
+from selenium.webdriver.support import expected_conditions as EC
 
 
 # 警告画面
@@ -57,8 +58,12 @@ def re_post(name,  driver, wait, title, post_text):
      return False
   
   # マイページをクリック
-  nav_list = driver.find_element(By.ID, value='ds_nav')
-  mypage = nav_list.find_element(By.LINK_TEXT, "マイページ")
+  nav_list = driver.find_elements(By.ID, value='ds_nav')
+  if not len(nav_list):
+     print(f"{name}: 警告画面が出ている可能性があります。")
+     return False
+  mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
+  
   try:
     mypage.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -959,6 +964,10 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
 def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count):
    driver.delete_all_cookies()
    driver.get("https://happymail.jp/login/")
+   # loaderが消えるのを待つ
+   WebDriverWait(driver, 10).until(
+      EC.invisibility_of_element_located((By.CLASS_NAME, "loader"))
+   )
    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
    wait_time = random.uniform(2, 5)
    time.sleep(2)
