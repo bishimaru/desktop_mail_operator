@@ -977,8 +977,11 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       print(f"{name}:警告画面が出ている可能性があります")
       return
    # プロフ検索をクリック
-   nav_list = driver.find_element(By.ID, value='ds_nav')
-   mypage = nav_list.find_element(By.LINK_TEXT, "プロフ検索")
+   nav_list = driver.find_elements(By.ID, value='ds_nav')
+   if len(nav_list):
+      print(f"{name}: 警告画面が出ている可能性があります。")
+      return
+   mypage = nav_list[0].find_element(By.LINK_TEXT, "プロフ検索")
    mypage.click()
    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
    time.sleep(wait_time)
