@@ -36,8 +36,8 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
     user_profile_list = []
     user_info = user_data.get("user", None)
     
-    # print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
-    # print(user_data["user"][0])
+    print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
+    print(happy_chara_list)
     mail_info = [
         user_data["user"][0]["user_email"],
         user_data["user"][0]["gmail_account"],
