@@ -27,13 +27,12 @@ def sb_h_all_do(return_foot_cnt, happy_chara_list, headless, mail_info):
         return_func = 0
     elapsed_time = time.time() - start_time  # 経過時間を計算する
     while elapsed_time < sec:
-      time.sleep(5)
+      time.sleep(60)
       elapsed_time = time.time() - start_time  # 経過時間を計算する
-      # print(elapsed_time)
+      print(f"待機中~~ {elapsed_time} ")
     return return_func
   
   wait_cnt = 7200 / len(happy_chara_list)
-  wait_cnt = 10
 
   start_one_rap_time = time.time() 
   return_cnt_list = []
