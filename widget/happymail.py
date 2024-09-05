@@ -978,7 +978,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       return
    # プロフ検索をクリック
    nav_list = driver.find_elements(By.ID, value='ds_nav')
-   if len(nav_list):
+   if not len(nav_list):
       print(f"{name}: 警告画面が出ている可能性があります。")
       return
    mypage = nav_list[0].find_element(By.LINK_TEXT, "プロフ検索")
