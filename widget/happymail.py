@@ -21,7 +21,8 @@ from selenium.common.exceptions import ElementClickInterceptedException, NoSuchE
 import base64
 import json
 from selenium.webdriver.support import expected_conditions as EC
-
+import base64
+import requests
 
 # 警告画面
 def catch_warning_screen(driver):
@@ -107,8 +108,8 @@ def re_post(name,  driver, wait, title, post_text):
      if road_cnt == 7:
         break
   genre = genre[1].text
-  print("<<<再投稿する掲示板のジャンル取得>>>")
-  print(genre)
+  # print("<<<再投稿する掲示板のジャンル取得>>>")
+  # print(genre)
   # 1日に書き込めるのは五回まで
  
     # for i, kanto in enumerate(area_list):
@@ -242,8 +243,8 @@ def re_post(name,  driver, wait, title, post_text):
             list.append(area)
             area_cnt += 1
         else:
-            print("重複があった")
-            print(area_cnt)
+            # print("重複があった")
+            # print(area_cnt)
             if area_cnt >= 4:
                 continue
             duplication_area = driver.find_elements(By.CLASS_NAME, value="ds_round_btn_red")[area_cnt]
@@ -273,10 +274,10 @@ def re_post(name,  driver, wait, title, post_text):
       if area in area_text:
         # print("今回のエリア")
         this_area = area
-        print(area)
+        # print(area)
         if area in not_be_repost_areas:
-          print("リポストできなかったのでスキップ")
-          print(area)
+          # print("リポストできなかったのでスキップ")
+          # print(area)
           skip_flug = True
     if skip_flug:
         break   
@@ -741,6 +742,18 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
     duplication_user = False
     user_name_list = []
     user_icon = 0
+    if return_foot_img:
+      # 画像データを取得してBase64にエンコード
+      image_response = requests.get(return_foot_img)
+      image_base64 = base64.b64encode(image_response.content).decode('utf-8')
+      # ローカルに一時的に画像ファイルとして保存
+      image_filename = f"{name}_image.png"
+      with open(image_filename, 'wb') as f:
+          f.write(base64.b64decode(image_base64))
+      # 画像の保存パスを取得
+      image_path = os.path.abspath(image_filename)
+    else:
+      image_path = ""
     # debug
     # if name == "えりか":
     #   # マッチング返し
@@ -781,189 +794,185 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
     #   time.sleep(wait_time)      
 
     # 足跡返し
-    while cnt >= return_cnt:
-      warning_pop = catch_warning_screen(driver)
-      if warning_pop:
-         print(f"{name}：警告画面が出ている可能性があります")
-         return
-      
-      # マイページをクリック
-      nav_list = driver.find_elements(By.ID, value='ds_nav')
-      if not len(nav_list):
-          print(f"{name}: 警告画面が出ている可能性があります。")
+    try:
+      while cnt >= return_cnt:
+        warning_pop = catch_warning_screen(driver)
+        if warning_pop:
+          print(f"{name}：警告画面が出ている可能性があります")
           return
-      mypage = nav_list.find_element(By.LINK_TEXT, "マイページ")
-      mypage.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-      # 足あとをクリック
-      return_footpoint = driver.find_element(By.CLASS_NAME, value="icon-ico_footprint")
-      driver.execute_script("arguments[0].click();", return_footpoint)
-      # return_footpoint.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-      send_status = True
-      time.sleep(1)
-      # ページの最後までスクロール
-      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-      # ページが完全に読み込まれるまで待機
-      time.sleep(1)
-      f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
-      while len(f_user) == 0:
-         time.sleep(2)
-         f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
+        
+        # マイページをクリック
+        nav_list = driver.find_elements(By.ID, value='ds_nav')
+        if not len(nav_list):
+            print(f"{name}: 警告画面が出ている可能性があります。")
+            return
+        mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
+        mypage.click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(wait_time)
+        # 足あとをクリック
+        return_footpoint = driver.find_element(By.CLASS_NAME, value="icon-ico_footprint")
+        driver.execute_script("arguments[0].click();", return_footpoint)
+        # return_footpoint.click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(wait_time)
+        send_status = True
+        time.sleep(1)
+        # ページの最後までスクロール
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        # ページが完全に読み込まれるまで待機
+        time.sleep(1)
+        f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
+        while len(f_user) == 0:
+          time.sleep(2)
+          f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
 
-      name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
-      user_name = name_field.text
-      mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
-      send_skip_cnt = 0
-      while len(mail_icon) or user_name in user_name_list:
-        if len(mail_icon):
-          user_icon += 1
-          print(f'送信履歴あり {user_name} ~ skip ~')
-          send_skip_cnt += 1
-          try:
-            name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
-            user_name = name_field.text
-            mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
-          except IndexError:
-            print("送信可能なユーザーが見つかりませんでした")
-            return return_cnt
-          if send_skip_cnt > 8:
-            print("送れないユーザーが9回続きました")
-            return return_cnt
-        elif len(user_name_list):
-          while user_name in user_name_list:
-              print('重複ユーザー')
-              send_skip_cnt += 1
-              user_icon = user_icon + 1
-              if len(f_user) <= user_icon:
-                duplication_user = True
-                break
+        name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
+        user_name = name_field.text
+        mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
+        send_skip_cnt = 0
+        while len(mail_icon) or user_name in user_name_list:
+          if len(mail_icon):
+            user_icon += 1
+            print(f'送信履歴あり {user_name} ~ skip ~')
+            send_skip_cnt += 1
+            try:
               name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
               user_name = name_field.text
-              if send_skip_cnt > 9:
-                print("送れないユーザーが10回続きました")
-                return return_cnt
-
-      # 年齢で返信する確率を調整する
-      # user_age = f_user[user_icon].find_elements(By.CLASS_NAME, value="ds_like_list_age")
-      # if not len(user_age):
-      #    send_status = False
-      # if user_age[0].text[:2] == "ナイ" or user_age[0].text == "":
-      #    print("年齢不詳")
-      #    user_age = 31
-      # else:
-      #   user_age = int(user_age[0].text[:2])
-      # if user_age >= 40:
-      #   #  print(f'〜〜{user_age}代〜〜')
-      #    # 実行確率（80%の場合）
-      #    execution_probability = 0.20
-      #    # ランダムな数値を生成し、実行確率と比較
-      #    if random.random() < execution_probability:
-      #       send_status = False
-    
-      # 足跡ユーザーをクリック
-     
-      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", f_user[user_icon])
-      time.sleep(1)
-      if duplication_user:
-        name_field = f_user[user_icon+1].find_element(By.CLASS_NAME, value="ds_like_list_name")
-        user_name = name_field.text
-        user_name_list.append(user_name) 
-
-        f_user[user_icon+1].click()
-      else:
-        f_user[user_icon].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-      catch_warning_screen(driver)
-      m = driver.find_elements(By.XPATH, value="//*[@id='ds_main']/div/p")
-      if len(m):
-        print(m[0].text)
-        if m[0].text == "プロフィール情報の取得に失敗しました":
-            user_icon += 1
-            continue
-      # 自己紹介文に業者、通報が含まれているかチェック
-      if len(driver.find_elements(By.CLASS_NAME, value="translate_body")):
-        contains_violations = driver.find_element(By.CLASS_NAME, value="translate_body")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", contains_violations)
-        self_introduction_text = contains_violations.text.replace(" ", "").replace("\n", "")
-        if '通報' in self_introduction_text or '業者' in self_introduction_text:
-            print(f'自己紹介文に危険なワードが含まれていました {user_name}')
-            send_status = False
-      # メッセージ履歴があるかチェック
-      mail_field = driver.find_element(By.ID, value="ds_nav")
-      mail_history = mail_field.find_element(By.ID, value="mail-history")
-      display_value = mail_history.value_of_css_property("display")
-      if display_value != "none":
-          # print('メール履歴があります')
-          # print(user_name)
-          user_name_list.append(user_name) 
-          send_status = False
-          mail_icon_cnt += 1
-      # メールするをクリック
-      if send_status:
-        send_mail = mail_field.find_element(By.CLASS_NAME, value="ds_profile_target_btn")
-        send_mail.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(wait_time)
-        # 足跡返しを入力
-        text_area = driver.find_element(By.ID, value="text-message")
-        # text_area.send_keys(return_foot_message)
-        script = "arguments[0].value = arguments[1];"
-        driver.execute_script(script, text_area, return_foot_message)
-        # 送信
-        catch_warning_screen(driver)
-        send_mail = driver.find_element(By.ID, value="submitButton")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
-        send_mail.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(wait_time)
-        # 画像があれば送信
-        if return_foot_img:
-          img_conform = driver.find_element(By.ID, value="media-confirm")
-          plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
-          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
-          time.sleep(1)
-          driver.execute_script("arguments[0].click();", plus_icon[0])         
-          time.sleep(1)
-          upload_file = driver.find_element(By.ID, "upload_file")
-          # DEBUG
-          # upload_file.send_keys("/Users/yamamotokenta/Desktop/myprojects/mail_operator/widget/picture/kumi_mizugi.jpeg")
-          upload_file.send_keys(return_foot_img)
-          time.sleep(2)
-          submit = driver.find_element(By.ID, value="submit_button")
-          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submit)
-          driver.execute_script("arguments[0].click();", submit)
-          while img_conform.is_displayed():
-             time.sleep(2)
-        return_cnt += 1
-        mail_icon_cnt = 0
-        user_icon = 0
-        print(f'{name}:足跡返し  ~ {str(return_cnt)} ~ {user_name} ')
-        # TOPに戻る
-        driver.execute_script("window.scrollTo(0, 0);")
-        ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", ds_logo)
-        top_link = ds_logo.find_element(By.TAG_NAME, value="a")
+              mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
+            except IndexError:
+              print("送信可能なユーザーが見つかりませんでした")
+              return return_cnt
+            if send_skip_cnt > 8:
+              print("送れないユーザーが9回続きました")
+              return return_cnt
+          elif len(user_name_list):
+            while user_name in user_name_list:
+                print('重複ユーザー')
+                send_skip_cnt += 1
+                user_icon = user_icon + 1
+                if len(f_user) <= user_icon:
+                  duplication_user = True
+                  break
+                name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
+                user_name = name_field.text
+                if send_skip_cnt > 9:
+                  print("送れないユーザーが10回続きました")
+                  return return_cnt
+        # 足跡ユーザーをクリック
+      
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", f_user[user_icon])
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", top_link)
-        # top_link.click()
+        if duplication_user:
+          name_field = f_user[user_icon+1].find_element(By.CLASS_NAME, value="ds_like_list_name")
+          user_name = name_field.text
+          user_name_list.append(user_name) 
+
+          f_user[user_icon+1].click()
+        else:
+          f_user[user_icon].click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(wait_time)
-      else:
-        user_name_list.append(user_name) 
-        # TOPに戻る
-        ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
-        top_link = ds_logo.find_element(By.TAG_NAME, value="a")
-        driver.execute_script("arguments[0].click();", top_link)
-        # top_link.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(wait_time)
-    if return_cnt == None:
-      return_cnt = 0
-    return return_cnt
+        catch_warning_screen(driver)
+        m = driver.find_elements(By.XPATH, value="//*[@id='ds_main']/div/p")
+        if len(m):
+          print(m[0].text)
+          if m[0].text == "プロフィール情報の取得に失敗しました":
+              user_icon += 1
+              continue
+        # 自己紹介文に業者、通報が含まれているかチェック
+        if len(driver.find_elements(By.CLASS_NAME, value="translate_body")):
+          contains_violations = driver.find_element(By.CLASS_NAME, value="translate_body")
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", contains_violations)
+          self_introduction_text = contains_violations.text.replace(" ", "").replace("\n", "")
+          if '通報' in self_introduction_text or '業者' in self_introduction_text:
+              print(f'自己紹介文に危険なワードが含まれていました {user_name}')
+              send_status = False
+        # メッセージ履歴があるかチェック
+        mail_field = driver.find_element(By.ID, value="ds_nav")
+        mail_history = mail_field.find_element(By.ID, value="mail-history")
+        display_value = mail_history.value_of_css_property("display")
+        if display_value != "none":
+            # print('メール履歴があります')
+            # print(user_name)
+            user_name_list.append(user_name) 
+            send_status = False
+            mail_icon_cnt += 1
+        # メールするをクリック
+        if send_status:
+          send_mail = mail_field.find_element(By.CLASS_NAME, value="ds_profile_target_btn")
+          send_mail.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(wait_time)
+          # 足跡返しを入力
+          text_area = driver.find_element(By.ID, value="text-message")
+          # text_area.send_keys(return_foot_message)
+          script = "arguments[0].value = arguments[1];"
+          driver.execute_script(script, text_area, return_foot_message)
+          # 送信
+          catch_warning_screen(driver)
+          send_mail = driver.find_element(By.ID, value="submitButton")
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
+          send_mail.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(wait_time)
+          # 画像があれば送信
+          if image_path:
+            img_conform = driver.find_element(By.ID, value="media-confirm")
+            plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
+            time.sleep(1)
+            driver.execute_script("arguments[0].click();", plus_icon[0])         
+            time.sleep(1)
+            upload_file = driver.find_element(By.ID, "upload_file")
+            # DEBUG
+            # upload_file.send_keys("/Users/yamamotokenta/Desktop/myprojects/mail_operator/widget/picture/kumi_mizugi.jpeg")
+            upload_file.send_keys(image_path)
+            time.sleep(2)
+            submit = driver.find_element(By.ID, value="submit_button")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submit)
+            driver.execute_script("arguments[0].click();", submit)
+            while img_conform.is_displayed():
+              time.sleep(2)
+          return_cnt += 1
+          mail_icon_cnt = 0
+          user_icon = 0
+          print(f'{name}:足跡返し  ~ {str(return_cnt)} ~ {user_name} ')
+          # TOPに戻る
+          driver.execute_script("window.scrollTo(0, 0);")
+          ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", ds_logo)
+          top_link = ds_logo.find_element(By.TAG_NAME, value="a")
+          time.sleep(1)
+          driver.execute_script("arguments[0].click();", top_link)
+          # top_link.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(wait_time)
+        else:
+          user_name_list.append(user_name) 
+          # TOPに戻る
+          ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
+          top_link = ds_logo.find_element(By.TAG_NAME, value="a")
+          driver.execute_script("arguments[0].click();", top_link)
+          # top_link.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(wait_time)
+
+      # ファイルが存在しているか確認し、削除
+      if os.path.exists(image_filename):
+          os.remove(image_filename)
+
+      if return_cnt == None:
+        return_cnt = 0
+      return return_cnt
+    finally: 
+      # ファイルが存在しているか確認し、削除
+      if os.path.exists(image_filename):
+          os.remove(image_filename)
+      if return_cnt == None:
+        return_cnt = 0
+      return return_cnt
+       
 
 def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count):
    driver.delete_all_cookies()
@@ -1189,7 +1198,6 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
 #    driver.refresh()
 
 def send_fst_message(happy_user_list, driver, wait):
-  
   for user_info in happy_user_list:
     name,login_id, passward, fst_message, mail_img = user_info
     limit_cnt = 1

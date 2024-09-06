@@ -33,6 +33,7 @@ def get_driver(headless_flag):
       options.add_argument('--headless')
       options.add_argument("--disable-gpu")  # headlessモードの時はこのオプションを追加
     options.add_argument("--incognito")
+    options.add_argument('--disable-web-security')
     options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
     options.add_argument("--no-sandbox")
     options.add_argument("--window-size=456,912")
