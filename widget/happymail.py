@@ -786,8 +786,12 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
       if warning_pop:
          print(f"{name}：警告画面が出ている可能性があります")
          return
+      
       # マイページをクリック
-      nav_list = driver.find_element(By.ID, value='ds_nav')
+      nav_list = driver.find_elements(By.ID, value='ds_nav')
+      if not len(nav_list):
+          print(f"{name}: 警告画面が出ている可能性があります。")
+          return
       mypage = nav_list.find_element(By.LINK_TEXT, "マイページ")
       mypage.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
