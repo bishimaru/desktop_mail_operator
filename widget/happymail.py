@@ -1042,6 +1042,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       user_link[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
+      catch_warning_screen(driver)
       # ユーザ名を取得
       user_name = driver.find_elements(By.CLASS_NAME, value="ds_user_display_name")
       user_name = user_name[0].text
