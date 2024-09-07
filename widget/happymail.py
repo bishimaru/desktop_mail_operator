@@ -963,14 +963,14 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
       if image_filename:
         if os.path.exists(image_filename):
             os.remove(image_filename)
-
       if return_cnt == None:
         return_cnt = 0
       return return_cnt
     finally: 
       # ファイルが存在しているか確認し、削除
-      if os.path.exists(image_filename):
-          os.remove(image_filename)
+      if image_filename:
+        if os.path.exists(image_filename):
+            os.remove(image_filename)
       if return_cnt == None:
         return_cnt = 0
       return return_cnt
