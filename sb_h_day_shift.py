@@ -53,6 +53,8 @@ def sb_h_all_do(return_foot_cnt, happy_chara_list, headless, mail_info):
   print(f"<<<<<<<<<<<<<サイト回し一周タイム： {elapsed_time_formatted}>>>>>>>>>>>>>>>>>>")
   return_cnt_list.append(f"サイト回し一周タイム： {elapsed_time_formatted}")
   str_return_cnt_list = ", ".join(return_cnt_list)
+  print(77777)
+  print(mail_info)
   if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
     func.send_mail(str_return_cnt_list, mail_info)
 

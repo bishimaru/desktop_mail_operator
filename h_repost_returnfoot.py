@@ -26,8 +26,6 @@ def sb_h_repost_returnfoot(happy_chara, cnt, headless):
   post_contents = happy_chara["post_contents"]
   return_foot_message = happy_chara["return_foot_message"]
   return_foot_img = happy_chara["chara_image"]
-  print(888)
-  print(return_foot_img)
 
   if not login_id:
     print(f"{name}：ログインIDが正しくありません")

@@ -750,7 +750,6 @@ def send_fst_mail(name, maji_soushin, select_areas, youngest_age, oldest_age, ng
   options.add_argument("--window-size=456,912")
   options.add_experimental_option("detach", True)
   options.add_argument("--disable-cache")
-  print(888)
   driver = func.get_firefox_driver()
   # service = Service(executable_path="./chromedriver")
   # driver = webdriver.Chrome(service=service, options=options)
