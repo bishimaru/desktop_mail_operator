@@ -36,8 +36,8 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
     user_profile_list = []
     user_info = user_data.get("user", None)
     
-    print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
-    print(happy_chara_list[0])
+    # print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
+    # print(user_data["user"])
     mail_info = [
         user_data["user"][0]["user_email"],
         user_data["user"][0]["gmail_account"],
@@ -52,7 +52,6 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
             combined_string = combined_string +",".join(element)
     c.execute("INSERT INTO users (user_name, password, h_schedule_time) VALUES (?, ?, ?)", (user_data["user"][0]["username"], user_data["user"][0]["password"], combined_string))
     conn.commit()
-    mail_info = []
     for data in schedule_data:
         hour, minute, args = data
         scheduler.add_job(

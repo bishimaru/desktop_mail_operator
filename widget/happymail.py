@@ -1329,7 +1329,10 @@ def send_fst_message(happy_user_list, driver, wait):
   print("fstmail end")
   
 
-def check_new_mail(driver, wait, name):
+def check_new_mail(driver, wait, happy_info):
+  print(11111111)
+  print(happy_info)
+  return
   return_list = []
   dbpath = 'firstdb.db'
   conn = sqlite3.connect(dbpath)
