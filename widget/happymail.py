@@ -754,6 +754,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
       image_path = os.path.abspath(image_filename)
     else:
       image_path = ""
+      image_filename = ""
     # debug
     # if name == "えりか":
     #   # マッチング返し

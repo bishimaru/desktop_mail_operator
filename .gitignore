@@ -1,2 +1,4 @@
 *.db
 d_m_venv/
+*.pyc
+
