@@ -754,7 +754,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
       image_path = os.path.abspath(image_filename)
     else:
       image_path = ""
-      image_filename = ""
+      image_filename = None
     # debug
     # if name == "えりか":
     #   # マッチング返し
@@ -960,8 +960,9 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
           time.sleep(wait_time)
 
       # ファイルが存在しているか確認し、削除
-      if os.path.exists(image_filename):
-          os.remove(image_filename)
+      if image_filename:
+        if os.path.exists(image_filename):
+            os.remove(image_filename)
 
       if return_cnt == None:
         return_cnt = 0
