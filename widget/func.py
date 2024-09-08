@@ -25,9 +25,21 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 # from selenium.webdriver.firefox.options import Options
 # import setting
 import requests
+import shutil
 
+
+def clear_webdriver_cache():
+    cache_dir = os.path.expanduser("~/.wdm/drivers")
+    if os.path.exists(cache_dir):
+        try:
+            shutil.rmtree(cache_dir)
+            
+        except Exception as e:
+            print(f"Error clearing webdriver cache: {e}")
 
 def get_driver(headless_flag):
+    # キャッシュをクリア
+    clear_webdriver_cache()
     options = Options()
     if headless_flag:
       options.add_argument('--headless')
@@ -161,8 +173,7 @@ def h_p_return_footprint(name, h_w, p_w, driver, return_foot_message, cnt, h_ret
   mail_icon_cnt = 0
   if len(mail_icon):
     if not user_name in history_user_list:
-        print(777)
-        print(history_user_list)
+        # print(history_user_list)
         mail_icon_cnt = 0
         history_user_list.append(user_name)
         happy_foot_user[0].click()
