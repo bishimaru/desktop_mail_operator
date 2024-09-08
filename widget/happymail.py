@@ -1016,6 +1016,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
    time.sleep(wait_time)
    for i in range(foot_count):
+      warinig_flug = catch_warning_screen(driver)
       if warinig_flug:
         print(f"{name}:警告画面が出ている可能性があります")
         return
