@@ -10,6 +10,8 @@ from sb_h_day_shift import sb_h_all_do
 from widget import func
 from sb_h_day_shift import sb_h_all_do
 import sqlite3
+from selenium.common.exceptions import WebDriverException
+
 
 conn = sqlite3.connect('user_data.db')
 c = conn.cursor()
@@ -32,12 +34,8 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
     if not verification_flug:
         return
     global driver
-
-    user_profile_list = []
-    user_info = user_data.get("user", None)
     
     # print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
-    # print(user_data["user"])
     mail_info = [
         user_data["user"][0]["user_email"],
         user_data["user"][0]["gmail_account"],
@@ -70,6 +68,11 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
         pass
+    except WebDriverException as e:
+        error_message = str(e)
+        if "unexpectedly exited. Status code was: -9" in error_message:
+            print("Chromedriverが予期せず終了しました。再起動して起動してください。")
+            driver.quit()
     finally:
         if driver:
             driver.quit()
