@@ -24,6 +24,14 @@ from selenium.webdriver.support import expected_conditions as EC
 import base64
 import requests
 from selenium.common.exceptions import WebDriverException
+import unicodedata
+
+
+
+# 文字列を正規化する関数
+def normalize_text(text):
+    # Unicodeの互換正規化（NFKC）を使って、全角・半角や記号を統一
+    return unicodedata.normalize('NFKC', text).replace("\n", "").replace("\r", "").replace(" ", "").replace("　", "")
 
 # 警告画面
 def catch_warning_screen(driver):
@@ -1453,11 +1461,12 @@ def check_new_mail(driver, wait, happy_info):
             print(fst_message)
             print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
             print(return_foot_message)
-
+            # 文字列を正規化する関数
+            normalize_text()
             # 改行と空白を削除
-            send_text_clean = send_text.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
-            fst_message_clean = fst_message.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
-            return_foot_message_clean = return_foot_message.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
+            send_text_clean = normalize_text(send_text)
+            fst_message_clean = normalize_text(send_text)
+            return_foot_message_clean = normalize_text(return_foot_message)
             
             # 変換後のデバッグ表示
             print(f"変換後のsend_text: {repr(send_text_clean)}")
