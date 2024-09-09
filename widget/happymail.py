@@ -1352,7 +1352,6 @@ def check_new_mail(driver, wait, happy_info):
   fst_message = happy_info["fst_message"]
   conditions_message = happy_info["second_message"]   
   return_foot_message = happy_info["return_foot_message"]   
-  print(conditions_message)
   if not login_id:
     print(f"{name}のhappymailキャラ情報を取得できませんでした")
     return
