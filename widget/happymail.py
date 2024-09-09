@@ -1453,21 +1453,37 @@ def check_new_mail(driver, wait, happy_info):
             print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
             print(return_foot_message)
 
+            # 改行と空白を削除
+            send_text_clean = send_text.replace("\n", "").replace(" ", "").replace("　", "")
+            fst_message_clean = fst_message.replace("\n", "").replace(" ", "").replace("　", "")
+            return_foot_message_clean = return_foot_message.replace("\n", "").replace(" ", "").replace("　", "")
+            
+            # 変換後のデバッグ表示
+            print(f"変換後のsend_text: {repr(send_text_clean)}")
+            print(f"変換後のfst_message: {repr(fst_message_clean)}")
+            print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
+
+
             print("---------------------------------------")
-            send_text = send_text.replace("\n", "").replace(" ", "").replace("　", "")
             print(send_text)
             print("---------------------------------------")
-            fst_message = fst_message.replace("\n", "").replace(" ", "").replace("　", "")
             print(fst_message == send_text)
             print(fst_message)
             print("---------------------------------------")
-            return_foot_message = return_foot_message.replace("\n", "").replace(" ", "").replace("　", "")
             print(return_foot_message == send_text)
             print(return_foot_message)
             print("---------------------------------------")
             print("募集メッセージ" in send_text)
 
-            if fst_message == send_text or return_foot_message == send_text or "募集メッセージ" in send_text:
+
+            
+            # 変換後のデバッグ表示
+            print(f"変換後のsend_text: {repr(send_text_clean)}")
+            print(f"変換後のfst_message: {repr(fst_message_clean)}")
+            print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
+
+
+            if fst_message_clean == send_text_clean or return_foot_message_clean == send_text_clean or "募集メッセージ" in send_text_clean:
                 text_area = driver.find_element(By.ID, value="text-message")
                 driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
                 # text_area.send_keys(return_foot_message)
