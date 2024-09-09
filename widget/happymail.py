@@ -1347,6 +1347,7 @@ def send_fst_message(happy_user_list, driver, wait):
 
 def check_new_mail(driver, wait, happy_info):
   return_list = []
+  name = happy_info["name"]
   login_id = happy_info["login_id"]
   login_pass = happy_info["password"]
   fst_message = happy_info["fst_message"]
