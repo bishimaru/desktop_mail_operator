@@ -62,7 +62,6 @@ def wait_if_near_midnight():
     return
 
 def check_mail(user_data, driver, wait):
-  print(777)
   happymail_list = user_data['happymail']
   print(happymail_list)
   pcmax_list = user_data['pcmax']
@@ -108,29 +107,29 @@ def check_mail(user_data, driver, wait):
                 print(traceback.format_exc())
                 # func.send_error(f"メールチェックエラー：ハッピーメール{order_info[0]}", traceback.format_exc())    
             wait_if_near_midnight()
-            # pcmax
-            # try:
-                # driver, wait = get_driver(debug)
-                # pcmax_new, return_foot_cnt = pcmax.check_new_mail(driver, wait, order_info[0])
-                
-            #     if pcmax_new != 1:
-            #         new_mail_lists.append(pcmax_new)
+        # pcmax
+        # try:
             
-            #     if return_foot_cnt:     
-            #         for r_f_user in pcmax_return_foot_count_dic:
-            #             if order_info[0] == r_f_user:
-            #                 # print(777)
-            #                 # print(return_foot_count_dic[r_f_user])
-            #                 pcmax_return_foot_count_dic[r_f_user] = pcmax_return_foot_count_dic[r_f_user] + return_foot_cnt
-            #                 # print(return_foot_count_dic[r_f_user])
-            #     driver.quit()
-            # except Exception as e:
-            #     # print(f"<<<<<<<<<<メールチェックエラー：pcmax{order_info[0]}>>>>>>>>>>>")
-            #     print(traceback.format_exc())
-            #     # func.send_error(f"メールチェックエラー：pcmax{order_info[0]}", traceback.format_exc())
+        #     pcmax_new, return_foot_cnt = pcmax.check_new_mail(driver, wait, order_info[0])
+            
+        #     if pcmax_new != 1:
+        #         new_mail_lists.append(pcmax_new)
+        
+        #     if return_foot_cnt:     
+        #         for r_f_user in pcmax_return_foot_count_dic:
+        #             if order_info[0] == r_f_user:
+        #                 # print(777)
+        #                 # print(return_foot_count_dic[r_f_user])
+        #                 pcmax_return_foot_count_dic[r_f_user] = pcmax_return_foot_count_dic[r_f_user] + return_foot_cnt
+        #                 # print(return_foot_count_dic[r_f_user])
+        #     driver.quit()
+        # except Exception as e:
+        #     # print(f"<<<<<<<<<<メールチェックエラー：pcmax{order_info[0]}>>>>>>>>>>>")
+        #     print(traceback.format_exc())
+        #     # func.send_error(f"メールチェックエラー：pcmax{order_info[0]}", traceback.format_exc())
 
-            #     driver.quit()
-            # wait_if_near_midnight()
+        #     driver.quit()
+        # wait_if_near_midnight()
             # jmail
             # try:
             #     driver, wait = get_driver(debug)
@@ -174,7 +173,7 @@ def check_mail(user_data, driver, wait):
 
                         text = text + new_mail + ",\n"
                         if "警告" in text:
-                            subject = "警告メッセージ"
+                            subject = "メッセージ"
                 address_from = 'kenta.bishi777@gmail.com'
                 # address_to = 'bidato@wanko.be'
                 address_to = "ryapya694@ruru.be"
