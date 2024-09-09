@@ -1470,7 +1470,10 @@ def check_new_mail(driver, wait, happy_info):
             if fst_message == send_text or return_foot_message == send_text or "募集メッセージ" in send_text:
                 text_area = driver.find_element(By.ID, value="text-message")
                 driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
-                text_area.send_keys(conditions_message)
+                # text_area.send_keys(return_foot_message)
+                script = "arguments[0].value = arguments[1];"
+                driver.execute_script(script, text_area, conditions_message)
+                # text_area.send_keys(conditions_message)
                 # 送信
                 send_mail = driver.find_element(By.ID, value="submitButton")
                 send_mail.click()
@@ -1513,7 +1516,9 @@ def check_new_mail(driver, wait, happy_info):
           else:
             text_area = driver.find_element(By.ID, value="text-message")
             driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
-            text_area.send_keys(fst_message)
+            script = "arguments[0].value = arguments[1];"
+            driver.execute_script(script, text_area, fst_message)
+            # text_area.send_keys(fst_message)
             # 送信
             send_mail = driver.find_element(By.ID, value="submitButton")
             driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
