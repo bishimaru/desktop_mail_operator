@@ -1453,6 +1453,7 @@ def check_new_mail(driver, wait, happy_info):
             print(fst_message == send_text)
             print("---------------------------------------")
             print(return_foot_message == send_text)
+            print(return_foot_message)
             print("---------------------------------------")
             print("募集メッセージ" in send_text)
 
