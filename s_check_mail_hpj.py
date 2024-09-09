@@ -155,10 +155,10 @@ def check_mail(user_data, driver, wait):
             
             # メール送信
             if len(new_mail_lists) == 0:
-                # print(f'{order_info[0]}新着チェック完了手動メールなし')
+                print(f'{happy_info["name"]}新着チェック完了手動メールなし')
                 pass
             else:
-                # print(f'{order_info[0]}新着チェック完了手動メールあり')
+                print(f'{happy_info["name"]}新着チェック完了手動メールあり')
                 print(new_mail_lists)
                 mailaddress = 'kenta.bishi777@gmail.com'
                 password = 'rjdzkswuhgfvslvd'
