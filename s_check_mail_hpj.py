@@ -63,7 +63,6 @@ def wait_if_near_midnight():
 
 def check_mail(user_data, driver, wait):
   happymail_list = user_data['happymail']
-  print(happymail_list)
   pcmax_list = user_data['pcmax']
   try:
     pcmax_return_foot_count_dic = {
