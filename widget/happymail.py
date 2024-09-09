@@ -1448,13 +1448,13 @@ def check_new_mail(driver, wait, happy_info):
                 send_text = send_message[-2].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
             
             print("<<<<<<<<<<<>>>>>>>>>>>>>")
-            print(send_text)
+            print(send_text.rstrip("\n"))
             print("---------------------------------------")
-            print(fst_message == send_text)
-            print(fst_message)
+            print(fst_message.rstrip("\n") == send_text.rstrip("\n"))
+            print(fst_message.rstrip("\n"))
             print("---------------------------------------")
-            print(return_foot_message == send_text)
-            print(return_foot_message)
+            print(return_foot_message.rstrip("\n") == send_text.rstrip("\n"))
+            print(return_foot_message.rstrip("\n"))
             print("---------------------------------------")
             print("募集メッセージ" in send_text)
 
