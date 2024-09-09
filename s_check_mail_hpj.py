@@ -102,13 +102,11 @@ def check_mail(user_data, driver, wait):
                 happymail_new = happymail.check_new_mail(driver, wait, happy_info)
                 if happymail_new:
                     new_mail_lists.append(happymail_new)
-                driver.quit()
+                
             except Exception as e:
                 # print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{order_info[0]}>>>>>>>>>>>")
                 print(traceback.format_exc())
-                # func.send_error(f"メールチェックエラー：ハッピーメール{order_info[0]}", traceback.format_exc())
-
-                driver.quit()
+                # func.send_error(f"メールチェックエラー：ハッピーメール{order_info[0]}", traceback.format_exc())    
             wait_if_near_midnight()
             # pcmax
             # try:
@@ -132,7 +130,7 @@ def check_mail(user_data, driver, wait):
             #     # func.send_error(f"メールチェックエラー：pcmax{order_info[0]}", traceback.format_exc())
 
             #     driver.quit()
-            wait_if_near_midnight()
+            # wait_if_near_midnight()
             # jmail
             # try:
             #     driver, wait = get_driver(debug)
@@ -175,6 +173,8 @@ def check_mail(user_data, driver, wait):
                     for new_mail in new_mail_list:
 
                         text = text + new_mail + ",\n"
+                        if "警告" in text:
+                            subject = "警告メッセージ"
                 address_from = 'kenta.bishi777@gmail.com'
                 # address_to = 'bidato@wanko.be'
                 address_to = "ryapya694@ruru.be"
@@ -204,54 +204,45 @@ def check_mail(user_data, driver, wait):
         # print(jmail_return_foot_count_dic)
 
         # 現在時刻を取得
-        now = datetime.now()
+        # now = datetime.now()
         # 現在時刻の時間と分を取得
-        current_hour = now.hour
-        current_minute = now.minute
+        # current_hour = now.hour
+        # current_minute = now.minute
         # もし現在時刻が10:00から10:20の間だったら
-        if current_hour == 10 and 0 <= current_minute <= 20 and send_flug:
-            print("現在時刻は10:00から10:20の間です。特定の動作を実行します。")
-            # ここに実行したい動作を追加
-            mailaddress = 'kenta.bishi777@gmail.com'
-            password = 'rjdzkswuhgfvslvd'
-            text = str(jmail_return_foot_count_dic)  # 辞書を文字列に変換
-            subject = "jメール足跡返し件数"
-            address_from = 'kenta.bishi777@gmail.com'
-            # address_to = 'bidato@wanko.be'
-            address_to = "ryapya694@ruru.be"
-            # address_to = 'misuzu414510@gmail.com'
-            try:
-                smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
-                smtpobj.set_debuglevel(0)
-                smtpobj.starttls()
-                smtpobj.login(mailaddress, password)
-                msg = MIMEText(text)
-                msg['Subject'] = subject
-                msg['From'] = address_from
-                msg['To'] = address_to
-                msg['Date'] = formatdate()
-                smtpobj.send_message(msg)
-            except smtplib.SMTPDataError as e:
-                print(f"SMTPDataError: {e}")
-            except Exception as e:
-                print(f"An error occurred: {e}")
-            smtpobj.close()
-            send_flug = False
-        if current_hour == 11:
-            send_flug = True
+        # if current_hour == 10 and 0 <= current_minute <= 20 and send_flug:
+        #     print("現在時刻は10:00から10:20の間です。特定の動作を実行します。")
+        #     # ここに実行したい動作を追加
+        #     mailaddress = 'kenta.bishi777@gmail.com'
+        #     password = 'rjdzkswuhgfvslvd'
+        #     text = str(jmail_return_foot_count_dic)  # 辞書を文字列に変換
+        #     subject = "jメール足跡返し件数"
+        #     address_from = 'kenta.bishi777@gmail.com'
+        #     # address_to = 'bidato@wanko.be'
+        #     address_to = "ryapya694@ruru.be"
+        #     # address_to = 'misuzu414510@gmail.com'
+        #     try:
+        #         smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
+        #         smtpobj.set_debuglevel(0)
+        #         smtpobj.starttls()
+        #         smtpobj.login(mailaddress, password)
+        #         msg = MIMEText(text)
+        #         msg['Subject'] = subject
+        #         msg['From'] = address_from
+        #         msg['To'] = address_to
+        #         msg['Date'] = formatdate()
+        #         smtpobj.send_message(msg)
+        #     except smtplib.SMTPDataError as e:
+        #         print(f"SMTPDataError: {e}")
+        #     except Exception as e:
+        #         print(f"An error occurred: {e}")
+        #     smtpobj.close()
+        #     send_flug = False
+        # if current_hour == 11:
+        #     send_flug = True
   except (smtplib.SMTPException, socket.gaierror) as e:
     print(f"メール送信中にエラーが発生しました: {e}")
     print("5分間待機して再試行します...")
+    driver.quit()
     time.sleep(300)  # 300秒（5分）間待機
-    check_mail()
-
-
-
-
-if __name__ == '__main__':
-#    start_time = time.time() 
-   check_mail()
-#    elapsed_time = time.time() - start_time  # 経過時間を計算する
-#    elapsed_timedelta = timedelta(seconds=elapsed_time)
-#    elapsed_time_formatted = str(elapsed_timedelta)
-#    print(f"<<<<<<<<<<<<<経過時間 {elapsed_time_formatted}>>>>>>>>>>>>>>>>>>")
+    driver, wait = func.get_driver(1)
+    check_mail(user_data, driver, wait)
