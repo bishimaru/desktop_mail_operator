@@ -1455,9 +1455,9 @@ def check_new_mail(driver, wait, happy_info):
             print(return_foot_message)
 
             # 改行と空白を削除
-            send_text_clean = send_text.replace("\n", "").replace(" ", "").replace("　", "")
-            fst_message_clean = fst_message.replace("\n", "").replace(" ", "").replace("　", "")
-            return_foot_message_clean = return_foot_message.replace("\n", "").replace(" ", "").replace("　", "")
+            send_text_clean = send_text.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
+            fst_message_clean = fst_message.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
+            return_foot_message_clean = return_foot_message.replace("\n", "").replace(" ", "").replace("　", "").replace("\r", "")
             
             # 変換後のデバッグ表示
             print(f"変換後のsend_text: {repr(send_text_clean)}")
