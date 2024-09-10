@@ -1468,18 +1468,15 @@ def check_new_mail(driver, wait, happy_info):
             
             # 変換後のデバッグ表示
             print(f"変換後のsend_text: {repr(send_text_clean)}")
+            print("---------------------------------------")
             print(f"変換後のfst_message: {repr(fst_message_clean)}")
+            print("---------------------------------------")
             print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
-
-
+            
             print("---------------------------------------")
-            print(send_text)
+            print(fst_message_clean == send_text_clean)
             print("---------------------------------------")
-            print(fst_message == send_text)
-            print(fst_message)
-            print("---------------------------------------")
-            print(return_foot_message == send_text)
-            print(return_foot_message)
+            print(return_foot_message_clean == send_text_clean)
             print("---------------------------------------")
             print("募集メッセージ" in send_text)
 
