@@ -753,7 +753,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
     driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
-    return_cnt = 1
+    return_cnt = 0
     mail_icon_cnt = 0
     duplication_user = False
     user_name_list = []
@@ -812,7 +812,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
 
     # 足跡返し
     try:
-      while cnt >= return_cnt:
+      while cnt >= return_cnt - 1:
         warning_pop = catch_warning_screen(driver)
         if warning_pop:
           print(f"{name}：警告画面が出ている可能性があります")
