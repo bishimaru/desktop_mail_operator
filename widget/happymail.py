@@ -1463,7 +1463,7 @@ def check_new_mail(driver, wait, happy_info):
             print(return_foot_message)
             # 改行と空白を削除
             send_text_clean = normalize_text(send_text)
-            fst_message_clean = normalize_text(send_text)
+            fst_message_clean = normalize_text(fst_message)
             return_foot_message_clean = normalize_text(return_foot_message)
             
             # 変換後のデバッグ表示
