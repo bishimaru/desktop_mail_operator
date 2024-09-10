@@ -154,6 +154,7 @@ def check_mail(user_data, driver, wait):
             
             
             # メール送信
+            smtpobj = None 
             if len(new_mail_lists) == 0:
                 print(f'{happy_info["name"]}新着チェック完了手動メールなし')
                 pass
@@ -192,7 +193,10 @@ def check_mail(user_data, driver, wait):
                     print(f"SMTPDataError: {e}")
                 except Exception as e:
                     print(f"An error occurred: {e}")
-                smtpobj.close()
+                finally:
+                    if smtpobj: 
+                        smtpobj.close()
+                           
         elapsed_time = time.time() - start_time  
         elapsed_timedelta = timedelta(seconds=elapsed_time)
         elapsed_time_formatted = str(elapsed_timedelta)
