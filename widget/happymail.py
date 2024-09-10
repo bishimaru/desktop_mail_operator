@@ -851,7 +851,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
         while len(mail_icon) or user_name in user_name_list:
           if len(mail_icon):
             user_icon += 1
-            print(f'送信履歴あり {user_name} ~ skip ~')
+            # print(f'送信履歴あり {user_name} ~ skip ~')
             send_skip_cnt += 1
             try:
               name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
