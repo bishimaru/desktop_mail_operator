@@ -812,7 +812,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
 
     # 足跡返し
     try:
-      while cnt >= return_cnt - 1:
+      while cnt >= return_cnt + 1:
         warning_pop = catch_warning_screen(driver)
         if warning_pop:
           print(f"{name}：警告画面が出ている可能性があります")
