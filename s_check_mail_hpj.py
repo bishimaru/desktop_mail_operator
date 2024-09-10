@@ -45,21 +45,18 @@ order_list = [
 #    ]
 
 def wait_if_near_midnight():
-    current_time = datetime.now().time()
-    
-    # 現在時刻が23:50を越えているかをチェック
-    if current_time >= dt_time(23, 55):
-        print("23:55を過ぎたので、0:05まで待機します。")
-        # 0:05までの残り時間を計算
-        target_time = datetime.combine(datetime.date.today(), dt_time(0, 5))
-        if current_time.hour == 23:
-            target_time += timedelta(days=1)  # 翌日の0:05を設定
-        time_to_wait = (target_time - datetime.datetime.now()).total_seconds()
-        
-        # 残り時間を待機
-        time.sleep(time_to_wait)
-        print("待機終了、処理を再開します。")
+    # 現在時刻を取得
+    now = datetime.now()
+    # 現在時刻の時間と分を取得
+    current_hour = now.hour
+    current_minute = now.minute
+    # もし現在時刻が23:55を過ぎていたら
+    if current_hour == 23 and 55 <= current_minute:
+        print("現在時刻は0時に近づいています。処理を一時中断します。")
+        #     # ここに実行したい動作を追加
+        time.sleep(600)
     return
+
 
 def check_mail(user_data, driver, wait):
   happymail_list = user_data['happymail']
@@ -96,7 +93,6 @@ def check_mail(user_data, driver, wait):
             debug = False
             # ハッピーメール
             try:
-                
                 happymail_new = happymail.check_new_mail(driver, wait, happy_info)
                 if happymail_new:
                     new_mail_lists.append(happymail_new)
