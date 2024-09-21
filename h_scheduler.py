@@ -119,11 +119,11 @@ def add_form(user_info):
     # 新しい入力フォームを追加
     hour_var = tk.IntVar()
     hour_menu = tk.OptionMenu(frame, hour_var, *range(24))  # 時間0〜23
-    hour_menu.grid(row=form_count, column=0)
+    hour_menu.grid(row=form_count, column=0, pady=2)
     hour_entries.append(hour_menu)
     hour_vars.append(hour_var)  # IntVarをリストに追加    print(999)
     hour_label = tk.Label(frame, text="時")
-    hour_label.grid(row=form_count, column=1)
+    hour_label.grid(row=form_count, column=1, pady=2)
     hour_labels.append(hour_label)
 
     minute_var = tk.IntVar()

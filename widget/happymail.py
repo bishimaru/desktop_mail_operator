@@ -40,8 +40,9 @@ def catch_warning_screen(driver):
   warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
   dialog = driver.find_elements(By.ID, value="_information_dialog")
   remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
+  remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
   warinig_cnt =0
-  while len(warning) or len(anno) or len(dialog) or len(remodal):
+  while len(warning) or len(anno) or len(dialog) or len(remodal) or len(remodal_wrapper):
     driver.refresh()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
@@ -49,6 +50,7 @@ def catch_warning_screen(driver):
     anno = driver.find_elements(By.CLASS_NAME, value="anno")
     dialog = driver.find_elements(By.ID, value="_information_dialog")
     remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
+    remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
     warinig_cnt += 1
     if warinig_cnt > 2:
        return True
@@ -773,6 +775,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
       image_path = ""
       image_filename = None 
     # マッチング返し
+    matching_counted = 0
     try:
       matching_counted = return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, image_path, matching_cnt)
       print(f"マッチング返し総数 {matching_counted}")
@@ -783,6 +786,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
     # タイプ返し
+    type_counted = 0
     try:
       type_counted = return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, image_path, type_cnt)
       print(f"タイプ返し総数 {type_counted}")
@@ -1101,6 +1105,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       print(f'{name}:足跡付け{i+1}件,  {user_name}')
 
       # 戻る
+      catch_warning_screen(driver)
       back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
       back[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
