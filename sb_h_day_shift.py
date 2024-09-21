@@ -16,7 +16,10 @@ from datetime import timedelta
 from h_repost_returnfoot import sb_h_repost_returnfoot
 
 
-def sb_h_all_do(return_foot_cnt, happy_chara_list, headless, mail_info):
+def sb_h_all_do(matching_cnt, type_cnt, return_foot_cnt, happy_chara_list, headless, mail_info):
+  verification_flug = func.get_user_data()
+  if not verification_flug:
+      return
   def timer(sec, functions):
     start_time = time.time() 
     for func in functions:
@@ -38,7 +41,7 @@ def sb_h_all_do(return_foot_cnt, happy_chara_list, headless, mail_info):
   return_cnt_list = []
   for happy_chara in happy_chara_list:
     try:
-      return_func = timer(wait_cnt, [lambda: sb_h_repost_returnfoot(happy_chara, return_foot_cnt, headless)])
+      return_func = timer(wait_cnt, [lambda: sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt, headless)])
       if isinstance(return_func, str):
         return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
       elif isinstance(return_func, list):

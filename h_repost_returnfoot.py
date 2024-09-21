@@ -17,8 +17,7 @@ import sqlite3
 import base64
 import requests
 
-def sb_h_repost_returnfoot(happy_chara, cnt, headless): 
-  
+def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt, headless): 
   name = happy_chara["name"]
   login_id = happy_chara["login_id"]
   login_pass = happy_chara["password"]
@@ -26,6 +25,17 @@ def sb_h_repost_returnfoot(happy_chara, cnt, headless):
   post_contents = happy_chara["post_contents"]
   return_foot_message = happy_chara["return_foot_message"]
   return_foot_img = happy_chara["chara_image"]
+  fst_message = happy_chara["fst_message"]
+#   fst_message = """
+#   初めまして♪
+# プロフィール見て気になってご連絡しちゃいました♪
+# あすかです٩( 'ω’ )و
+# 友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！
+
+# 2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥
+
+# 私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？
+# """
 
   if not login_id:
     print(f"{name}：ログインIDが正しくありません")
@@ -45,25 +55,24 @@ def sb_h_repost_returnfoot(happy_chara, cnt, headless):
   send_form.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
-  return_foot_cnt = 0
+  return_foot_counted = 0
   repost_flug = ""
+  # try:
+  #   repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
+  # except Exception as e:
+  #   print(f"ハッピーメール掲示板エラー{name}")
+  #   print(traceback.format_exc())
+  #   func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
+  # time.sleep(2)
   try:
-    repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
-  except Exception as e:
-    print(f"ハッピーメール掲示板エラー{name}")
-    print(traceback.format_exc())
-    func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
-  time.sleep(2)
-  try:
-    fst_message = ""
-    return_foot_cnt = happymail.return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_img, fst_message)
+    return_foot_counted = happymail.return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type_cnt, return_foot_cnt, return_foot_img, fst_message)
   except Exception as e:
     print(f"足跡返しエラー{name}")
     print(traceback.format_exc())
     func.send_error(f"足跡返しエラー{name}", traceback.format_exc())
   driver.quit()
-  print(f"再投稿：{repost_flug}\n足跡返し {return_foot_cnt}件")
-  return f"再投稿：{repost_flug}\n足跡返し {return_foot_cnt}件\n"
+  print(f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件")
+  return f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件"
 
 
 if __name__ == '__main__':
@@ -74,7 +83,7 @@ if __name__ == '__main__':
     cnt = int(sys.argv[2])
     # matching_cnt = int(sys.argv[3])
     # type_cnt = int(sys.argv[4])
-  happy_chara_list ={'id': 49, 'name': 'アスカ', 'login_id': '50023922457', 'password': 'ebbh7278', 'fst_message': None, 'return_foot_message': "足跡が付いてたので気になってご連絡しちゃいました♪\r\nあすかです٩( 'ω’ )و\r\n友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！\r\n\r\n2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥\r\n\r\n私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？", 'conditions_message': None, 'post_title': '3人でエッチを楽しめる方探してます♪', 'post_contents': '初めまして( ＾∀＾)\r\nあすかです！友達のゆかとセフレさん探しの為に始めてみました♪♪\r\n\r\n2人とも都内のメンズ専門の脱毛サロンで働いてるんですけど、VIOの脱毛専門で施術中にエッチな気分になっちゃてるちょっと変態な2人組です(⸝⸝⸝´꒳`⸝⸝⸝)ﾃﾚｯ\r\n\r\n私もゆかもちょっと刺激が欲しいなって思ってて、、\r\n折角セフレさんになってもらうなら3人でエッチを楽しめる人を探してます！\r\n\r\n3Pとかに興味ある方は連絡くださいね♪♪\r\n因みに、2人ともエッチで人懐っこい性格なので会って損はしないと思います♪笑', 'is_active': True, 'chara_image': 'http://127.0.0.1:8000/media/chara_images/a_y.jpeg', 'user_id': 4}
+  happy_chara_list ={'id': 49, 'name': 'アスカ', 'login_id': '50023922457', 'password': 'ebbh7278', 'fst_message': "777", 'return_foot_message': "足跡が付いてたので気になってご連絡しちゃいました♪\r\nあすかです٩( 'ω’ )و\r\n友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！\r\n\r\n2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥\r\n\r\n私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？", 'conditions_message': None, 'post_title': '3人でエッチを楽しめる方探してます♪', 'post_contents': '初めまして( ＾∀＾)\r\nあすかです！友達のゆかとセフレさん探しの為に始めてみました♪♪\r\n\r\n2人とも都内のメンズ専門の脱毛サロンで働いてるんですけど、VIOの脱毛専門で施術中にエッチな気分になっちゃてるちょっと変態な2人組です(⸝⸝⸝´꒳`⸝⸝⸝)ﾃﾚｯ\r\n\r\n私もゆかもちょっと刺激が欲しいなって思ってて、、\r\n折角セフレさんになってもらうなら3人でエッチを楽しめる人を探してます！\r\n\r\n3Pとかに興味ある方は連絡くださいね♪♪\r\n因みに、2人ともエッチで人懐っこい性格なので会って損はしないと思います♪笑', 'is_active': True, 'chara_image': 'http://127.0.0.1:8000/media/chara_images/a_y.jpeg', 'user_id': 4}
   
   headless = False
   sb_h_repost_returnfoot(happy_chara_list, cnt, headless)

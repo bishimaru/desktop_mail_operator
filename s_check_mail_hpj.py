@@ -55,6 +55,7 @@ def wait_if_near_midnight():
         print("現在時刻は0時に近づいています。処理を一時中断します。")
         #     # ここに実行したい動作を追加
         time.sleep(600)
+        print("処理を再開します。")
     return
 
 

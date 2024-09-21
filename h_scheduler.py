@@ -44,24 +44,26 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
     scheduler = BlockingScheduler()
     combined_string = ""
     for element in schedule_data:
+        str_element = [str(e) for e in element]  # 各要素を文字列に変換
         if combined_string:
-            combined_string = combined_string + "," +",".join(element)
+            combined_string = combined_string + "," +",".join(str_element)
         else:
-            combined_string = combined_string +",".join(element)
+            combined_string = combined_string +",".join(str_element)
     c.execute("INSERT INTO users (user_name, password, h_schedule_time) VALUES (?, ?, ?)", (user_data["user"][0]["username"], user_data["user"][0]["password"], combined_string))
     conn.commit()
     for data in schedule_data:
-        hour, minute, args = data
+        hour, minute, match_args, type_args, args = data
         scheduler.add_job(
             sb_h_all_do, 
             'cron', 
             hour=int(hour), 
             minute=int(minute), 
-            args=[int(args), happy_chara_list, headless, mail_info], 
+            args=[int(match_args), int(type_args), int(args), happy_chara_list, headless, mail_info], 
             max_instances=1, 
             misfire_grace_time=60*60
         )
-        print(f"スケジュール設定: {hour}時{minute}分, 足跡返し件数{args}件")
+        print(f"スケジュール設定: {hour}時{minute}分, マッチング返し{match_args}件, タイプ返し{type_args}件, 足跡返し件数{args}件")
+
     print("Ctrl+{0} を押すと終了します。".format('Break' if os.name == 'nt' else 'C'))
 
     try:
@@ -92,15 +94,17 @@ def run_scheduler():
                 sorted_happymail.append(h_chara_data)
                 break    
     for i in range(form_count):
-        hour = hour_entries[i].get()
-        minute = minute_entries[i].get()
-        args = args_entries[i].get()
+        hour = hour_vars[i].get()
+        minute = minute_vars[i].get()
+        match_args = match_vars[i].get()
+        type_args = type_vars[i].get() 
+        args = args_vars[i].get()
 
-        if not hour.isdigit() or not minute.isdigit() or not args.isdigit():
-            tk.messagebox.showerror("入力エラー", "スペースなど数字以外は入力しないでください")
-            return
+        # if not hour.isdigit() or not minute.isdigit() or not args.isdigit():
+        #     tk.messagebox.showerror("入力エラー", "スペースなど数字以外は入力しないでください")
+        #     return
 
-        schedule_data.append((hour, minute, args))
+        schedule_data.append((hour, minute, match_args, type_args, args))
 
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
@@ -113,31 +117,74 @@ def add_form(user_info):
         return  
 
     # 新しい入力フォームを追加
-    hour_entry = tk.Entry(frame, width=3)
-    hour_entry.grid(row=form_count, column=0)
-    hour_entries.append(hour_entry)
+    hour_var = tk.IntVar()
+    hour_menu = tk.OptionMenu(frame, hour_var, *range(24))  # 時間0〜23
+    hour_menu.grid(row=form_count, column=0)
+    hour_entries.append(hour_menu)
+    hour_vars.append(hour_var)  # IntVarをリストに追加    print(999)
     hour_label = tk.Label(frame, text="時")
     hour_label.grid(row=form_count, column=1)
     hour_labels.append(hour_label)
 
-    minute_entry = tk.Entry(frame, width=3)
-    minute_entry.grid(row=form_count, column=2)
-    minute_entries.append(minute_entry)
+    minute_var = tk.IntVar()
+    minute_menu = tk.OptionMenu(frame, minute_var, *range(60))  # 分0〜59
+    minute_menu.grid(row=form_count, column=2)
+    minute_entries.append(minute_menu)
+    minute_vars.append(minute_var)
     minute_label = tk.Label(frame, text="分")
     minute_label.grid(row=form_count, column=3)
     minute_labels.append(minute_label)
 
-    args_entry = tk.Entry(frame, width=3)
-    args_entry.grid(row=form_count, column=4)
-    args_entries.append(args_entry)
-    args_label = tk.Label(frame, text="件（足跡返し）")
-    args_label.grid(row=form_count, column=5)
-    args_labels.append(args_label)
+    match_left_label = tk.Label(frame, text="(マッチング返し)")
+    match_left_label.grid(row=form_count, column=4)
+    match_labels.append(match_left_label)  
+    match_var = tk.IntVar()
+    match_menu = tk.OptionMenu(frame, match_var, *range(6))  # マッチング返し0〜5
+    match_menu.grid(row=form_count, column=5)
+    match_entries.append(match_menu)
+    match_vars.append(match_var)
+    match_right_label = tk.Label(frame, text="件")
+    match_right_label.grid(row=form_count, column=6)
+    match_labels.append(match_right_label)
 
-    # 初期値を設定
-    hour_entry.insert(0, user_info_list[form_count][0] if user_info_list[form_count][0] is not None else "")   
-    minute_entry.insert(0, user_info_list[form_count][1] if user_info_list[form_count][1] is not None else "")  
-    args_entry.insert(0, user_info_list[form_count][2] if user_info_list[form_count][2] is not None else "") 
+    type_left_label = tk.Label(frame, text="（タイプ返し)")
+    type_left_label.grid(row=form_count, column=7)
+    type_labels.append(type_left_label)
+    type_var = tk.IntVar()
+    type_menu = tk.OptionMenu(frame, type_var, *range(6))  # タイプ返し0〜5
+    type_menu.grid(row=form_count, column=8)
+    type_entries.append(type_menu)
+    type_vars.append(type_var)
+    type_right_label = tk.Label(frame, text="件")
+    type_right_label.grid(row=form_count, column=9)
+    type_labels.append(type_right_label)
+
+
+    args_left_label = tk.Label(frame, text="（足跡返し）")
+    args_left_label.grid(row=form_count, column=10)
+    args_labels.append(args_left_label)
+    args_var = tk.IntVar()
+    args_menu = tk.OptionMenu(frame, args_var, *range(31))  # 足跡返し0〜30
+    args_menu.grid(row=form_count, column=11)
+    args_entries.append(args_menu)
+    args_vars.append(args_var)
+    args_right_label = tk.Label(frame, text="件")
+    args_right_label.grid(row=form_count, column=12)
+    args_labels.append(args_right_label)
+
+
+    # 初期値を設定（空文字列に対応）
+    hour_value = int(user_info_list[form_count][0]) if user_info_list[form_count][0].isdigit() else 0
+    minute_value = int(user_info_list[form_count][1]) if user_info_list[form_count][1].isdigit() else 0
+    match_value = int(user_info_list[form_count][2]) if user_info_list[form_count][2].isdigit() else 0
+    type_value = int(user_info_list[form_count][3]) if user_info_list[form_count][3].isdigit() else 0
+    args_value = int(user_info_list[form_count][4]) if user_info_list[form_count][4].isdigit() else 0
+
+    hour_var.set(hour_value)   
+    minute_var.set(minute_value)  
+    match_var.set(match_value) 
+    type_var.set(type_value) 
+    args_var.set(args_value)
 
     form_count += 1  # カウンタを更新
 
@@ -147,16 +194,24 @@ def remove_form():
     if form_count <= 1:
         return
     form_count -= 1  # カウンタを更新
+    
     # 最後のフォームを削除
     hour_entries.pop().grid_forget()
     minute_entries.pop().grid_forget()
     args_entries.pop().grid_forget()
+    type_entries.pop().grid_forget()
+    match_entries.pop().grid_forget()
 
     # 最後のラベルを削除
     hour_labels.pop().grid_forget()
     minute_labels.pop().grid_forget()
     args_labels.pop().grid_forget()
-
+    args_labels.pop().grid_forget()
+    type_labels.pop().grid_forget()
+    type_labels.pop().grid_forget()
+    match_labels.pop().grid_forget()
+    match_labels.pop().grid_forget()
+    
     
 
 def populate_user_listbox():
@@ -208,34 +263,48 @@ frame.grid(row=2, column=0, columnspan=6, pady=10)
 
 hour_entries = []
 minute_entries = []
+match_entries = []  
+type_entries = []  
 args_entries = []
 
 hour_labels = []
 minute_labels = []
+match_labels = []
+type_labels = []  
 args_labels = []
+
+hour_vars = []
+minute_vars = []
+match_vars = []
+type_vars = []
+args_vars = []
+
 
 def get_latest_user_data(c):
     c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
     return c.fetchone()
 
 user_info = get_latest_user_data(c)
-user_info_list = [["", "", ""] for _ in range(6)]  
+user_info_list = [["", "", "", "", ""] for _ in range(6)]  
 if user_info[3] is not None:
     string = user_info[3].split(",")
     for i in range(len(string)):
-        user_info_list[i // 3][i % 3] = string[i]
+        user_info_list[i // 5][i % 5] = string[i]
 
 # 最初の入力フォームを作成
 add_form(user_info_list)
 
+# プラスボタンとマイナスボタンを中央揃えにするためのフレームを作成
+button_frame = tk.Frame(root)
+button_frame.grid(row=3, column=0, columnspan=6, pady=10)
+
 # プラスボタンを追加
-add_button = tk.Button(root, text="+", command=lambda: add_form(user_info_list))
-# add_button = tk.Button(root, text="+", command=add_form)
-add_button.grid(row=3, column=1, pady=10)
+add_button = tk.Button(button_frame, text="+", command=lambda: add_form(user_info_list))
+add_button.grid(row=0, column=0, padx=10)
 
 # マイナスボタンを追加
-remove_button = tk.Button(root, text="-", command=remove_form)
-remove_button.grid(row=3, column=2, pady=10)
+remove_button = tk.Button(button_frame, text="-", command=remove_form)
+remove_button.grid(row=0, column=1, padx=10)
 
 # 新しいフレームにチェックボックスとラベルを配置
 check_frame = tk.Frame(root)

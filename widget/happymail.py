@@ -108,7 +108,7 @@ def re_post(name,  driver, wait, title, post_text):
     time.sleep(1)
   
     # ジャンル選択
-    genre_dict = {0:"今すぐ会いたい", 1:"大人の出会い"}  
+    # genre_dict = {0:"今すぐ会いたい", 1:"大人の出会い"}  
     genre = driver.find_elements(By.CLASS_NAME, value="ds_bd_none")
     road_cnt = 1
     while len(genre) <= 2:
@@ -387,7 +387,7 @@ def re_post(name,  driver, wait, title, post_text):
                 # 書き込み成功画面の判定
                 success = driver.find_elements(By.CLASS_NAME, value="ds_keijiban_finish")
                 if len(success):
-                  print(str(area) + "の再投稿に成功しました")
+                  # print(str(area) + "の再投稿に成功しました")
                   repost_flug_list.append(str(area) + ":◯")
                   # マイページをクリック
                   nav_list = driver.find_element(By.ID, value='ds_nav')
@@ -456,12 +456,12 @@ def re_post(name,  driver, wait, title, post_text):
         print("Chromedriverが予期せず終了しました。再起動して起動してください。")
         driver.quit()
 
-def return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img):
-  return_matching_cnt = 0
+def return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img, matching_cnt):
+  return_matching_counted = 0
   mail_icon_cnt = 0
   user_icon = 0
 
-  while return_matching_cnt < 5:
+  while return_matching_counted < matching_cnt:
     send_status = True
     #  タイプをクリック
     nav_list = driver.find_element(By.ID, value='ds_nav')
@@ -483,18 +483,18 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
     user_name = name_field.text
     mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
     while len(mail_icon):
-      print(f'送信履歴あり {user_name}　~ skip ~')
+      # print(f'送信履歴あり {user_name}　~ skip ~')
       mail_icon_cnt += 1
       user_icon += 1
-      # # メールアイコンが4つ続いたら終了
-      if mail_icon_cnt == 4:
+      # # メールアイコンが5つ続いたら終了
+      if mail_icon_cnt == 5:
         ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
         top_link = ds_logo.find_element(By.TAG_NAME, value="a")
         top_link.click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(wait_time)
-        print("マッチングリストでメールアイコンが4回続きました")
-        return return_matching_cnt
+        print("マッチングリストで送信履歴のあるユーザーが5回続きました")
+        return return_matching_counted
       name_field = matching_users[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
       user_name = name_field.text
       mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
@@ -540,13 +540,13 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
           user_icon += 1
     # メールするをクリック
     if send_status:
+      catch_warning_screen(driver)
       # fst_messageを入力
       text_area = driver.find_element(By.ID, value="text-message")
       # text_area.send_keys(fst_message)
       script = "arguments[0].value = arguments[1];"
       driver.execute_script(script, text_area, fst_message)
       # 送信
-      catch_warning_screen(driver)
       send_mail = driver.find_element(By.ID, value="submitButton")
       driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
       send_mail.click()
@@ -556,9 +556,9 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
       if return_foot_img:
         img_conform = driver.find_element(By.ID, value="media-confirm")
         plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[1])
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", plus_icon[1])
+        driver.execute_script("arguments[0].click();", plus_icon[0])
         time.sleep(1)
         upload_file = driver.find_element(By.ID, "upload_file")
         upload_file.send_keys(return_foot_img)
@@ -570,8 +570,8 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
           time.sleep(2)
       mail_icon_cnt = 0
       user_icon = 0
-      return_matching_cnt += 1
-      print(f'{name}:マッチング返し send_status = {str(send_status)} ~ {str(return_matching_cnt)} ~ {user_name}')
+      return_matching_counted += 1
+      print(f'{name}:マッチング返し {user_name} ~ {str(return_matching_counted)} ~ ')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
       ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
@@ -592,13 +592,13 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
   user_icon = 0
-  return return_matching_cnt
+  return return_matching_counted
 
-def return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img):
-  return_type_cnt = 0
+def return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img, type_cnt):
+  return_type_counted = 0
   mail_icon_cnt = 0
   user_icon_type = 0
-  while return_type_cnt < 5:
+  while return_type_counted < type_cnt:
     send_status = True
     #  タイプをクリック
     nav_list = driver.find_element(By.ID, value='ds_nav')
@@ -620,18 +620,18 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
     user_name = name_field.text
     mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
     while len(mail_icon):
-      print(f'送信履歴あり {user_name} ~ skip ~')
+      # print(f'送信履歴あり {user_name} ~ skip ~')
       mail_icon_cnt += 1
       user_icon_type += 1
-      # # メールアイコンが4つ続いたら終了
-      if mail_icon_cnt == 4:
+      # # メールアイコンが5つ続いたら終了
+      if mail_icon_cnt == 5:
         ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
         top_link = ds_logo.find_element(By.TAG_NAME, value="a")
         top_link.click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(wait_time)
-        print("タイプリストでメールアイコンが4回続きました")
-        return return_type_cnt
+        print("タイプリストで送信履歴のあるユーザーが５回続きました")
+        return return_type_counted
       name_field = type_users[user_icon_type].find_element(By.CLASS_NAME, value="ds_like_list_name")
       user_name = name_field.text
       mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
@@ -690,15 +690,16 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
             print(f'自己紹介文に危険なワードが含まれていました {user_name}')
             send_status = False
             user_icon_type += 1
+    
     # メールするをクリック
     if send_status:
+      catch_warning_screen(driver)
       # fst_messageを入力
       text_area = driver.find_element(By.ID, value="text-message")
-      # text_area.send_keys(fst_message)
-      script = "arguments[0].value = arguments[1];"
-      driver.execute_script(script, text_area, fst_message)
+      text_area.send_keys(fst_message)
+      # script = "arguments[0].value = arguments[1];"
+      # driver.execute_script(script, text_area, fst_message)
       # 送信
-      catch_warning_screen(driver)
       send_mail = driver.find_element(By.ID, value="submitButton")
       driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
       send_mail.click()
@@ -708,9 +709,9 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
       if return_foot_img:
         img_conform = driver.find_element(By.ID, value="media-confirm")
         plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[1])
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", plus_icon[1])
+        driver.execute_script("arguments[0].click();", plus_icon[0])
         time.sleep(1)
         upload_file = driver.find_element(By.ID, "upload_file")
         # DEBUG用
@@ -724,8 +725,8 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
           time.sleep(2)
       mail_icon_cnt = 0
       user_icon_type = 0
-      return_type_cnt += 1
-      print(f'{name}:タイプ返し send_status = {str(send_status)} ~ {str(return_type_cnt)} ~) {user_name}')
+      return_type_counted += 1
+      print(f'{name}:タイプ返し {user_name} ~ {str(return_type_counted)} ~ ')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
       ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
@@ -746,9 +747,9 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
   user_icon_type = 0
-  return return_type_cnt
+  return return_type_counted
       
-def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_img, fst_message):
+def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type_cnt, return_foot_cnt, return_foot_img, fst_message):
     wait_time = random.uniform(3, 4)
     driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -770,49 +771,34 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
       image_path = os.path.abspath(image_filename)
     else:
       image_path = ""
-      image_filename = None
-    # debug
-    # if name == "えりか":
-    #   # マッチング返し
-    #   matching_cnt = return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"マッチング返し総数 {matching_cnt}")
-    #   return_cnt = return_cnt + matching_cnt
-    #   # タイプ返し
-    #   type_cnt = return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"タイプ返し総数 {mail_icon_cnt}")
-    #   return_cnt = return_cnt + type_cnt
-    #   print(f"メッセージ送信数　{return_cnt}")
-    # elif name == "アスカ" or name == "いおり":
-    #   # マッチング返し
-    #   matching_cnt = return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"マッチング返し総数 {matching_cnt}")
-    #   # タイプ返し
-    #   type_cnt = return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"タイプ返し総数 {type_cnt}")
+      image_filename = None 
     # マッチング返し
-    # try:
-    #   matching_cnt = return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"マッチング返し総数 {matching_cnt}")
-    # except Exception as e:  
-    #   print("マッチ返しエラー")
-    #   print(traceback.format_exc())
-    #   driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
-    #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    #   time.sleep(wait_time)
-    # # タイプ返し
-    # try:
-    #   type_cnt = return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, return_foot_img)
-    #   print(f"タイプ返し総数 {type_cnt}")
-    # except Exception as e:  
-    #   print("タイプ返しエラー")
-    #   print(traceback.format_exc())
-    #   driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
-    #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    #   time.sleep(wait_time)      
+    try:
+      matching_counted = return_matching(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, image_path, matching_cnt)
+      print(f"マッチング返し総数 {matching_counted}")
+    except Exception as e:  
+      print("マッチング返しエラー")
+      # print(traceback.format_exc())
+      driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(wait_time)
+    # タイプ返し
+    try:
+      type_counted = return_type(name, wait, wait_time, driver, user_name_list, duplication_user, fst_message, image_path, type_cnt)
+      print(f"タイプ返し総数 {type_counted}")
+    except Exception as e:  
+      print("タイプ返しエラー")
+      # print(traceback.format_exc())
+      driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(wait_time)      
+    
+    # print(f"メッセージ送信数　{return_cnt} {matching_counted} {type_counted}")
+    
 
     # 足跡返し
     try:
-      while cnt >= return_cnt + 1:
+      while return_foot_cnt >= return_cnt + 1:
         warning_pop = catch_warning_screen(driver)
         if warning_pop:
           print(f"{name}：警告画面が出ている可能性があります")
@@ -996,7 +982,7 @@ def return_footpoint(name, driver, wait, return_foot_message, cnt, return_foot_i
             os.remove(image_filename)
       if return_cnt == None:
         return_cnt = 0
-      return return_cnt
+      return [matching_counted, type_counted, return_cnt]
        
 
 def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count):
