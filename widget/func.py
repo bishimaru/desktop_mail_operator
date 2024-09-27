@@ -53,7 +53,7 @@ def get_driver(headless_flag):
     options.add_argument("--disable-cache")
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(options=options, service=service)
-    wait = WebDriverWait(driver, 15)
+    wait = WebDriverWait(driver, 30)
 
     return driver, wait
 
@@ -345,7 +345,7 @@ def h_p_return_footprint(name, h_w, p_w, driver, return_foot_message, cnt, h_ret
     if len(mail_icon):
       while len(mail_icon):
         if not user_name in history_user_list:
-          print(777)
+          
           mail_icon_cnt = 0
           history_user_list.append(user_name)
           happy_foot_user[0].click()
@@ -626,8 +626,8 @@ def get_user_data():
 
           # Happymailデータを表示
           # print("Happymailのデータ:")
-          for data in user_data.get('userprofile', []):
-              print(f"Name: {data['gmail_account']}, ")
+          # for data in user_data.get('userprofile', []):
+          #     print(f"Name: {data['gmail_account']}, ")
 
           # # PCMaxデータを表示
           # print("PCMaxのデータ:")

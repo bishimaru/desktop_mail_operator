@@ -21,6 +21,8 @@ import sqlite3
 from selenium.webdriver.chrome.service import Service as ChromeService
 from datetime import datetime, timedelta
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import WebDriverException
+import urllib3
 
 
 
@@ -142,8 +144,7 @@ def re_post(name, pcmax_windowhandle, driver, genre_flag):
   # 掲示板履歴をクリック　
   bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
   bulletin_board_history = bulletin_board_history.find_elements(By.TAG_NAME, value="dd")
-  print(777)
-  print(len(bulletin_board_history))
+  
   for i in bulletin_board_history:
     if i.text == "投稿履歴・編集":
       bulletin_board_history = i.find_element(By.TAG_NAME, value="a")
@@ -1031,32 +1032,39 @@ def send_fst_mail(name, maji_soushin, select_areas, youngest_age, oldest_age, ng
     print("Ctl + c")
     driver.quit()  
 
-def check_new_mail(driver, wait, name):
+def check_new_mail(driver, wait, pcmax_info):
   return_list = []
-  dbpath = 'firstdb.db'
-  conn = sqlite3.connect(dbpath)
-  cur = conn.cursor()
-  cur.execute('SELECT login_id, passward, fst_mail, mail_img, second_message, return_foot_message FROM pcmax WHERE name = ?', (name,))
-  login_id = None
-  for row in cur:
-      
-      login_id = row[0]
-      login_pass = row[1]
-      fst_message = row[2]
-      mail_img = row[3]   
-      second_message = row[4]
-      return_foot_message = row[5]
+  login_id = pcmax_info["login_id"]
+  login_pass = pcmax_info["password"]
+  fst_message = pcmax_info["fst_mail"]
+  mail_img = ""
+  second_message = pcmax_info["second_message"]
+  return_foot_message = pcmax_info["return_foot_message"]
   
+  name = pcmax_info["name"]
   if login_id == None or login_id == "":
     print(f"{name}のpcmaxキャラ情報を取得できませんでした")
     return 1, 0
   try:
+    print(1111111111111111111111111)
+    print(driver.session_id)
     driver.delete_all_cookies()
     driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   except TimeoutException as e:
     print("TimeoutException")
     driver.refresh()
+  except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
+    print(f"接続エラーが発生しました: {e}")
+    print("10秒後に再接続します。")
+    print(driver.session_id)
+
+    driver.quit()
+    time.sleep(10)  # 10秒待機して再試行
+    driver, wait = func.get_driver(1)
+    print(driver.session_id)
+    print("888888888888")
+    
   time.sleep(2)
   id_form = driver.find_element(By.ID, value="login_id")
   id_form.send_keys(login_id)
@@ -1115,7 +1123,7 @@ def check_new_mail(driver, wait, name):
       print(len(message_list))
       # メッセージ一覧を取得      
       while len(message_list):
-        wait = WebDriverWait(driver, 10)  # 10秒まで待つ（必要に応じて変更）
+        
         try:
             message_list = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "receive_user")))   
         except TimeoutException:
@@ -1189,15 +1197,12 @@ def check_new_mail(driver, wait, name):
               # https://pcmax.jp/mobile/mail_recive_detail.php?mail_id=1167384264&user_id=16164934
               print("user_idが見つかりませんでした。")
               if len(element):
-                print(456)
-                print(len(element))
                 user_photo = element[-1].find_element(By.CLASS_NAME, value="user_photo")
                 user_link = user_photo.find_element(By.TAG_NAME, value="a").get_attribute("href")
                 start_index = user_link.find("user_id=")
                 print(type(start_index))
                 # print(start_index)
                 if start_index != -1:
-                  print(444444)
                   user_id = user_link[start_index + len("user_id="):]
                   # print("取得した文字列:", user_id)
                   taikai = False

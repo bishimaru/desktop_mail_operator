@@ -83,10 +83,11 @@ if __name__ == '__main__':
     cnt = int(sys.argv[2])
     # matching_cnt = int(sys.argv[3])
     # type_cnt = int(sys.argv[4])
-  happy_chara_list ={'id': 49, 'name': 'アスカ', 'login_id': '50023922457', 'password': 'ebbh7278', 'fst_message': "777", 'return_foot_message': "足跡が付いてたので気になってご連絡しちゃいました♪\r\nあすかです٩( 'ω’ )و\r\n友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！\r\n\r\n2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥\r\n\r\n私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？", 'conditions_message': None, 'post_title': '3人でエッチを楽しめる方探してます♪', 'post_contents': '初めまして( ＾∀＾)\r\nあすかです！友達のゆかとセフレさん探しの為に始めてみました♪♪\r\n\r\n2人とも都内のメンズ専門の脱毛サロンで働いてるんですけど、VIOの脱毛専門で施術中にエッチな気分になっちゃてるちょっと変態な2人組です(⸝⸝⸝´꒳`⸝⸝⸝)ﾃﾚｯ\r\n\r\n私もゆかもちょっと刺激が欲しいなって思ってて、、\r\n折角セフレさんになってもらうなら3人でエッチを楽しめる人を探してます！\r\n\r\n3Pとかに興味ある方は連絡くださいね♪♪\r\n因みに、2人ともエッチで人懐っこい性格なので会って損はしないと思います♪笑', 'is_active': True, 'chara_image': 'http://127.0.0.1:8000/media/chara_images/a_y.jpeg', 'user_id': 4}
-  
+  happy_chara_list ={'id': 49, 'name': 'アスカ', 'login_id': '50023922457', 'password': 'ebbh7278', 'fst_message': "777", 'return_foot_message': "足跡が付いてたので気になってご連絡しちゃいました♪\r\nあすかです٩( 'ω’ )و\r\n友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！\r\n\r\n2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥\r\n\r\n私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？", 'conditions_message': None, 'post_title': '3人でエッチを楽しめる方探してます♪', 'post_contents': '初めまして( ＾∀＾)\r\nあすかです！友達のゆかとセフレさん探しの為に始めてみました♪♪\r\n\r\n2人とも都内のメンズ専門の脱毛サロンで働いてるんですけど、VIOの脱毛専門で施術中にエッチな気分になっちゃてるちょっと変態な2人組です(⸝⸝⸝´꒳`⸝⸝⸝)ﾃﾚｯ\r\n\r\n私もゆかもちょっと刺激が欲しいなって思ってて、、\r\n折角セフレさんになってもらうなら3人でエッチを楽しめる人を探してます！\r\n\r\n3Pとかに興味ある方は連絡くださいね♪♪\r\n因みに、2人ともエッチで人懐っこい性格なので会って損はしないと思います♪笑', 'is_active': True, 'chara_image': '', 'user_id': 4}
+  matching_cnt = 0
+  type_cnt = 0
   headless = False
-  sb_h_repost_returnfoot(happy_chara_list, cnt, headless)
+  sb_h_repost_returnfoot(happy_chara_list, matching_cnt, type_cnt, cnt, headless)
 
 
   

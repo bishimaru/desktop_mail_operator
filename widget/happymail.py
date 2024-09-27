@@ -838,6 +838,9 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
         user_name = name_field.text
         mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
         send_skip_cnt = 0
+        print(7777777777777777)
+        print(f_user)
+
         while len(mail_icon) or user_name in user_name_list:
           if len(mail_icon):
             user_icon += 1

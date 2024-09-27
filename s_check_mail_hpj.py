@@ -18,31 +18,10 @@ import sqlite3
 import time 
 from datetime import datetime, timedelta, time as dt_time  
 import socket
-order_list = [
-   ["アスカ", "asuka414510@gmail.com"],
-#    ["あやか", "ayaka414510@gmail.com"],
-   ["いおり", "iori547253@gmail.com"],
-   ["えりか", "k.erika414510@gmail.com"],
-   ["きりこ", "kiriko414510@gmail.com"],
-   ["くみ", "kumi414510@gmail.com"],
-   ["さな", "sana.cnfwijl@gmail.com"],
-   ["すい", "sui187586@gmail.com"],
-   ["つむぎ", "tumtum.jpwa@gmail.com"],
-   ["なお", "n414510a@gmail.com"],
-#    ["ハル", "haruru414510@gmail.com"],
-#    ["はづき", "k.haru414510@gmail.com"], 
-#    ["めあり", "meari414510@gmail.com"],
-#    ["りこ", "riko414510@gmail.com"],
-#    ["りな", "k.rina414510@gmail.com"],
-#    ["ゆうな", "y8708336@gmail.com"],
-#    ["ゆっこ", "yuko414510@gmail.com"], 
-#    ["ゆかり", "y216154@gmail.com"],
-  
-]
-# order_list = [
-#      ["すい", "sui187586@gmail.com"],
+from selenium.common.exceptions import WebDriverException
+import urllib3
 
-#    ]
+
 
 def wait_if_near_midnight():
     # 現在時刻を取得
@@ -58,32 +37,18 @@ def wait_if_near_midnight():
         print("処理を再開します。")
     return
 
-
 def check_mail(user_data, driver, wait):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
+  conn = sqlite3.connect('user_data.db')
+  c = conn.cursor()
+  c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+  chara_data = c.fetchone()
+  mailaddress = chara_data[4]
+  password = chara_data[5]
+  receiving_address = chara_data[6]
+
   try:
-    pcmax_return_foot_count_dic = {
-            "アスカ": 0,
-            "いおり": 0,
-            "えりか": 0,
-            "きりこ": 0,
-            "くみ": 0,
-            "さな": 0,
-            "すい": 0,
-            "つむぎ": 0,
-            "なお": 0,
-            "ハル": 0,
-            "はづき": 0,
-            "めあり": 0,
-            "りこ": 0,
-            "りな": 0,
-            "ゆうな": 0,
-            "ゆっこ": 0,
-            "ゆかり": 0,   
-            "わかな": 0,   
-        }
-    
     send_flug = True
     while True:
         start_time = time.time() 
@@ -92,7 +57,7 @@ def check_mail(user_data, driver, wait):
         for happy_info in happymail_list:
             new_mail_lists = []
             debug = False
-            # ハッピーメール
+            # # ハッピーメール
             try:
                 happymail_new = happymail.check_new_mail(driver, wait, happy_info)
                 if happymail_new:
@@ -103,29 +68,33 @@ def check_mail(user_data, driver, wait):
                 print(traceback.format_exc())
                 # func.send_error(f"メールチェックエラー：ハッピーメール{order_info[0]}", traceback.format_exc())    
             wait_if_near_midnight()
-        # pcmax
-        # try:
+            # pcmax
+            try:
+                new_mail_lists = []
+                for pcmax_info in pcmax_list:
+                    pcmax_new, return_foot_cnt = pcmax.check_new_mail(driver, wait, pcmax_info)
+                
+                    if pcmax_new != 1:
+                        new_mail_lists.append(pcmax_new)
             
-        #     pcmax_new, return_foot_cnt = pcmax.check_new_mail(driver, wait, order_info[0])
-            
-        #     if pcmax_new != 1:
-        #         new_mail_lists.append(pcmax_new)
-        
-        #     if return_foot_cnt:     
-        #         for r_f_user in pcmax_return_foot_count_dic:
-        #             if order_info[0] == r_f_user:
-        #                 # print(777)
-        #                 # print(return_foot_count_dic[r_f_user])
-        #                 pcmax_return_foot_count_dic[r_f_user] = pcmax_return_foot_count_dic[r_f_user] + return_foot_cnt
-        #                 # print(return_foot_count_dic[r_f_user])
-        #     driver.quit()
-        # except Exception as e:
-        #     # print(f"<<<<<<<<<<メールチェックエラー：pcmax{order_info[0]}>>>>>>>>>>>")
-        #     print(traceback.format_exc())
-        #     # func.send_error(f"メールチェックエラー：pcmax{order_info[0]}", traceback.format_exc())
+                    if return_foot_cnt:     
+                        print(777)
+                        # for r_f_user in pcmax_return_foot_count_dic:
+                        #     if order_info[0] == r_f_user:
+                        #         # print(777)
+                        #         # print(return_foot_count_dic[r_f_user])
+                        #         pcmax_return_foot_count_dic[r_f_user] = pcmax_return_foot_count_dic[r_f_user] + return_foot_cnt
+                        #         # print(return_foot_count_dic[r_f_user])
+                
+            except Exception as e:
+                # print(f"<<<<<<<<<<メールチェックエラー：pcmax{order_info[0]}>>>>>>>>>>>")
+                print(traceback.format_exc())
+                # func.send_error(f"メールチェックエラー：pcmax{order_info[0]}", traceback.format_exc())
 
-        #     driver.quit()
-        # wait_if_near_midnight()
+                driver.quit()
+            
+                
+            wait_if_near_midnight()
             # jmail
             # try:
             #     driver, wait = get_driver(debug)
@@ -149,32 +118,28 @@ def check_mail(user_data, driver, wait):
             #     func.send_error(f"メールチェックエラー：jmail{order_info[0]}", traceback.format_exc())
             #     driver.quit()
             
-            
             # メール送信
             smtpobj = None 
             if len(new_mail_lists) == 0:
                 print(f'{happy_info["name"]}新着チェック完了手動メールなし')
                 pass
             else:
-                print(f'{happy_info["name"]}新着チェック完了手動メールあり')
-                print(new_mail_lists)
-                mailaddress = 'kenta.bishi777@gmail.com'
-                password = 'rjdzkswuhgfvslvd'
-                text = ""
-                subject = "新着メッセージ"
-            
-                for new_mail_list in new_mail_lists:
-                    # print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
-                    # print(new_mail_list)
-                    for new_mail in new_mail_list:
+                if mailaddress and password and receiving_address:
+                    print(f'{happy_info["name"]}新着チェック完了手動メールあり')
+                    print(new_mail_lists)
+                    
+                    text = ""
+                    subject = "新着メッセージ"
+                
+                    for new_mail_list in new_mail_lists:
+                        # print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
+                        # print(new_mail_list)
+                        for new_mail in new_mail_list:
 
-                        text = text + new_mail + ",\n"
-                        if "警告" in text:
-                            subject = "メッセージ"
-                address_from = 'kenta.bishi777@gmail.com'
-                # address_to = 'bidato@wanko.be'
-                address_to = "ryapya694@ruru.be"
-                # address_to = 'misuzu414510@gmail.com'
+                            text = text + new_mail + ",\n"
+                            if "警告" in text:
+                                subject = "メッセージ"
+                    
 
                 try:
                     smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
@@ -182,8 +147,8 @@ def check_mail(user_data, driver, wait):
                     smtpobj.login(mailaddress, password)
                     msg = MIMEText(text)
                     msg['Subject'] = subject
-                    msg['From'] = address_from
-                    msg['To'] = address_to
+                    msg['From'] = mailaddress
+                    msg['To'] = receiving_address
                     msg['Date'] = formatdate()
                     smtpobj.send_message(msg)
                 except smtplib.SMTPDataError as e:
@@ -243,5 +208,16 @@ def check_mail(user_data, driver, wait):
     print("5分間待機して再試行します...")
     driver.quit()
     time.sleep(300)  # 300秒（5分）間待機
+    driver, wait = func.get_driver(1)
+    check_mail(user_data, driver, wait)
+  except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
+    print(f"接続エラーが発生しました: {e}")
+    
+    print("20秒後に再接続します。")
+    print(driver.session_id)
+
+    driver.quit()
+    time.sleep(20)  # 10秒待機して再試行
+    print(999)
     driver, wait = func.get_driver(1)
     check_mail(user_data, driver, wait)

@@ -15,7 +15,6 @@ from selenium.common.exceptions import WebDriverException
 
 conn = sqlite3.connect('user_data.db')
 c = conn.cursor()
-# グローバル変数の宣言
 global user_data
 user_data = func.get_user_data()
 
@@ -59,7 +58,7 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
             hour=int(hour), 
             minute=int(minute), 
             args=[int(match_args), int(type_args), int(args), happy_chara_list, headless, mail_info], 
-            max_instances=1, 
+            max_instances=2, 
             misfire_grace_time=60*60
         )
         print(f"スケジュール設定: {hour}時{minute}分, マッチング返し{match_args}件, タイプ返し{type_args}件, 足跡返し件数{args}件")
@@ -101,7 +100,8 @@ def run_scheduler():
         args = args_vars[i].get()
 
         # if not hour.isdigit() or not minute.isdigit() or not args.isdigit():
-        #     tk.messagebox.showerror("入力エラー", "スペースなど数字以外は入力しないでください")
+        #     tk.messagebox.showerror("
+        # 入力エラー", "スペースなど数字以外は入力しないでください")
         #     return
 
         schedule_data.append((hour, minute, match_args, type_args, args))
@@ -212,8 +212,6 @@ def remove_form():
     match_labels.pop().grid_forget()
     match_labels.pop().grid_forget()
     
-    
-
 def populate_user_listbox():
     global user_data  # グローバル変数に代入
     
