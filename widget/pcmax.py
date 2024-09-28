@@ -1089,7 +1089,7 @@ def check_new_mail(pcmax_info, driver, wait):
       return return_list, 0
     else:
       return 1, 0
-  
+  print(second_message)
   # 新着があるかチェック
   have_new_massage_users = []
   new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
@@ -1230,6 +1230,7 @@ def check_new_mail(pcmax_info, driver, wait):
           # 受信メッセージにメールアドレスが含まれているか
           received_mail_elem = driver.find_elements(By.CLASS_NAME, value="left_balloon_m")
           received_mail = received_mail_elem[-1].text
+          
           # ＠を@に変換する
           if "＠" in received_mail:
             received_mail = received_mail.replace("＠", "@")
@@ -1374,7 +1375,7 @@ def check_new_mail(pcmax_info, driver, wait):
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(2)
 
-          elif second_message in sent_by_me[-1].text:
+          elif func.normalize_text(second_message) == func.normalize_text(sent_by_me[-1].text):
             # 受信メールにアドレスがあるか
             print('やり取り中')
             print(sent_by_me[-1].text)

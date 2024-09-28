@@ -26,6 +26,8 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 # import setting
 import requests
 import shutil
+import unicodedata
+
 
 
 def clear_webdriver_cache():
@@ -657,3 +659,8 @@ def get_user_data():
       time.sleep(wait_time)  # 5分間待機
   # すべてのリトライが失敗した場合のエラーメッセージ
   raise Exception("サーバーへの接続に失敗しました。")
+
+# 文字列を正規化する関数
+def normalize_text(text):
+    # Unicodeの互換正規化（NFKC）を使って、全角・半角や記号を統一
+    return unicodedata.normalize('NFKC', text).replace("\n", "").replace("\r", "").replace(" ", "").replace("　", "")
