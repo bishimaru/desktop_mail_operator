@@ -77,7 +77,7 @@ def send_conditional(user_name, user_address, mailaddress, password, text, site)
   address_from = mailaddress
   address_to = user_address
   smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
-  smtpobj.set_debuglevel(1) 
+  smtpobj.set_debuglevel(0)
   smtpobj.starttls()
   smtpobj.login(mailaddress, password)
   msg = MIMEText(text)

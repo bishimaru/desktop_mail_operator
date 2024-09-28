@@ -23,19 +23,16 @@ from selenium.common.exceptions import NoSuchWindowException
 global user_data 
 user_data = func.get_user_data()
 
-def check_mail_hpj(driver, wait):
-    
+def check_mail_hpj(driver, wait): 
     check_mail_flug = user_data["user"][0]['check_mail_happymail']
     if not check_mail_flug:
         print("有効期限が切れています。")
         return
-    
     if not user_data:
         return
     if user_data == 2:
         print("ユーザーデータを登録してください。")
         return
-    
     check_mail(user_data, driver, wait)
         
 def run_script():

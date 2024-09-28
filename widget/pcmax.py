@@ -1032,22 +1032,23 @@ def send_fst_mail(name, maji_soushin, select_areas, youngest_age, oldest_age, ng
     print("Ctl + c")
     driver.quit()  
 
-def check_new_mail(driver, wait, pcmax_info):
+def check_new_mail(pcmax_info, driver, wait):
   return_list = []
   login_id = pcmax_info["login_id"]
   login_pass = pcmax_info["password"]
   fst_message = pcmax_info["fst_mail"]
-  mail_img = ""
+  mail_img = pcmax_info["mail_img"]
   second_message = pcmax_info["second_message"]
   return_foot_message = pcmax_info["return_foot_message"]
+  condition_message = pcmax_info["condition_message"]
+  mail_address = pcmax_info["mail_address"]
+  gmail_password = pcmax_info["gmail_password"]
   
   name = pcmax_info["name"]
   if login_id == None or login_id == "":
     print(f"{name}のpcmaxキャラ情報を取得できませんでした")
     return 1, 0
   try:
-    print(1111111111111111111111111)
-    print(driver.session_id)
     driver.delete_all_cookies()
     driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1062,8 +1063,6 @@ def check_new_mail(driver, wait, pcmax_info):
     driver.quit()
     time.sleep(10)  # 10秒待機して再試行
     driver, wait = func.get_driver(1)
-    print(driver.session_id)
-    print("888888888888")
     
   time.sleep(2)
   id_form = driver.find_element(By.ID, value="login_id")
@@ -1084,12 +1083,13 @@ def check_new_mail(driver, wait, pcmax_info):
   warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
   number_lock = driver.find_elements(By.ID, value="content_header2")
   if len(warning) or len(warning2) or len(warning3) or len(number_lock):
-    print(f"{name}pcmaxに警告画面が出ている可能性があります")
+    print(f"PCMAX {name}に警告画面が出ている可能性があります")
     # return_list.append(f"{name}pcmaxに警告画面が出ている可能性があります")
     if len(return_list):
       return return_list, 0
     else:
       return 1, 0
+  
   # 新着があるかチェック
   have_new_massage_users = []
   new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
@@ -1119,15 +1119,13 @@ def check_new_mail(driver, wait, pcmax_info):
           if len(new_mail_user) > 7:
             new_mail_user = new_mail_user[:7] + "…"
           have_new_massage_users.append(new_mail_user)
-      print("新着メッセージリスト")
-      print(len(message_list))
+      print(f"新着メッセージ数 {len(message_list)}")
       # メッセージ一覧を取得      
       while len(message_list):
-        
         try:
             message_list = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "receive_user")))   
         except TimeoutException:
-            print("要素が見つかりませんでした。")
+            print("タイムアウトしました")
             break
         arrival_date = message_list[-1].find_elements(By.CLASS_NAME, value="date")
         date_numbers = re.findall(r'\d+', arrival_date[0].text)
@@ -1135,9 +1133,9 @@ def check_new_mail(driver, wait, pcmax_info):
         arrival_datetime = datetime(int(date_numbers[0]), int(date_numbers[1]), int(date_numbers[2]), int(date_numbers[3]), int(date_numbers[4])) 
         now = datetime.today()
         elapsed_time = now - arrival_datetime
-        print(f"メール到着からの経過時間{elapsed_time}")
+        # print(f"メール到着からの経過時間{elapsed_time}")
         if elapsed_time >= timedelta(minutes=4):
-          print("4分以上経過しています。")
+          # print("4分以上経過しています。")
           taikai = False
           # dev
           # user_photo = message_list[5].find_element(By.CLASS_NAME, value="user_photo")
@@ -1249,19 +1247,12 @@ def check_new_mail(driver, wait, pcmax_info):
             if "icloud.com" in received_mail:
               print("icloud.comが含まれています")
               icloud_text = "メール送ったんですけど、ブロックされちゃって届かないのでこちらのアドレスにお名前添えて送ってもらえますか？"
-              dbpath = 'firstdb.db'
-              conn = sqlite3.connect(dbpath)
-              # # SQLiteを操作するためのカーソルを作成
-              cur = conn.cursor()
-              # # 順番
-              # # データ検索
-              cur.execute('SELECT mail_address FROM gmail WHERE name = ?', (name,))
-              for row in cur:
-                  mail_address = row[0]
               icloud_text = icloud_text + "\n" + mail_address
               text_area = driver.find_elements(By.ID, value="mdc")
               if len(text_area):
-                text_area[0].send_keys(icloud_text)
+                script = "arguments[0].value = arguments[1];"
+                driver.execute_script(script, text_area[0], icloud_text)
+                # text_area[0].send_keys(icloud_text)
                 time.sleep(4)
                 send = driver.find_element(By.ID, value="send_n")
                 send.click()
@@ -1285,21 +1276,9 @@ def check_new_mail(driver, wait, pcmax_info):
               name_elem = driver.find_elements(By.CLASS_NAME, value="content_header_center")
               user_name = name_elem[0].text
               for user_address in email_list:
-                dbpath = 'firstdb.db'
-                conn = sqlite3.connect(dbpath)
-                # # SQLiteを操作するためのカーソルを作成
-                cur = conn.cursor()
-                # # 順番
-                # # データ検索
-                cur.execute('SELECT conditions_message, gmail_password FROM pcmax WHERE name = ?', (name,))
-                for row in cur:
-                    text = row[0]
-                    password = row[1]
-                cur.execute('SELECT mail_address FROM gmail WHERE name = ?', (name,))
-                for row in cur:
-                    mailaddress = row[0]
                 site = "pcmax"
-                func.send_conditional(user_name, user_address, mailaddress, password, text, site)
+                func.send_conditional(user_name, user_address, mail_address, gmail_password, condition_message, site)
+                print("アドレス内1stメールを送信しました")
             # 見ちゃいや登録
             latest_mail = driver.find_element(By.ID, value="dlink")
             latest_mail.click()
@@ -1318,10 +1297,11 @@ def check_new_mail(driver, wait, pcmax_info):
             dont_look_registration = driver.find_elements(By.CLASS_NAME, value="del")
             dont_look_registration[0].click()
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-            time.sleep(1)
+            time.sleep(2)
             driver.get("https://pcmax.jp/mobile/mail_recive_list.php?receipt_status=0")
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
             time.sleep(2)
+            
             continue
 
             # received_mail_elem = driver.find_elements(By.CLASS_NAME, value="left_balloon_m")
@@ -1335,7 +1315,9 @@ def check_new_mail(driver, wait, pcmax_info):
           elif len(sent_by_me) == 0 and len(sent_by_me_maji) == 0:
             text_area = driver.find_elements(By.ID, value="mdc")
             if len(text_area):
-              text_area[0].send_keys(fst_message)
+              script = "arguments[0].value = arguments[1];"
+              driver.execute_script(script, text_area[0], fst_message)
+              # text_area[0].send_keys(fst_message)
               time.sleep(6)
               send = driver.find_element(By.ID, value="send_n")
               send.click()
@@ -1374,7 +1356,9 @@ def check_new_mail(driver, wait, pcmax_info):
             if no_history_second_mail:
               text_area = driver.find_elements(By.ID, value="mdc")
               if len(text_area):
-                text_area[0].send_keys(second_message)
+                script = "arguments[0].value = arguments[1];"
+                driver.execute_script(script, text_area[0], second_message)
+                # text_area[0].send_keys(second_message)
                 time.sleep(6)
                 send = driver.find_element(By.ID, value="send_n")
                 send.click()
@@ -1392,8 +1376,8 @@ def check_new_mail(driver, wait, pcmax_info):
 
           elif second_message in sent_by_me[-1].text:
             # 受信メールにアドレスがあるか
-            # print('やり取り中')
-            # print(sent_by_me[-1].text)
+            print('やり取り中')
+            print(sent_by_me[-1].text)
             name_elem = driver.find_elements(By.CLASS_NAME, value="content_header_center")
             user_name = name_elem[0].text
             # print(user_name)
@@ -1579,10 +1563,12 @@ def check_new_mail(driver, wait, pcmax_info):
       
     # メッセージを入力
     text_area = driver.find_element(By.ID, value="mdc")
-    text_area.send_keys(return_foot_message)
+    script = "arguments[0].value = arguments[1];"
+    driver.execute_script(script, text_area, return_foot_message)
+    # text_area.send_keys(return_foot_message)
     time.sleep(6)
     # print("マジ送信 " + str(maji_soushin) + " ~" + str(send_count + 1) + "~")
-    print(f"{name}pcmax マジ送信:{maji_soushin} {send_count + 1}件送信")
+    print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count + 1}件送信")
 
     # メッセージを送信
     if maji_soushin:

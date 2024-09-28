@@ -1219,8 +1219,7 @@ def send_fst_message(happy_user_list, driver, wait):
   for user_info in happy_user_list:
     name,login_id, passward, fst_message, mail_img = user_info
     limit_cnt = 1
-    if name == "きりこ":
-      limit_cnt = 0
+    
     driver.delete_all_cookies()
     driver.get("https://happymail.jp/login/")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1344,7 +1343,7 @@ def send_fst_message(happy_user_list, driver, wait):
   print("fstmail end")
   
 
-def check_new_mail(driver, wait, happy_info):
+def check_new_mail(happy_info, driver, wait):
   return_list = []
   name = happy_info["name"]
   login_id = happy_info["login_id"]
@@ -1389,6 +1388,7 @@ def check_new_mail(driver, wait, happy_info):
   if not name_elem:
      return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります.....")
      return return_list
+  
   name = name_elem.text  
   message_icon_candidates = driver.find_elements(By.CLASS_NAME, value="ds_nav_item")
   message_icon = ""
