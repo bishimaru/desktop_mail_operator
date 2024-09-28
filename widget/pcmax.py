@@ -1296,7 +1296,8 @@ def check_new_mail(pcmax_info, driver, wait):
               wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
               time.sleep(1)
             dont_look_registration = driver.find_elements(By.CLASS_NAME, value="del")
-            dont_look_registration[0].click()
+            if len(dont_look_registration):
+              dont_look_registration[0].click()
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
             time.sleep(2)
             driver.get("https://pcmax.jp/mobile/mail_recive_list.php?receipt_status=0")
