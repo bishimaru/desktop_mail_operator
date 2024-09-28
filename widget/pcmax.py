@@ -1089,7 +1089,6 @@ def check_new_mail(pcmax_info, driver, wait):
       return return_list, 0
     else:
       return 1, 0
-  print(second_message)
   # 新着があるかチェック
   have_new_massage_users = []
   new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
