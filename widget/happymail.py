@@ -1486,10 +1486,16 @@ def check_new_mail(happy_info, driver, wait):
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
+              print(user_name.text)
+              print('--------------------')
               user_name = user_name.text
               receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
+              print(receive_contents.text)
               return_message = f"{name}happymail,{login_id}:{login_pass}\n{user_name}「{receive_contents.text}」"
               return_list.append(return_message)
+              print('----------------------------------------')
+
+              print(return_message)
               # みちゃいや
               plus_icon_parent = driver.find_elements(By.CLASS_NAME, value="message__form__action")
               plus_icon = plus_icon_parent[0].find_elements(By.CLASS_NAME, value="icon-message_plus")
