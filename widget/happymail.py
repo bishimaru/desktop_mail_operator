@@ -1439,24 +1439,24 @@ def check_new_mail(happy_info, driver, wait):
             send_text = send_message[-1].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
             if not send_text:
                 send_text = send_message[-2].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
-            print("<<<<<<<<<<<send_text>>>>>>>>>>>>>")
-            print(send_text)
-            print("<<<<<<<<<<<fst_message>>>>>>>>>>>>>")
-            print(fst_message)
-            print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
-            print(return_foot_message)
+            # print("<<<<<<<<<<<send_text>>>>>>>>>>>>>")
+            # print(send_text)
+            # print("<<<<<<<<<<<fst_message>>>>>>>>>>>>>")
+            # print(fst_message)
+            # print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
+            # print(return_foot_message)
             # 改行と空白を削除
             send_text_clean = func.normalize_text(send_text)
             fst_message_clean = func.normalize_text(fst_message)
             return_foot_message_clean = func.normalize_text(return_foot_message)
             
             # 変換後のデバッグ表示
-            print("---------------------------------------")
-            print(f"変換後のsend_text: {repr(send_text_clean)}")
-            print("---------------------------------------")
-            print(f"変換後のfst_message: {repr(fst_message_clean)}")
-            print("---------------------------------------")
-            print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のsend_text: {repr(send_text_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のfst_message: {repr(fst_message_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
             
             print("---------------------------------------")
             print(fst_message_clean == send_text_clean)
@@ -1483,9 +1483,11 @@ def check_new_mail(happy_info, driver, wait):
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[0]
+              print(f"{len(user_name)}--------")
               user_name = user_name.text
               receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
-              #  print(f"{user_name}:{receive_contents.text}")
+              print(f"{len(receive_contents)}~~~~~~~~~~~~~~")
+              print(f"{user_name}:{receive_contents.text}")
               return_message = f"{name}happymail,{login_id}:{login_pass}\n{user_name}「{receive_contents.text}」"
               return_list.append(return_message)
               # みちゃいや
