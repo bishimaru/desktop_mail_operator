@@ -1483,10 +1483,10 @@ def check_new_mail(happy_info, driver, wait):
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[0]
-              print(f"{len(user_name)}--------")
+              print(f"{(user_name)}--------")
               user_name = user_name.text
               receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
-              print(f"{len(receive_contents)}~~~~~~~~~~~~~~")
+              print(f"{receive_contents}~~~~~~~~~~~~~~")
               print(f"{user_name}:{receive_contents.text}")
               return_message = f"{name}happymail,{login_id}:{login_pass}\n{user_name}「{receive_contents.text}」"
               return_list.append(return_message)
