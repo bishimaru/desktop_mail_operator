@@ -1402,6 +1402,7 @@ def check_new_mail(happy_info, driver, wait):
      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
      time.sleep(2)
      #  未読のみ表示
+    #  only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[2]
      only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[1]
      only_new_message.click()
      time.sleep(1)
@@ -1413,7 +1414,9 @@ def check_new_mail(happy_info, driver, wait):
           list_load[0].click()
          time.sleep(2)
      #新着がある間はループ
-    #  while True:  
+    #  b = 0
+    #  while b == 0:
+    #     b+= 1  
      while len(new_mail):
         parent_element = new_mail[0].find_element(By.XPATH, value="..")
         next_element = parent_element.find_element(By.XPATH, value="following-sibling::*")
@@ -1422,12 +1425,12 @@ def check_new_mail(happy_info, driver, wait):
         arrival_datetime = datetime(int(datetime.now().year), int(date_numbers[0]), int(date_numbers[1]), int(date_numbers[2]), int(date_numbers[3])) 
         now = datetime.today()
         elapsed_time = now - arrival_datetime
-        # print(f"メール到着からの経過時間{elapsed_time}")
+        print(f"メール到着からの経過時間{elapsed_time}")
         # 4分経過しているか
         # if True:
         if elapsed_time >= timedelta(minutes=4):
           print("4分以上経過しています。")
-          # s = driver.find_elements(By.CLASS_NAME, value="ds_js_hide_arrow")
+          # s = driver.find_elements(By.CLASS_NAME, value="ds_message_list_top")
           # s[0].click()
           new_mail[0].click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1458,12 +1461,12 @@ def check_new_mail(happy_info, driver, wait):
             # print("---------------------------------------")
             # print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
             
-            print("---------------------------------------")
-            print(fst_message_clean == send_text_clean)
-            print("---------------------------------------")
-            print(return_foot_message_clean == send_text_clean)
-            print("---------------------------------------")
-            print("募集メッセージ" in send_text)
+            # print("---------------------------------------")
+            # print(fst_message_clean == send_text_clean)
+            # print("---------------------------------------")
+            # print(return_foot_message_clean == send_text_clean)
+            # print("---------------------------------------")
+            # print("募集メッセージ" in send_text)
 
 
 
@@ -1483,11 +1486,8 @@ def check_new_mail(happy_info, driver, wait):
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
-              print(f"{(user_name)}--------")
               user_name = user_name.text
               receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
-              print(f"{receive_contents}~~~~~~~~~~~~~~")
-              print(f"{user_name}:{receive_contents.text}")
               return_message = f"{name}happymail,{login_id}:{login_pass}\n{user_name}「{receive_contents.text}」"
               return_list.append(return_message)
               # みちゃいや

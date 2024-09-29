@@ -71,8 +71,8 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
     print(traceback.format_exc())
     func.send_error(f"足跡返しエラー{name}", traceback.format_exc())
   driver.quit()
-  print(f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件")
-  return f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件"
+  print(f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件\n")
+  return f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件\n"
 
 
 if __name__ == '__main__':
