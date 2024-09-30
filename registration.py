@@ -92,15 +92,14 @@ entry_receiving_address.grid(row=5, column=1, padx=10, pady=10)
 if latest_user_data:
     print(888)
     print(latest_user_data)
-    entry_user_name.insert(0, latest_user_data[1])
-    entry_password.insert(0, latest_user_data[2])
+    entry_user_name.insert(0, latest_user_data[1] if latest_user_data[1] is not None else "")
+    entry_password.insert(0, latest_user_data[2] if latest_user_data[2] is not None else "")
     if len(latest_user_data) > 4:
-        entry_gmail_address.insert(0, latest_user_data[4])
+        entry_gmail_address.insert(0, latest_user_data[4] if latest_user_data[4] is not None else "")
     if len(latest_user_data) > 5:
-        entry_gmail_pass.insert(0, latest_user_data[5])
+        entry_gmail_pass.insert(0, latest_user_data[5] if latest_user_data[5] is not None else "")
     if len(latest_user_data) > 6:
-        entry_receiving_address.insert(0, latest_user_data[6])
-    
+        entry_receiving_address.insert(0, latest_user_data[6] if latest_user_data[6] is not None else "")
 
 # 保存ボタンの作成
 save_button = tk.Button(root, text="保存", command=save_data)
