@@ -103,10 +103,10 @@ def check_mail(user_data, driver, wait):
                         if smtpobj: 
                             smtpobj.close()   
             except Exception as e:
-                print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info["name"]}>>>>>>>>>>>")
+                print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
                 traceback.print_exc() 
-                func.send_error(f"メールチェックエラー：ハッピーメール{happy_info["name"]}", traceback.format_exc())    
+                func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
             wait_if_near_midnight()
         # pcmax
         print(f"<<PCMAX:新着メール 足あとチェック開始>>")
