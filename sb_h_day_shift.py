@@ -55,7 +55,7 @@ def sb_h_all_do(matching_cnt, type_cnt, return_foot_cnt, happy_chara_list, headl
   elapsed_time_formatted = str(elapsed_timedelta)
   print(f"<<<<<<<<<<<<<サイト回し一周タイム： {elapsed_time_formatted}>>>>>>>>>>>>>>>>>>")
   return_cnt_list.append(f"サイト回し一周タイム： {elapsed_time_formatted}")
-  str_return_cnt_list = ", ".join(return_cnt_list)
+  str_return_cnt_list = ",\n".join(return_cnt_list)
   
   if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
     func.send_mail(str_return_cnt_list, mail_info)
