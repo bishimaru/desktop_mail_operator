@@ -90,6 +90,8 @@ entry_receiving_address.grid(row=5, column=1, padx=10, pady=10)
 # 取得したデータが存在すれば、それを入力欄の初期値に設定
 
 if latest_user_data:
+    print(888)
+    print(latest_user_data)
     entry_user_name.insert(0, latest_user_data[1])
     entry_password.insert(0, latest_user_data[2])
     if len(latest_user_data) > 4:
