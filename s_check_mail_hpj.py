@@ -60,10 +60,9 @@ def check_mail(user_data, driver, wait):
             try:
                 happymail_new = happymail.check_new_mail(happy_info, driver, wait)
                 if happymail_new:
-                    print(999999999999999999999999999999)
                     new_mail_lists.append(happymail_new)
                 # メール送信
-                smtpobj = None 
+                smtpobj = None
                 if len(new_mail_lists) == 0:
                     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     print(f'{happy_info["name"]}チェック完了  {now}')
@@ -73,7 +72,6 @@ def check_mail(user_data, driver, wait):
                         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         print(f'チェック完了　要確認メールあり  {now}')
                         print(new_mail_lists)
-                        
                         text = ""
                         subject = "新着メッセージ"
                     
