@@ -254,4 +254,4 @@ def check_mail(user_data, driver, wait):
     time.sleep(20)  # 10秒待機して再試行
     print(999)
     driver, wait = func.get_driver(1)
-    check_mail(user_data, headless)
+    check_mail(user_data, driver, wait)

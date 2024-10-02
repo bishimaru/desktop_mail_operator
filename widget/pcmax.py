@@ -1228,7 +1228,10 @@ def check_new_mail(pcmax_info, driver, wait):
           no_history_second_mail = True
           # 受信メッセージにメールアドレスが含まれているか
           received_mail_elem = driver.find_elements(By.CLASS_NAME, value="left_balloon_m")
-          received_mail = received_mail_elem[-1].text
+          if len(received_mail_elem):
+            received_mail = received_mail_elem[-1].text
+          else:
+            received_mail = ""
           
           # ＠を@に変換する
           if "＠" in received_mail:
