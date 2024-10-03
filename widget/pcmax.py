@@ -1425,6 +1425,8 @@ def check_new_mail(pcmax_info, driver, wait):
     reload_cnt += 1
     if reload_cnt == 5:
       break
+  if not len(chara_img):
+    return
   chara_img[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
