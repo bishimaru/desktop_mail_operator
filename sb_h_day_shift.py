@@ -30,7 +30,7 @@ def sb_h_all_do(matching_cnt, type_cnt, return_foot_cnt, happy_chara_list, headl
         return_func = 0
     elapsed_time = time.time() - start_time  # 経過時間を計算する
     while elapsed_time < sec:
-      time.sleep(60)
+      time.sleep(30)
       elapsed_time = time.time() - start_time  # 経過時間を計算する
       # print(f"待機中~~ {elapsed_time} ")
     return return_func
