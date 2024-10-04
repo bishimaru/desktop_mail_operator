@@ -111,8 +111,12 @@ def check_mail(user_data, driver, wait):
         print(f"<<PCMAX:新着メール 足あとチェック開始>>")
         for pcmax_info in pcmax_list:
             new_mail_lists = []
-            pcmax_new, return_foot_cnt = pcmax.check_new_mail(pcmax_info, driver, wait)
-        
+            result = pcmax.check_new_mail(pcmax_info, driver, wait)
+            if result is not None:
+                pcmax_new, return_foot_cnt = result
+            else:
+                pcmax_new, return_foot_cnt = 1, 0
+
             if pcmax_new != 1:
                 new_mail_lists.append(pcmax_new)
             # メール送信
