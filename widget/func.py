@@ -27,17 +27,19 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 import requests
 import shutil
 import unicodedata
-
+import platform
 
 
 def clear_webdriver_cache():
-    cache_dir = os.path.expanduser("~/.wdm/drivers")
-    if os.path.exists(cache_dir):
-        try:
-            shutil.rmtree(cache_dir)
-            
-        except Exception as e:
-            print(f"Error clearing webdriver cache: {e}")
+    os_name = platform.system()
+    if os_name == "Darwin":
+      cache_dir = os.path.expanduser("~/.wdm/drivers")
+      if os.path.exists(cache_dir):
+          try:
+              shutil.rmtree(cache_dir)
+              
+          except Exception as e:
+              print(f"Error clearing webdriver cache: {e}")
 
 def get_driver(headless_flag):
     # キャッシュをクリア

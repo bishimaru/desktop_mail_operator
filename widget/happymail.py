@@ -745,7 +745,7 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
   return return_type_counted
       
 def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type_cnt, return_foot_cnt, return_foot_img, fst_message):
-    wait_time = random.uniform(3, 4)
+    wait_time = random.uniform(2, 3)
     driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
@@ -789,10 +789,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
       driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)      
-    
     # print(f"メッセージ送信数　{return_cnt} {matching_counted} {type_counted}")
-    
-
     # 足跡返し
     try:
       while return_foot_cnt >= return_cnt + 1:
@@ -800,7 +797,6 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
         if warning_pop:
           print(f"{name}：警告画面が出ている可能性があります")
           return
-        
         # マイページをクリック
         nav_list = driver.find_elements(By.ID, value='ds_nav')
         if not len(nav_list):
@@ -823,16 +819,19 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
         # ページが完全に読み込まれるまで待機
         time.sleep(1)
         f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
-        while len(f_user) == 0:
+        while len(f_user) < 19:
+          # ページの最後までスクロール
+          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
           time.sleep(2)
           f_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")
-
         name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
         user_name = name_field.text
         mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
         send_skip_cnt = 0
         while len(mail_icon) or user_name in user_name_list:
           if len(mail_icon):
+            print("***")
+            print(send_skip_cnt)
             user_icon += 1
             # print(f'送信履歴あり {user_name} ~ skip ~')
             send_skip_cnt += 1
@@ -843,12 +842,14 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
             except IndexError:
               print("送信可能なユーザーが見つかりませんでした")
               return return_cnt
-            if send_skip_cnt > 8:
-              print("送れないユーザーが9回続きました")
+            if send_skip_cnt > 19:
+              print("送れないユーザーが20回続きました")
               return return_cnt
           elif len(user_name_list):
             while user_name in user_name_list:
                 print('重複ユーザー')
+                print("~~~")
+                print(send_skip_cnt)
                 send_skip_cnt += 1
                 user_icon = user_icon + 1
                 if len(f_user) <= user_icon:
@@ -856,11 +857,10 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
                   break
                 name_field = f_user[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
                 user_name = name_field.text
-                if send_skip_cnt > 9:
-                  print("送れないユーザーが10回続きました")
+                if send_skip_cnt > 19:
+                  print("送れないユーザーが20回続きました")
                   return return_cnt
         # 足跡ユーザーをクリック
-      
         driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", f_user[user_icon])
         time.sleep(1)
         if duplication_user:
@@ -887,6 +887,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           self_introduction_text = contains_violations.text.replace(" ", "").replace("\n", "")
           if '通報' in self_introduction_text or '業者' in self_introduction_text:
               print(f'自己紹介文に危険なワードが含まれていました {user_name}')
+              user_name_list.append(user_name)
               send_status = False
         # メッセージ履歴があるかチェック
         mail_field = driver.find_element(By.ID, value="ds_nav")
