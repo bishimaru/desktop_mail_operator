@@ -40,13 +40,14 @@ def wait_if_near_midnight():
 def check_mail(user_data, driver, wait):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
-  conn = sqlite3.connect('user_data.db')
-  c = conn.cursor()
-  c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
-  chara_data = c.fetchone()
-  mailaddress = chara_data[4]
-  password = chara_data[5]
-  receiving_address = chara_data[6]
+  with sqlite3.connect('user_data.db') as conn:
+    c = conn.cursor()
+    c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+    chara_data = c.fetchone()
+    mailaddress = chara_data[4]
+    gmail_password = chara_data[5]
+    receiving_address = chara_data[6]
+    print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
 
   try:
     send_flug = True
@@ -68,7 +69,9 @@ def check_mail(user_data, driver, wait):
                     print(f'{happy_info["name"]}チェック完了  {now}')
                     pass
                 else:
-                    if mailaddress and password and receiving_address:
+                    print("~~~~~~~~~~~~")
+                    print(f"{mailaddress} {gmail_password} {receiving_address}")
+                    if mailaddress and gmail_password and receiving_address:
                         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         print(f'チェック完了　要確認メールあり  {now}')
                         print(new_mail_lists)
@@ -87,7 +90,7 @@ def check_mail(user_data, driver, wait):
                         smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
                         smtpobj.starttls()
                         smtpobj.set_debuglevel(0)
-                        smtpobj.login(mailaddress, password)
+                        smtpobj.login(mailaddress, gmail_password)
                         msg = MIMEText(text)
                         msg['Subject'] = subject
                         msg['From'] = mailaddress
@@ -127,8 +130,8 @@ def check_mail(user_data, driver, wait):
                 pass
             else:
                 print("~~~~~~~~~~~~")
-                print(f"{mailaddress} {password} {receiving_address}")
-                if mailaddress and password and receiving_address:
+                print(f"{mailaddress} {gmail_password} {receiving_address}")
+                if mailaddress and gmail_password and receiving_address:
                     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     print(f'チェック完了 要確認メールあり  {now}')
                     print(new_mail_lists)
