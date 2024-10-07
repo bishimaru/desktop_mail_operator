@@ -831,8 +831,8 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
         send_skip_cnt = 0
         while len(mail_icon) or user_name in user_name_list:
           if len(mail_icon):
-            print("***")
-            print(send_skip_cnt)
+            # print("***")
+            # print(send_skip_cnt)
             user_icon += 1
             # print(f'送信履歴あり {user_name} ~ skip ~')
             send_skip_cnt += 1
