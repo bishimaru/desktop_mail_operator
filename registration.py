@@ -10,10 +10,6 @@ c.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_name TEXT NOT NULL,
         password TEXT NOT NULL,
-        h_schedule_time TEXT,
-        gmail_address TEXT,
-        gmail_password TEXT,
-        receiving_address TEXT        
     )
 ''')
 conn.commit()
@@ -27,12 +23,10 @@ def get_latest_user_data():
 def save_data():
     user_name = entry_user_name.get().strip().replace(" ", "").replace("　", "")
     password = entry_password.get().strip().replace(" ", "").replace("　", "")
-    gmail = entry_gmail_address.get().strip().replace(" ", "").replace("　", "")
-    gmail_pass = entry_gmail_pass.get().strip().replace(" ", "").replace("　", "")
-    receiving_address = entry_receiving_address.get().strip().replace(" ", "").replace("　", "")
+    
 
     if user_name and password:
-        c.execute("INSERT INTO users (user_name, password, gmail_address, gmail_password, receiving_address) VALUES (?,?,?,?,?)", (user_name, password, gmail, gmail_pass, receiving_address))
+        c.execute("INSERT INTO users (user_name, password) VALUES (?,?)", (user_name, password))
         conn.commit()
         messagebox.showinfo("情報", "データが保存されました！")
         entry_user_name.delete(0, tk.END)
@@ -71,20 +65,7 @@ show_password_var = tk.BooleanVar()
 show_password_check = tk.Checkbutton(root, text="パスワードを表示", variable=show_password_var, command=toggle_password)
 show_password_check.grid(row=2, column=1, padx=10, pady=10, sticky='w')
 
-label_gmail_address = tk.Label(root, text="自動送信サーバーアドレス:")
-label_gmail_address.grid(row=3, column=0, padx=10, pady=10)
-entry_gmail_address = tk.Entry(root)
-entry_gmail_address.grid(row=3, column=1, padx=10, pady=10)
 
-label_gmail_pass = tk.Label(root, text="Gmailアプリパスワード:")
-label_gmail_pass.grid(row=4, column=0, padx=10, pady=10)
-entry_gmail_pass = tk.Entry(root)
-entry_gmail_pass.grid(row=4, column=1, padx=10, pady=10)
-
-label_receiving_address = tk.Label(root, text="受信メールアドレス:")
-label_receiving_address.grid(row=5, column=0, padx=10, pady=10)
-entry_receiving_address = tk.Entry(root)
-entry_receiving_address.grid(row=5, column=1, padx=10, pady=10)
 
 
 # 取得したデータが存在すれば、それを入力欄の初期値に設定
@@ -92,12 +73,7 @@ entry_receiving_address.grid(row=5, column=1, padx=10, pady=10)
 if latest_user_data:
     entry_user_name.insert(0, latest_user_data[1] if latest_user_data[1] is not None else "")
     entry_password.insert(0, latest_user_data[2] if latest_user_data[2] is not None else "")
-    if len(latest_user_data) > 4:
-        entry_gmail_address.insert(0, latest_user_data[4] if latest_user_data[4] is not None else "")
-    if len(latest_user_data) > 5:
-        entry_gmail_pass.insert(0, latest_user_data[5] if latest_user_data[5] is not None else "")
-    if len(latest_user_data) > 6:
-        entry_receiving_address.insert(0, latest_user_data[6] if latest_user_data[6] is not None else "")
+    
 
 # 保存ボタンの作成
 save_button = tk.Button(root, text="保存", command=save_data)

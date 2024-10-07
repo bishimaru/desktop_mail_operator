@@ -11,6 +11,8 @@ from widget import func
 from sb_h_day_shift import sb_h_all_do
 import sqlite3
 from selenium.common.exceptions import WebDriverException
+import requests
+from requests.exceptions import HTTPError
 
 
 conn = sqlite3.connect('user_data.db')
@@ -29,27 +31,37 @@ root.title("スケジューラ設定")
 driver = None  # グローバルにドライバを定義
 
 def start_scheduler(schedule_data, happy_chara_list, headless):
-    verification_flug = func.get_user_data()
-    if not verification_flug:
+    if not user_data:
         return
     global driver
     
-    # print('<<<<<<<<<<<<<>>>>>>>>>>>>>')
     mail_info = [
         user_data["user"][0]["user_email"],
         user_data["user"][0]["gmail_account"],
         user_data["user"][0]["gmail_account_password"],
     ]
     scheduler = BlockingScheduler()
-    combined_string = ""
-    for element in schedule_data:
-        str_element = [str(e) for e in element]  # 各要素を文字列に変換
-        if combined_string:
-            combined_string = combined_string + "," +",".join(str_element)
-        else:
-            combined_string = combined_string +",".join(str_element)
-    c.execute("INSERT INTO users (user_name, password, h_schedule_time) VALUES (?, ?, ?)", (user_data["user"][0]["username"], user_data["user"][0]["password"], combined_string))
-    conn.commit()
+    
+    api_url = "https://meruopetyan.com/api/user-data/"
+    # DEBUG
+    # api_url = "http://127.0.0.1:8000/api/user-data/"
+    # スケジュールデータを文字列に変換して保存
+    schedule_strings = [f"{hour}:{minute}:{match_args}:{type_args}:{args}" for (hour, minute, match_args, type_args, args) in schedule_data]
+    try:
+        user_id = user_data["user"][0]["user"]
+        update_data = {
+            "h_schedule_time": schedule_strings
+        }
+
+        response = requests.patch(f"{api_url}{user_id}/", json=update_data)
+        response.raise_for_status()
+        # print(f"UserProfileが更新されました: {response.json()}")
+    
+    except HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+    except Exception as err:
+        print(f"Other error occurred: {err}")
+    
     for data in schedule_data:
         hour, minute, match_args, type_args, args = data
         scheduler.add_job(
@@ -99,20 +111,14 @@ def run_scheduler():
         type_args = type_vars[i].get() 
         args = args_vars[i].get()
 
-        # if not hour.isdigit() or not minute.isdigit() or not args.isdigit():
-        #     tk.messagebox.showerror("
-        # 入力エラー", "スペースなど数字以外は入力しないでください")
-        #     return
-
         schedule_data.append((hour, minute, match_args, type_args, args))
 
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
     start_scheduler(schedule_data, sorted_happymail, headless)
 
-def add_form(user_info):
+def add_form(user_info_list):
     global form_count
-
     if form_count >= max_forms:
         return  
 
@@ -278,16 +284,13 @@ type_vars = []
 args_vars = []
 
 
-def get_latest_user_data(c):
-    c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
-    return c.fetchone()
-
-user_info = get_latest_user_data(c)
+happy_times = user_data["user"][0]["h_schedule_time"]
 user_info_list = [["", "", "", "", ""] for _ in range(6)]  
-if user_info[3] is not None:
-    string = user_info[3].split(",")
-    for i in range(len(string)):
-        user_info_list[i // 5][i % 5] = string[i]
+if happy_times is not None:
+    for i in range(len(happy_times)):
+        split_data = happy_times[i].split(":")  # ":"で分割
+        for j in range(len(split_data)):
+            user_info_list[i][j] = split_data[j]  # 分割されたデータを正しい位置に挿入
 
 # 最初の入力フォームを作成
 add_form(user_info_list)

@@ -40,14 +40,11 @@ def wait_if_near_midnight():
 def check_mail(user_data, driver, wait):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
-  with sqlite3.connect('user_data.db') as conn:
-    c = conn.cursor()
-    c.execute("SELECT * FROM users ORDER BY id DESC LIMIT 1")
-    chara_data = c.fetchone()
-    mailaddress = chara_data[4]
-    gmail_password = chara_data[5]
-    receiving_address = chara_data[6]
-    print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
+  mailaddress = user_data['user'][0]['gmail_account']
+  gmail_password = user_data['user'][0]['gmail_account_password']
+  receiving_address = user_data['user'][0]['recieve_mailaddress']
+
+#   print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
 
   try:
     send_flug = True
@@ -69,8 +66,7 @@ def check_mail(user_data, driver, wait):
                     print(f'{happy_info["name"]}チェック完了  {now}')
                     pass
                 else:
-                    print("~~~~~~~~~~~~")
-                    print(f"{mailaddress} {gmail_password} {receiving_address}")
+                    
                     if mailaddress and gmail_password and receiving_address:
                         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         print(f'チェック完了　要確認メールあり  {now}')
@@ -86,6 +82,10 @@ def check_mail(user_data, driver, wait):
                                 text = text + new_mail + ",\n"
                                 if "警告" in text:
                                     subject = "メッセージ"
+                    else:
+                        print("~~~~~~~~~~~~")
+                        print(f"自動送信に必要な情報が不足しています。　{mailaddress} {gmail_password} {receiving_address}")
+                        
                     try:
                         smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
                         smtpobj.starttls()
