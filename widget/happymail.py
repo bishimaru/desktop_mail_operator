@@ -24,6 +24,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import base64
 import requests
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 
 
 # 警告画面
@@ -1350,9 +1351,16 @@ def check_new_mail(happy_info, driver, wait):
   if not login_id:
     print(f"{name}のログインIDを取得できませんでした")
     return
+  
   driver.delete_all_cookies()
-  driver.get("https://happymail.jp/login/")
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  try:
+    driver.get("https://happymail.jp/login/")
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  except TimeoutException:
+    print("Timeout reached, retrying...")
+    driver.refresh()  # ページをリフレッシュして再試行
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    
   wait_time = random.uniform(2, 5)
   time.sleep(wait_time)
   id_form = driver.find_element(By.ID, value="TelNo")
@@ -1362,8 +1370,15 @@ def check_new_mail(happy_info, driver, wait):
   time.sleep(wait_time)
   send_form = driver.find_element(By.ID, value="login_btn")
   send_form.click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(2)
+  try:
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+  except TimeoutException:
+    print("Timeout reached, retrying...")
+    driver.refresh()  # ページをリフレッシュして再試行
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    
+    
   remodal = driver.find_elements(By.CLASS_NAME,value="remodal-close")
   if len(remodal):
      remodal[0].click()
