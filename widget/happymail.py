@@ -1338,7 +1338,7 @@ def send_fst_message(happy_user_list, driver, wait):
   
 
 def check_new_mail(happy_info, driver, wait):
-  print(f"{name} チェック開始")
+  
   return_list = []
   name = happy_info["name"]
   login_id = happy_info["login_id"]
@@ -1346,8 +1346,9 @@ def check_new_mail(happy_info, driver, wait):
   fst_message = happy_info["fst_message"]
   conditions_message = happy_info["second_message"]   
   return_foot_message = happy_info["return_foot_message"]   
+  print(f"{name} チェック開始")
   if not login_id:
-    print(f"{name}のhappymailキャラ情報を取得できませんでした")
+    print(f"{name}のログインIDを取得できませんでした")
     return
   driver.delete_all_cookies()
   driver.get("https://happymail.jp/login/")
