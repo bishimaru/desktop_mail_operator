@@ -151,7 +151,7 @@ def check_mail(user_data, driver, wait):
                     smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
                     smtpobj.starttls()
                     smtpobj.set_debuglevel(0)
-                    smtpobj.login(mailaddress, password)
+                    smtpobj.login(mailaddress, gmail_password)
                     msg = MIMEText(text)
                     msg['Subject'] = subject
                     msg['From'] = mailaddress
