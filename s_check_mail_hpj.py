@@ -52,7 +52,7 @@ def check_mail(user_data, driver, wait):
         start_time = time.time() 
         current_datetime = datetime.utcfromtimestamp(int(start_time))
         # ハッピーメール
-        print(f'~~ハピメ:新着メールチェック開始~~')
+        print(f'~~~~~~ハピメ:新着メールチェック開始~~~~~~')
         for happy_info in happymail_list:
             new_mail_lists = []
             try:
@@ -111,7 +111,7 @@ def check_mail(user_data, driver, wait):
                 func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
             wait_if_near_midnight()
         # pcmax
-        print(f"<<PCMAX:新着メール 足あとチェック開始>>")
+        print(f"<<<<<<PCMAX:新着メール 足あとチェック開始>>>>>>")
         for pcmax_info in pcmax_list:
             new_mail_lists = []
             result = pcmax.check_new_mail(pcmax_info, driver, wait)

@@ -800,6 +800,7 @@ def check_new_mail(pcmax_info, driver, wait):
     else:
       return 1, 0
   # 新着があるかチェック
+  print(f"PCMAX {name}のメールチェック開始")
   have_new_massage_users = []
   new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
   if len(new_message_elem):

@@ -1382,7 +1382,7 @@ def check_new_mail(happy_info, driver, wait):
   if not name_elem:
      return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります.....")
      return return_list
-  
+  print(f"ハッピーメール{name} チェック開始")
   name = name_elem.text  
   message_icon_candidates = driver.find_elements(By.CLASS_NAME, value="ds_nav_item")
   message_icon = ""
