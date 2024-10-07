@@ -9,7 +9,7 @@ c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_name TEXT NOT NULL,
-        password TEXT NOT NULL,
+        password TEXT NOT NULL
     )
 ''')
 conn.commit()
