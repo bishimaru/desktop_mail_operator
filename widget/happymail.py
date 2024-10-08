@@ -848,9 +848,9 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
               return return_cnt
           elif len(user_name_list):
             while user_name in user_name_list:
-                print('重複ユーザー')
-                print("~~~")
-                print(send_skip_cnt)
+                # print('重複ユーザー')
+                # print("~~~")
+                # print(send_skip_cnt)
                 send_skip_cnt += 1
                 user_icon = user_icon + 1
                 if len(f_user) <= user_icon:
