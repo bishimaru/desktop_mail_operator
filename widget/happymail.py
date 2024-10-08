@@ -70,7 +70,6 @@ def re_post(name,  driver, wait, title, post_text):
       print(f"{name}: 警告画面が出ている可能性があります。")
       return False
     mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
-    
     try:
       mypage.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -78,6 +77,12 @@ def re_post(name,  driver, wait, title, post_text):
     except ElementClickInterceptedException as e:
       print(f"{name}:警告画面が出ている可能性があります")
       return
+    # 画像チェック
+    top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
+    if len(top_img_element):
+      top_img = top_img_element[0].get_attribute("style")
+      if "noimage" in top_img:
+          print(f"{name}のトップ画がNoImageの可能性があります。。。")
     # マイリストをクリック
     common_list = driver.find_element(By.CLASS_NAME, "ds_common_table")
     common_table = common_list.find_elements(By.CLASS_NAME, "ds_mypage_text")
@@ -1399,7 +1404,17 @@ def check_new_mail(happy_info, driver, wait):
   if not name_elem:
      return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります.....")
      return return_list
-  
+  # 画像チェック
+  top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
+  print(999)
+  print(len(top_img_element))
+  if len(top_img_element):
+     top_img = top_img_element[0].get_attribute("style")
+     print(888)
+     print(top_img)
+     if "noimage" in top_img:
+        print(f"{name}のトップ画の設定がNoImageです")
+        return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールのトップ画像がNOIMAGEの可能性があります.....")
   name = name_elem.text  
   message_icon_candidates = driver.find_elements(By.CLASS_NAME, value="ds_nav_item")
   message_icon = ""

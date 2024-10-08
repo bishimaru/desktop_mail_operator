@@ -753,7 +753,6 @@ def check_new_mail(pcmax_info, driver, wait):
   condition_message = pcmax_info["condition_message"]
   mail_address = pcmax_info["mail_address"]
   gmail_password = pcmax_info["gmail_password"]
-  
   name = pcmax_info["name"]
   if login_id == None or login_id == "":
     print(f"{name}のpcmaxキャラ情報を取得できませんでした")
@@ -799,8 +798,14 @@ def check_new_mail(pcmax_info, driver, wait):
       return return_list, 0
     else:
       return 1, 0
-  # 新着があるかチェック
   print(f"{name}のメールチェック開始")
+  # トップ画像の確認
+  top_img_elem = driver.find_elements(By.CLASS_NAME, value="p_img")
+  if len(top_img_elem):
+    top_img_style = top_img_elem[0].get_attribute("style")
+    if "no-image" in top_img_style:
+      print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
+  # 新着があるかチェック
   have_new_massage_users = []
   new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
   if len(new_message_elem):
@@ -1453,6 +1458,24 @@ def re_registration(name, driver):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
 
+  
+  # 体型
+  if body_shape:
+    prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
+    body_shape_link = prof_list[1].find_elements(By.TAG_NAME, value="a")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", body_shape_link[0])
+    time.sleep(1)
+    body_shape_link[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(wait_time)
+    body_shape_select = driver.find_elements(By.CLASS_NAME, value="s_select")
+    select = Select(body_shape_select[0])
+    select.select_by_visible_text(body_shape)
+    time.sleep(1)
+    set_button = driver.find_elements(By.CLASS_NAME, value="basic_btn")
+    set_button[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(wait_time)
   # 身長
   prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
   height_link = prof_list[0].find_elements(By.TAG_NAME, value="a")
@@ -1479,23 +1502,6 @@ def re_registration(name, driver):
   set_button[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(wait_time)
-  # 体型
-  if body_shape:
-    prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
-    body_shape_link = prof_list[1].find_elements(By.TAG_NAME, value="a")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", body_shape_link[0])
-    time.sleep(1)
-    body_shape_link[0].click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(wait_time)
-    body_shape_select = driver.find_elements(By.CLASS_NAME, value="s_select")
-    select = Select(body_shape_select[0])
-    select.select_by_visible_text(body_shape)
-    time.sleep(1)
-    set_button = driver.find_elements(By.CLASS_NAME, value="basic_btn")
-    set_button[0].click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(wait_time)
   # 血液型
   if blood_type:
     prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
@@ -1698,7 +1704,7 @@ def re_registration(name, driver):
 
 def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, second_message, maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort_list):
   options = Options()
-  options.add_argument('--headless')
+  # options.add_argument('--headless')
   options.add_argument("--incognito")
   options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
   options.add_argument("--no-sandbox")
@@ -2083,7 +2089,9 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
             select.select_by_visible_text(fst_message_img)
           # メッセージを入力
           text_area = driver.find_element(By.ID, value="mdc")
-          text_area.send_keys(fst_message)
+          script = "arguments[0].value = arguments[1];"
+          driver.execute_script(script, text_area, fst_message)
+          # text_area.send_keys(fst_message)
           time.sleep(4)
         
           if maji_soushin:
