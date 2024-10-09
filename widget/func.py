@@ -42,6 +42,7 @@ def clear_webdriver_cache():
               print(f"Error clearing webdriver cache: {e}")
 
 def get_driver(headless_flag):
+    
     # キャッシュをクリア
     clear_webdriver_cache()
     options = Options()
@@ -183,7 +184,6 @@ def h_p_return_footprint(name, h_w, p_w, driver, return_foot_message, cnt, h_ret
         history_user_list.append(user_name)
         happy_foot_user[0].click()
     else:
-      print(666)
       # print('ハッピーメール：メールアイコンがあります')
       mail_icon_cnt += 1
       # print(f'メールアイコンカウント{mail_icon_cnt}')

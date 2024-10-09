@@ -31,6 +31,7 @@ root.title("スケジューラ設定")
 driver = None  # グローバルにドライバを定義
 
 def start_scheduler(schedule_data, happy_chara_list, headless):
+    
     if not user_data:
         return
     global driver

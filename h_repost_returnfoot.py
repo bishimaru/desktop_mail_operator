@@ -26,16 +26,6 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
   return_foot_message = happy_chara["return_foot_message"]
   return_foot_img = happy_chara["chara_image"]
   fst_message = happy_chara["fst_message"]
-#   fst_message = """
-#   初めまして♪
-# プロフィール見て気になってご連絡しちゃいました♪
-# あすかです٩( 'ω’ )و
-# 友達のゆかと3人でエッチを楽しめるセフレさんを見つけたくてサイトに登録しました！
-
-# 2人ともメンズ専門の脱毛サロンで働いてるんですけど、毎回VIOの施術中にエッチな気分になっちゃって(//ω照♥
-
-# 私もゆかも今は特定の相手もいないし、折角なら3人でエッチを楽しめるセフレさんが出来たらなって思ってるんですけど今ってそういうお相手探してたりしませんか？？
-# """
 
   if not login_id:
     print(f"{name}：ログインIDが正しくありません")

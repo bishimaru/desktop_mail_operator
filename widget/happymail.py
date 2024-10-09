@@ -437,10 +437,11 @@ def re_post(name,  driver, wait, title, post_text):
                   # 掲示板履歴をクリック
                   menu_list = driver.find_element(By.CLASS_NAME, "ds_menu_link_list")
                   menu_link = menu_list.find_elements(By.CLASS_NAME, "ds_next_arrow")
-                  bulletin_board_history = menu_link[5]
+                  bulletin_board_history = menu_link[4]
                   bulletin_board_history.click()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(wait_time)
+                  
                   
       blue_round_buttons = driver.find_elements(By.CLASS_NAME, "ds_round_btn_blue2")
       # print(f"「{name}」ハッピーメールの掲示板書き込みに成功しました")
@@ -1358,6 +1359,7 @@ def check_new_mail(happy_info, driver, wait):
     return
   
   driver.delete_all_cookies()
+  driver.implicitly_wait(15)
   try:
     driver.get("https://happymail.jp/login/")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')

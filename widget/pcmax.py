@@ -1330,8 +1330,8 @@ def re_registration(name, driver):
   user_data = func.get_user_data()
   chara_data = []
   for i in user_data["pcmax"]:
-    print(777)
-    print(i['name'])
+    # print(777)
+    # print(i['name'])
     if i['name'] == name:
       chara_data = i
   if chara_data == []:
