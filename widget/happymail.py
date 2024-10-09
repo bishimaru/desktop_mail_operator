@@ -1406,12 +1406,8 @@ def check_new_mail(happy_info, driver, wait):
      return return_list
   # 画像チェック
   top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
-  print(999)
-  print(len(top_img_element))
   if len(top_img_element):
      top_img = top_img_element[0].get_attribute("style")
-     print(888)
-     print(top_img)
      if "noimage" in top_img:
         print(f"{name}のトップ画の設定がNoImageです")
         return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールのトップ画像がNOIMAGEの可能性があります.....")

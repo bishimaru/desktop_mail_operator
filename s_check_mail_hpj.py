@@ -255,10 +255,8 @@ def check_mail(user_data, driver, wait):
     print(f"接続エラーが発生しました: {e}")
     
     print("20秒後に再接続します。")
-    print(driver.session_id)
 
     driver.quit()
     time.sleep(20)  # 10秒待機して再試行
-    print(999)
     driver, wait = func.get_driver(1)
     check_mail(user_data, driver, wait)
