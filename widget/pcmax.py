@@ -1702,18 +1702,7 @@ def re_registration(name, driver):
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(wait_time)
 
-def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, second_message, maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort_list):
-  options = Options()
-  options.add_argument('--headless')
-  options.add_argument("--incognito")
-  options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
-  options.add_argument("--no-sandbox")
-  options.add_argument("--window-size=456,912")
-  options.add_experimental_option("detach", True)
-  options.add_argument("--disable-cache")
-  service = Service(executable_path=ChromeDriverManager().install())
-  driver = webdriver.Chrome(options=options, service=service)
-  wait = WebDriverWait(driver, 15)
+def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, second_message, maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort_list, driver, wait):
   try:
     driver.delete_all_cookies()
     driver.get("https://pcmax.jp/pcm/file.php?f=login_form")

@@ -20,7 +20,7 @@ from tkinter import messagebox
 from selenium.common.exceptions import NoSuchWindowException
 
 
-def happymail_footprints(driver, wait, foot_cnt):
+def happymail_footprints(headless, foot_cnt):
     user_data = func.get_user_data()
     happy_user_list = []
     if not user_data:
@@ -32,6 +32,7 @@ def happymail_footprints(driver, wait, foot_cnt):
         happy_user_list.append([h_chara_data['name'], h_chara_data['login_id'], h_chara_data['password']])
    
     for i in range(9999):
+        driver,wait = func.get_driver(headless)
         verification_flug = func.get_user_data()
         if not verification_flug:
             return
@@ -46,6 +47,7 @@ def happymail_footprints(driver, wait, foot_cnt):
                 print(f"{user_list[0]}:ログインIDが正しくありません")
                 continue
             try:
+                
                 happymail.make_footprints(user_list[0], user_list[1], user_list[2], driver, wait, foot_cnt)
             except NoSuchWindowException:
                 pass
@@ -58,7 +60,8 @@ def happymail_footprints(driver, wait, foot_cnt):
                     print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
                     driver.quit()
                     sys.exit(0)
-                
+        driver.quit()
+        time.sleep(1)        
         elapsed_time = time.time() - start_time
         elapsed_timedelta = timedelta(seconds=elapsed_time)
         elapsed_time_formatted = str(elapsed_timedelta)
@@ -67,10 +70,10 @@ def happymail_footprints(driver, wait, foot_cnt):
 def run_script():
     foot_cnt = int(entry.get())
     headless = check_var.get()
-    driver,wait = func.get_driver(headless)
+    
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
-    happymail_footprints(driver, wait, foot_cnt)
+    happymail_footprints(headless, foot_cnt)
 
 def populate_user_listbox():
     user_data = func.get_user_data()

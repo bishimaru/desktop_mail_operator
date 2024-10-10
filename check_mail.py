@@ -23,7 +23,7 @@ from selenium.common.exceptions import NoSuchWindowException
 global user_data 
 user_data = func.get_user_data()
 
-def check_mail_hpj(driver, wait): 
+def check_mail_hpj(headless): 
     check_mail_flug = user_data["user"][0]['check_mail_happymail']
     if not check_mail_flug:
         print("有効期限が切れています。")
@@ -33,14 +33,13 @@ def check_mail_hpj(driver, wait):
     if user_data == 2:
         print("ユーザーデータを登録してください。")
         return
-    check_mail(user_data, driver, wait)
+    check_mail(user_data, headless)
         
 def run_script():
     headless = check_var.get()
-    driver,wait = func.get_driver(headless)
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
-    check_mail_hpj(driver, wait)
+    check_mail_hpj(headless)
 
 def populate_user_listbox():
     

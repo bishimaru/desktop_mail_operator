@@ -7,10 +7,10 @@ from concurrent.futures import ThreadPoolExecutor
 import traceback
 import random
 from datetime import datetime
+import time
 
 
-
-def main(maji_soushin, chara_name_list, end_hour, end_minute):
+def main(maji_soushin, chara_name_list, end_hour, end_minute, headless):
   # 〜〜〜〜〜〜検索設定〜〜〜〜〜〜
   # メール送信数（上限なしは0）
   limit_send_cnt = 15
@@ -69,17 +69,23 @@ def main(maji_soushin, chara_name_list, end_hour, end_minute):
       select_areas.append("東京都")
       print(f"キャラ:{chara_name_list[order_count]['name']}、選択地域:{select_areas}")
       try:
-        pcmax.send_fst_mail(chara_name_list[order_count]['name'], chara_name_list[order_count]['login_id'], chara_name_list[order_count]['password'], chara_name_list[order_count]['fst_mail'], chara_name_list[order_count]['mail_img'], chara_name_list[order_count]['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort)
+        driver,wait = func.get_driver(headless)
+        pcmax.send_fst_mail(chara_name_list[order_count]['name'], chara_name_list[order_count]['login_id'], chara_name_list[order_count]['password'], chara_name_list[order_count]['fst_mail'], chara_name_list[order_count]['mail_img'], chara_name_list[order_count]['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver,wait)
       except Exception as e:
         print(traceback.format_exc())
+      finally:
+         driver.quit()
+         time.sleep(1)
    
 
 if __name__ == '__main__':
   maji_soushin = False
   if sys.argv[1] == str(1):
       maji_soushin = True
-  end_hour = sys.argv[2]
-  end_minute = sys.argv[3]
+      headless = True
+  end_hour = sys.argv[1]
+  end_minute = sys.argv[2]
+  headless = sys.argv[3]
     
   chara_name_list = {
     "アスカ":{},"彩香":{},"えりか":{},"きりこ":{},
@@ -93,5 +99,5 @@ if __name__ == '__main__':
     
   # }
   
-  main(maji_soushin, chara_name_list, end_hour, end_minute)
+  main(maji_soushin, chara_name_list, end_hour, end_minute, headless)
   

@@ -37,7 +37,7 @@ def wait_if_near_midnight():
         print("処理を再開します。")
     return
 
-def check_mail(user_data, driver, wait):
+def check_mail(user_data, headless):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
   mailaddress = user_data['user'][0]['gmail_account']
@@ -51,6 +51,7 @@ def check_mail(user_data, driver, wait):
     while True:
         start_time = time.time() 
         current_datetime = datetime.utcfromtimestamp(int(start_time))
+        driver,wait = func.get_driver(headless)
         # ハッピーメール
         print(f'~~~~~~ハピメ:新着メールチェック開始~~~~~~')
         for happy_info in happymail_list:
@@ -203,6 +204,8 @@ def check_mail(user_data, driver, wait):
         elapsed_time = time.time() - start_time  
         elapsed_timedelta = timedelta(seconds=elapsed_time)
         elapsed_time_formatted = str(elapsed_timedelta)
+        driver.quit()
+        time.sleep(1)
         # print(f"<<<<<<<<<<<<<<<<<<<<足跡返し総数　　開始時間{current_datetime}, 経過時間{elapsed_time_formatted}>>>>>>>>>>>>>>>>>>>>")
         # print(pcmax_return_foot_count_dic)
         # print("<<<<<<<<<<<<<<<jmail>>>>>>>>>>>>>>>>>>>>>>>")
