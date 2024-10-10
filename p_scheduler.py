@@ -32,7 +32,7 @@ if __name__ == '__main__':
             chara_list.append(i)
     
     # 朝のジョブ
-    scheduler.add_job(p_fstmail.main, 'cron', hour=18, minute=52, args=[1, chara_list, 23, 55, headless],  misfire_grace_time=60*60)
+    scheduler.add_job(p_fstmail.main, 'cron', hour=6, minute=2, args=[1, chara_list, 10, 55, headless],  misfire_grace_time=60*60)
     # # 昼のジョブ
     scheduler.add_job(p_fstmail.main, 'cron', hour=13, minute=15, args=[1, chara_list, 14, 15, headless],  misfire_grace_time=60*60)
     # # 夜のジョブ
