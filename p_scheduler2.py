@@ -13,6 +13,7 @@ def tick():
     print("Tick! The time is : %s'" % datetime.now())
 
 if __name__ == '__main__':
+    headless = False
     scheduler = BlockingScheduler()  # スケジューラを作る
     user_data = func.get_user_data()
     
@@ -30,11 +31,11 @@ if __name__ == '__main__':
             chara_list.append(i)
     
     # 朝のジョブ
-    scheduler.add_job(p_fstmail.main, 'cron', hour=6, minute=0, args=[1, chara_list, 11, 5],  misfire_grace_time=60*60)
+    scheduler.add_job(p_fstmail.main, 'cron', hour=6, minute=0, args=[1, chara_list, 11, 5, headless],  misfire_grace_time=60*60)
     # # 昼のジョブ
-    scheduler.add_job(p_fstmail.main, 'cron', hour=14, minute=15, args=[1, chara_list, 16, 15],  misfire_grace_time=60*60)
+    scheduler.add_job(p_fstmail.main, 'cron', hour=14, minute=15, args=[1, chara_list, 16, 15, headless],  misfire_grace_time=60*60)
     # # 夜のジョブ
-    scheduler.add_job(p_fstmail.main, 'cron', hour=18, minute=0, args=[1, chara_list, 22, 10], misfire_grace_time=60*60)
+    scheduler.add_job(p_fstmail.main, 'cron', hour=18, minute=0, args=[1, chara_list, 22, 10, headless], misfire_grace_time=60*60)
     print("Press Ctrl+{0} to exit.".format('Break' if os.name == 'nt' else 'C'))
     
     try:
