@@ -13,7 +13,7 @@ def tick():
     print("Tick! The time is : %s'" % datetime.now())
 
 if __name__ == '__main__':
-    headless = False
+    headless = True
     scheduler = BlockingScheduler()  # スケジューラを作る
     user_data = func.get_user_data()
     
