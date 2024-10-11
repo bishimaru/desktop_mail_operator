@@ -110,17 +110,14 @@ def check_mail(user_data, headless):
                 driver.quit()
                 time.sleep(300)  # 300秒（5分）間待機
                 driver, wait = func.get_driver(1)
-                check_mail(user_data, driver, wait)
-    
+                check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")
-                
                 print("20秒後に再接続します。")
-
                 driver.quit()
                 time.sleep(20)  # 10秒待機して再試行
                 driver, wait = func.get_driver(1)
-                # check_mail(user_data, driver, wait)
+                check_mail(user_data, headless)
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
@@ -156,16 +153,13 @@ def check_mail(user_data, headless):
                     if mailaddress and gmail_password and receiving_address:
                         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         print(f'チェック完了 要確認メールあり  {now}')
-                        print(new_mail_lists)
-                        
+                        print(new_mail_lists) 
                         text = ""
                         subject = "新着メッセージ"
-                    
                         for new_mail_list in new_mail_lists:
                             # print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
                             # print(new_mail_list)
                             for new_mail in new_mail_list:
-
                                 text = text + new_mail + ",\n"
                                 if "警告" in text:
                                     subject = "メッセージ"
@@ -193,13 +187,10 @@ def check_mail(user_data, headless):
                 driver.quit()
                 time.sleep(300)  # 300秒（5分）間待機
                 driver, wait = func.get_driver(1)
-                check_mail(user_data, driver, wait)
-    
+                check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
-                print(f"接続エラーが発生しました: {e}")
-                
+                print(f"接続エラーが発生しました: {e}")      
                 print("20秒後に再接続します。")
-
                 driver.quit()
                 time.sleep(20)  # 10秒待機して再試行
                 driver, wait = func.get_driver(1)
