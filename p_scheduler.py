@@ -30,6 +30,7 @@ if __name__ == '__main__':
         # if i["name"] in chara_order_list:
         #     print(i["name"])
         #     chara_list.append(i)
+        print(i["name"])
     
     # 朝のジョブ
     scheduler.add_job(p_fstmail.main, 'cron', hour=6, minute=2, args=[1, chara_list, 10, 55, headless],  misfire_grace_time=60*60)

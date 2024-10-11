@@ -109,14 +109,12 @@ def check_mail(user_data, headless):
                 print("5分間待機して再試行します...")
                 driver.quit()
                 time.sleep(300)  # 300秒（5分）間待機
-                driver, wait = func.get_driver(1)
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")
                 print("20秒後に再接続します。")
                 driver.quit()
                 time.sleep(20)  # 10秒待機して再試行
-                driver, wait = func.get_driver(1)
                 check_mail(user_data, headless)
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
@@ -186,15 +184,13 @@ def check_mail(user_data, headless):
                 print("5分間待機して再試行します...")
                 driver.quit()
                 time.sleep(300)  # 300秒（5分）間待機
-                driver, wait = func.get_driver(1)
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")      
                 print("20秒後に再接続します。")
                 driver.quit()
                 time.sleep(20)  # 10秒待機して再試行
-                driver, wait = func.get_driver(1)
-                # check_mail(user_data, driver, wait)
+                check_mail(user_data, headless)
             except Exception as e:
                 print(f"<<<<<<<<<<PCMAX{pcmax_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
@@ -210,6 +206,7 @@ def check_mail(user_data, headless):
                 #         pcmax_return_foot_count_dic[r_f_user] = pcmax_return_foot_count_dic[r_f_user] + return_foot_cnt
                 #         # print(return_foot_count_dic[r_f_user])
             wait_if_near_midnight()
+            driver.refresh()
             # jmail
             # try:
             #     driver, wait = get_driver(debug)
