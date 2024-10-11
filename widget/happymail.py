@@ -573,7 +573,8 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
       mail_icon_cnt = 0
       user_icon = 0
       return_matching_counted += 1
-      print(f'{name}:マッチング返し {user_name} ~ {str(return_matching_counted)} ~ ')
+      now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+      print(f'{name}:マッチング返し {user_name} ~ {str(return_matching_counted)} ~ {now}')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
       ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
@@ -728,7 +729,8 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
       mail_icon_cnt = 0
       user_icon_type = 0
       return_type_counted += 1
-      print(f'{name}:タイプ返し {user_name} ~ {str(return_type_counted)} ~ ')
+      now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+      print(f'{name}:タイプ返し {user_name} ~ {str(return_type_counted)} ~ {now}')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
       ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
@@ -945,7 +947,8 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           return_cnt += 1
           mail_icon_cnt = 0
           user_icon = 0
-          print(f'{name}:足跡返し  ~ {str(return_cnt)} ~ {user_name} ')
+          now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+          print(f'{name}:足跡返し  ~ {str(return_cnt)} ~ {user_name} {now}')
           # TOPに戻る
           driver.execute_script("window.scrollTo(0, 0);")
           ds_logo = driver.find_element(By.CLASS_NAME, value="ds_logo")
