@@ -45,15 +45,14 @@ def check_mail(user_data, headless):
   receiving_address = user_data['user'][0]['recieve_mailaddress']
 
 #   print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
-
-  try:
-    send_flug = True
-    while True:
+  while True:
+        send_flug = True
         start_time = time.time() 
         current_datetime = datetime.utcfromtimestamp(int(start_time))
-        driver,wait = func.get_driver(headless)
         # ハッピーメール
-        print(f'~~~~~~ハピメ:新着メールチェック開始~~~~~~')
+        print(f'~~~~~~~~~~~~ハピメ:新着メールチェック開始~~~~~~~~~~~~')
+        driver = None
+        driver,wait = func.get_driver(headless)
         for happy_info in happymail_list:
             new_mail_lists = []
             try:
@@ -105,68 +104,112 @@ def check_mail(user_data, headless):
                     finally:
                         if smtpobj: 
                             smtpobj.close()   
+            except (smtplib.SMTPException, socket.gaierror) as e:
+                print(f"メール送信中にエラーが発生しました: {e}")
+                print("5分間待機して再試行します...")
+                driver.quit()
+                time.sleep(300)  # 300秒（5分）間待機
+                driver, wait = func.get_driver(1)
+                check_mail(user_data, driver, wait)
+    
+            except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
+                print(f"接続エラーが発生しました: {e}")
+                
+                print("20秒後に再接続します。")
+
+                driver.quit()
+                time.sleep(20)  # 10秒待機して再試行
+                driver, wait = func.get_driver(1)
+                # check_mail(user_data, driver, wait)
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
                 traceback.print_exc() 
                 func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
             wait_if_near_midnight()
+        if driver is not None:
+            driver.quit()
+        time.sleep(2)
+        driver,wait = func.get_driver(headless)
         # pcmax
-        print(f"<<<<<<PCMAX:新着メール 足あとチェック開始>>>>>>")
+        print(f"<<<<<<<<<<<<PCMAX:新着メール 足あとチェック開始>>>>>>>>>>>>")
         for pcmax_info in pcmax_list:
             new_mail_lists = []
-            result = pcmax.check_new_mail(pcmax_info, driver, wait)
-            if result is not None:
-                pcmax_new, return_foot_cnt = result
-            else:
-                pcmax_new, return_foot_cnt = 1, 0
+            try:
+                result = pcmax.check_new_mail(pcmax_info, driver, wait)
+                if result is not None:
+                    pcmax_new, return_foot_cnt = result
+                else:
+                    pcmax_new, return_foot_cnt = 1, 0
 
-            if pcmax_new != 1:
-                new_mail_lists.append(pcmax_new)
-            # メール送信
-            smtpobj = None 
-            if len(new_mail_lists) == 0:
-                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                print(f'{pcmax_info["name"]}チェック完了  {now}')
-                pass
-            else:
-                print("~~~~~~~~~~~~")
-                print(f"{mailaddress} {gmail_password} {receiving_address}")
-                if mailaddress and gmail_password and receiving_address:
+                if pcmax_new != 1:
+                    new_mail_lists.append(pcmax_new)
+                # メール送信
+                smtpobj = None 
+                if len(new_mail_lists) == 0:
                     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    print(f'チェック完了 要確認メールあり  {now}')
-                    print(new_mail_lists)
+                    print(f'{pcmax_info["name"]}チェック完了  {now}')
+                    pass
+                else:
+                    print("~~~~~~~~~~~~")
+                    print(f"{mailaddress} {gmail_password} {receiving_address}")
+                    if mailaddress and gmail_password and receiving_address:
+                        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        print(f'チェック完了 要確認メールあり  {now}')
+                        print(new_mail_lists)
+                        
+                        text = ""
+                        subject = "新着メッセージ"
                     
-                    text = ""
-                    subject = "新着メッセージ"
-                
-                    for new_mail_list in new_mail_lists:
-                        # print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
-                        # print(new_mail_list)
-                        for new_mail in new_mail_list:
+                        for new_mail_list in new_mail_lists:
+                            # print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
+                            # print(new_mail_list)
+                            for new_mail in new_mail_list:
 
-                            text = text + new_mail + ",\n"
-                            if "警告" in text:
-                                subject = "メッセージ"
-                try:
-                    smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
-                    smtpobj.starttls()
-                    smtpobj.set_debuglevel(0)
-                    smtpobj.login(mailaddress, gmail_password)
-                    msg = MIMEText(text)
-                    msg['Subject'] = subject
-                    msg['From'] = mailaddress
-                    msg['To'] = receiving_address
-                    msg['Date'] = formatdate()
-                    smtpobj.send_message(msg)
-                except smtplib.SMTPDataError as e:
-                    print(f"SMTPDataError: {e}")
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                finally:
-                    if smtpobj: 
-                        smtpobj.close()   
+                                text = text + new_mail + ",\n"
+                                if "警告" in text:
+                                    subject = "メッセージ"
+                    try:
+                        smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
+                        smtpobj.starttls()
+                        smtpobj.set_debuglevel(0)
+                        smtpobj.login(mailaddress, gmail_password)
+                        msg = MIMEText(text)
+                        msg['Subject'] = subject
+                        msg['From'] = mailaddress
+                        msg['To'] = receiving_address
+                        msg['Date'] = formatdate()
+                        smtpobj.send_message(msg)
+                    except smtplib.SMTPDataError as e:
+                        print(f"SMTPDataError: {e}")
+                    except Exception as e:
+                        print(f"An error occurred: {e}")
+                    finally:
+                        if smtpobj: 
+                            smtpobj.close()   
+            except (smtplib.SMTPException, socket.gaierror) as e:
+                print(f"メール送信中にエラーが発生しました: {e}")
+                print("5分間待機して再試行します...")
+                driver.quit()
+                time.sleep(300)  # 300秒（5分）間待機
+                driver, wait = func.get_driver(1)
+                check_mail(user_data, driver, wait)
     
+            except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
+                print(f"接続エラーが発生しました: {e}")
+                
+                print("20秒後に再接続します。")
+
+                driver.quit()
+                time.sleep(20)  # 10秒待機して再試行
+                driver, wait = func.get_driver(1)
+                # check_mail(user_data, driver, wait)
+            except Exception as e:
+                print(f"<<<<<<<<<<PCMAX{pcmax_info['name']}>>>>>>>>>>>")
+                print(traceback.format_exc())
+                traceback.print_exc() 
+                func.send_error(f"PCMAX{pcmax_info['name']}", traceback.format_exc())    
+            wait_if_near_midnight()
             if return_foot_cnt:     
                 continue
                 # for r_f_user in pcmax_return_foot_count_dic:
@@ -200,7 +243,7 @@ def check_mail(user_data, headless):
             #     driver.quit()
             
             
-                           
+                        
         elapsed_time = time.time() - start_time  
         elapsed_timedelta = timedelta(seconds=elapsed_time)
         elapsed_time_formatted = str(elapsed_timedelta)
@@ -247,19 +290,11 @@ def check_mail(user_data, headless):
         #     send_flug = False
         # if current_hour == 11:
         #     send_flug = True
-  except (smtplib.SMTPException, socket.gaierror) as e:
-    print(f"メール送信中にエラーが発生しました: {e}")
-    print("5分間待機して再試行します...")
-    driver.quit()
-    time.sleep(300)  # 300秒（5分）間待機
-    driver, wait = func.get_driver(1)
-    check_mail(user_data, driver, wait)
-  except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
-    print(f"接続エラーが発生しました: {e}")
+    # except (smtplib.SMTPException, socket.gaierror) as e:
+    #     print(f"メール送信中にエラーが発生しました: {e}")
+    #     print("5分間待機して再試行します...")
+    #     driver.quit()
+    #     time.sleep(300)  # 300秒（5分）間待機
+    #     driver, wait = func.get_driver(1)
+    #     check_mail(user_data, driver, wait)
     
-    print("20秒後に再接続します。")
-
-    driver.quit()
-    time.sleep(20)  # 10秒待機して再試行
-    driver, wait = func.get_driver(1)
-    check_mail(user_data, driver, wait)
