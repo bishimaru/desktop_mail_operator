@@ -68,13 +68,15 @@ def main(maji_soushin, chara_name_list, end_hour, end_minute, headless):
       select_areas = random.sample(areas, 2)
       select_areas.append("東京都")
       print(f"キャラ:{chara_name_list[order_count]['name']}、選択地域:{select_areas}")
+      driver = None
       try:
         driver,wait = func.get_driver(headless)
         pcmax.send_fst_mail(chara_name_list[order_count]['name'], chara_name_list[order_count]['login_id'], chara_name_list[order_count]['password'], chara_name_list[order_count]['fst_mail'], chara_name_list[order_count]['mail_img'], chara_name_list[order_count]['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver,wait)
       except Exception as e:
         print(traceback.format_exc())
       finally:
-         driver.quit()
+         if driver is not None:
+          driver.quit()
          time.sleep(1)
    
 
