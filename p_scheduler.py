@@ -18,18 +18,18 @@ if __name__ == '__main__':
     user_data = func.get_user_data()
     
 
-    chara_order_list = [
-    "アスカ","いおり","えりか","きりこ",
-    "さな","すい","つむぎ","なお",
-    # "はづき":{}, "ハル":{}, "めあり":{},"りこ":{}, 
-    # "りな":{}, "ゆっこ":{},"ゆかり":{}, "ゆうな":{},
-    ]
+    # chara_order_list = [
+    # "アスカ","いおり","えりか","きりこ",
+    # "さな","すい","つむぎ","なお",
+    # # "はづき":{}, "ハル":{}, "めあり":{},"りこ":{}, 
+    # # "りな":{}, "ゆっこ":{},"ゆかり":{}, "ゆうな":{},
+    # ]
     chara_list = []
     for i in user_data["pcmax"]:
-        
-        if i["name"] in chara_order_list:
-            print(i["name"])
-            chara_list.append(i)
+        chara_list.append(i)
+        # if i["name"] in chara_order_list:
+        #     print(i["name"])
+        #     chara_list.append(i)
     
     # 朝のジョブ
     scheduler.add_job(p_fstmail.main, 'cron', hour=6, minute=2, args=[1, chara_list, 10, 55, headless],  misfire_grace_time=60*60)
