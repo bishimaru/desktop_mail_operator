@@ -15,7 +15,7 @@ def tick():
 if __name__ == '__main__':
     headless = True
     scheduler = BlockingScheduler()  # スケジューラを作る
-    user_data = func.get_user_data()
+    user_data = func.get_user_data_kenta()
     
     # chara_order_list = [
     # "アスカ","いおり","えりか","きりこ",

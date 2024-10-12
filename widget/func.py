@@ -590,6 +590,64 @@ def check_new_mail_gmail(driver, wait, name, mail_address):
   else:
     return None
 
+def get_user_data_kenta():
+  # APIエンドポイントURL
+  api_url = "https://meruopetyan.com/api/user-data/"
+  # DEBUG
+  # api_url = "http://127.0.0.1:8000/api/user-data/"
+  max_retries = 3
+  retry_count = 0
+  wait_time = 300  # 5分（300秒）
+
+  # POSTリクエストのペイロード
+  data = {
+      'name': "kenta",
+      'password': "7234"
+  }
+
+  while retry_count < max_retries:
+    try:
+      # POSTリクエストを送信してデータを取得
+      response = requests.post(api_url, data=data)
+      # レスポンスのステータスコードを確認
+      if response.status_code == 200:
+          # レスポンスのJSONデータを取得
+          user_data = response.json()
+
+          # Happymailデータを表示
+          # print("Happymailのデータ:")
+          # for data in user_data.get('userprofile', []):
+          #     print(f"Name: {data['gmail_account']}, ")
+
+          # # PCMaxデータを表示
+          # print("PCMaxのデータ:")
+          # for data in user_data.get('pcmax', []):
+          #     print(f"Name: {data['name']}, ")
+          return user_data
+      elif response.status_code == 204:
+        print(f"有効期限が切れている可能性があります。")
+        return 0
+      elif response.status_code == 404:
+        print(f"ユーザー名が見つかりません。")
+        return 0
+      elif response.status_code == 400:
+        print(f"パスワードが正しくありません。")
+        return 0
+      
+      else:
+        print(f"Error: {response.status_code}, データの取得に失敗しました。")
+        return 0
+    except requests.exceptions.ConnectionError as e:
+      retry_count += 1
+      print(f"接続エラーが発生しました。リトライ回数: {retry_count}/{max_retries}")
+      if retry_count >= max_retries:
+          print("最大リトライ回数に達しました。エラーを終了します。")
+          raise e
+      print(f"{wait_time}秒後にリトライします...")
+      time.sleep(wait_time)  # 5分間待機
+  # すべてのリトライが失敗した場合のエラーメッセージ
+  raise Exception("サーバーへの接続に失敗しました。")
+
 def get_user_data():
   # APIエンドポイントURL
   api_url = "https://meruopetyan.com/api/user-data/"
