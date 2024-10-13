@@ -573,7 +573,7 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
       mail_icon_cnt = 0
       user_icon = 0
       return_matching_counted += 1
-      now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+      now = datetime.now().strftime('%m-%d %H:%M:%S')
       print(f'{name}:マッチング返し {user_name} ~ {str(return_matching_counted)} ~ {now}')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
@@ -729,7 +729,7 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
       mail_icon_cnt = 0
       user_icon_type = 0
       return_type_counted += 1
-      now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+      now = datetime.now().strftime('%m-%d %H:%M:%S')
       print(f'{name}:タイプ返し {user_name} ~ {str(return_type_counted)} ~ {now}')
       # TOPに戻る
       driver.execute_script("window.scrollTo(0, 0);")
@@ -947,7 +947,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           return_cnt += 1
           mail_icon_cnt = 0
           user_icon = 0
-          now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+          now = datetime.now().strftime('%m-%d %H:%M:%S')
           print(f'{name}:足跡返し  ~ {str(return_cnt)} ~ {user_name} {now}')
           # TOPに戻る
           driver.execute_script("window.scrollTo(0, 0);")
@@ -1379,8 +1379,8 @@ def check_new_mail(happy_info, driver, wait):
   pass_form.send_keys(login_pass)
   time.sleep(wait_time)
   send_form = driver.find_element(By.ID, value="login_btn")
-  send_form.click()
   try:
+    send_form.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
   except TimeoutException:

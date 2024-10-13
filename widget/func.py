@@ -61,7 +61,7 @@ def get_driver(headless_flag):
     options.add_argument("--disable-cache")
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(options=options, service=service)
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 60)
 
     return driver, wait
 
