@@ -915,8 +915,15 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(wait_time)
           # 足跡返しを入力
-          text_area = driver.find_element(By.ID, value="text-message")
-          # text_area.send_keys(return_foot_message)
+          # 入力エリアが表示され、操作可能になるまで待機
+          text_area = WebDriverWait(driver, 20).until(
+              EC.visibility_of_element_located((By.ID, "text-message"))
+          )
+          # text_area = driver.find_element(By.ID, value="text-message")
+          # 入力エリアをスクロールして中央に表示し、少し待機
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
+          time.sleep(1)  # 少し待機して安定させる
+          
           script = "arguments[0].value = arguments[1];"
           driver.execute_script(script, text_area, return_foot_message)
           # 送信
@@ -926,6 +933,19 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           send_mail.click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(wait_time)
+          send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
+          reload_cnt = 0
+          while send_msg_elem[-1].text != return_foot_message:
+             print(777)
+             print(send_msg_elem.text)
+             time.sleep(wait_time)
+             send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
+             reload_cnt += 1
+             if reload_cnt == 3:
+                driver.refresh()
+                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                time.sleep(wait_time)
+                break
           # 画像があれば送信
           if image_path:
             img_conform = driver.find_element(By.ID, value="media-confirm")
@@ -1348,7 +1368,6 @@ def send_fst_message(happy_user_list, driver, wait):
   
 
 def check_new_mail(happy_info, driver, wait):
-  
   return_list = []
   name = happy_info["name"]
   login_id = happy_info["login_id"]
@@ -1360,7 +1379,6 @@ def check_new_mail(happy_info, driver, wait):
   if not login_id:
     print(f"{name}のログインIDを取得できませんでした")
     return
-  
   driver.delete_all_cookies()
   driver.implicitly_wait(15)
   try:
@@ -1503,8 +1521,6 @@ def check_new_mail(happy_info, driver, wait):
             # print("---------------------------------------")
             # print("募集メッセージ" in send_text)
 
-
-
             if fst_message_clean == send_text_clean or return_foot_message_clean == send_text_clean or "募集メッセージ" in send_text_clean:
                 text_area = driver.find_element(By.ID, value="text-message")
                 driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
@@ -1516,8 +1532,7 @@ def check_new_mail(happy_info, driver, wait):
                 send_mail = driver.find_element(By.ID, value="submitButton")
                 send_mail.click()
                 wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                time.sleep(wait_time)
-                
+                time.sleep(wait_time)   
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
