@@ -1444,7 +1444,7 @@ def check_new_mail(happy_info, driver, wait):
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   print(777)
                   print(send_msg_elem[-1].text)
-                  time.sleep(wait_time)
+                  time.sleep(5)
                   send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
                   reload_cnt += 1
                   if reload_cnt == 3:
@@ -1501,9 +1501,11 @@ def check_new_mail(happy_info, driver, wait):
             send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
             reload_cnt = 0
             while send_msg_elem[-1].text != fst_message:
+                  driver.refresh()
+                  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                  time.sleep(5)
                   print(777)
                   print(send_msg_elem[-1].text)
-                  time.sleep(wait_time)
                   send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
                   reload_cnt += 1
                   if reload_cnt == 3:
