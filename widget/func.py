@@ -42,7 +42,6 @@ def clear_webdriver_cache():
               print(f"Error clearing webdriver cache: {e}")
 
 def get_driver(headless_flag):
-    
     # キャッシュをクリア
     clear_webdriver_cache()
     options = Options()
@@ -61,7 +60,7 @@ def get_driver(headless_flag):
     options.add_argument("--disable-cache")
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(options=options, service=service)
-    wait = WebDriverWait(driver, 60)
+    wait = WebDriverWait(driver, 18)
 
     return driver, wait
 
@@ -652,7 +651,7 @@ def get_user_data():
   # APIエンドポイントURL
   api_url = "https://meruopetyan.com/api/user-data/"
   # DEBUG
-  # api_url = "http://127.0.0.1:8000/api/user-data/"
+  api_url = "http://127.0.0.1:8000/api/user-data/"
   max_retries = 3
   retry_count = 0
   wait_time = 300  # 5分（300秒）
