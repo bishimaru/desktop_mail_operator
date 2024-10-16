@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 import urllib3
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 
@@ -1842,134 +1843,147 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
       # /////////////////////////詳細検索画面/////////////////////////
-
-      # /////////////////////////利用制限あり
-      # pref_no
-      # 地域選択
-      select_area = driver.find_elements(By.NAME, value="pref_no")
-      select = Select(select_area[0])
-      select.select_by_visible_text("神奈川県")
-      time.sleep(1)
-      # 年齢makerItem
-      oldest_age = driver.find_elements(By.ID, value="makerItem")
-      select = Select(oldest_age[0])
-      select.select_by_visible_text("29歳")
-
-      time.sleep(100)
-      # /////////////////////////利用制限なし
-      # 地域選択
+      
       select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-      if len(select_area):
-        select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-        select_link[0].click()
+      if not len(select_area):
+        # /////////////////////////利用制限あり
+        print(f"{name}利用制限あり")
+        # 地域選択
+        # 選択確率の重みを設定
+        weights = [0.2, 0.2, 0.6]  # 東京都は60%、千葉県と埼玉県は20%ずつの確率
+        selected_area = random.choices(select_areas, weights=weights)[0]
+
+        # テスト
+        print(f"決定地域{selected_area}")
+        select_area = driver.find_elements(By.NAME, value="pref_no")
+        select = Select(select_area[0])
+        select.select_by_visible_text(selected_area)
+        time.sleep(1)
+        # 年齢
+        oldest_age = driver.find_elements(By.ID, value="makerItem")
+        select = Select(oldest_age[0])
+        select.select_by_visible_text("29歳")
+        time.sleep(1)
+        # 上記の条件で検索するボタン送信
+        filtered_send = driver.find_elements(By.NAME, value="send")
+        filtered_send[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(wait_time)
       else:
-        # 都道府県の変更、リセット
-        reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
-        reset_area[0].click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(1)
-        reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
-        reset_area_orange[0].click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(1)
-        ok_button = driver.find_element(By.ID, value="link_OK")
-        ok_button.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(1)
-        select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-        # たまにエラー
-        select_area_cnt = 0
-        while not len(select_area):
+        # /////////////////////////利用制限なし
+        print(f"{name}利用制限なし")
+        # 地域選択
+        if len(select_area):
+          select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+          select_link[0].click()
+        else:
+          # 都道府県の変更、リセット
+          reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
+          reset_area[0].click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(1)
-          # print("select_areaが取得できません")
+          reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
+          reset_area_orange[0].click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+          ok_button = driver.find_element(By.ID, value="link_OK")
+          ok_button.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
           select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-          select_area_cnt += 1
-          if select_area_cnt == 10:
-            break
+          # たまにエラー
+          select_area_cnt = 0
+          while not len(select_area):
+            time.sleep(1)
+            # print("select_areaが取得できません")
+            select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+            select_area_cnt += 1
+            if select_area_cnt == 10:
+              break
 
-        select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-        select_link[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(1)
-      area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
-      area_ids = []
-      for select_area in select_areas:
-        if area_id_dict.get(select_area):
-          area_ids.append(area_id_dict.get(select_area))
-      for area_id in area_ids:
-        if 19 <= area_id <= 25:
-          region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
-        elif 13 <= area_id <= 18:
-          region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
-        elif 26 <= area_id <= 29:
-          region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
-        check = region.find_elements(By.ID, value=int(area_id))
+          select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+          select_link[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", check[0])
-      save_area = driver.find_elements(By.NAME, value="change")
-      time.sleep(1)
-      save_area[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(1)
-      # 年齢
-      if youngest_age:
-        if 17 < int(youngest_age) < 59:
-          str_youngest_age = youngest_age + "歳"
-        elif 60 <= int(youngest_age):
-          str_youngest_age = "60歳以上"
-        from_age = driver.find_element(By.NAME, value="from_age")
-        select_from_age = Select(from_age)
-        select_from_age.select_by_visible_text(str_youngest_age)
-        time.sleep(1)
-      else:
-        youngest_age = ""
-      if oldest_age:
-        if 17 < int(oldest_age) < 59:
-          str_oldest_age = oldest_age + "歳"
-        elif 60 <= int(oldest_age):
-          str_oldest_age = "60歳以上" 
-        to_age = driver.find_element(By.ID, "to_age")
-        select = Select(to_age)
-        select.select_by_visible_text(str_oldest_age)
-        time.sleep(1)
-      else:
-        youngest_age = ""
-      # ページの高さを取得
-      last_height = driver.execute_script("return document.body.scrollHeight")
-      while True:
-        # ページの最後までスクロール
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        # ページが完全に読み込まれるまで待機
-        time.sleep(2)
-        # 新しい高さを取得
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
-        if new_height == last_height:
-            break
-        last_height = new_height
-      # 履歴あり、なしの設定
-      mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
-      check_flag = driver.find_element(By.ID, value="opt3") 
-      is_checked = check_flag.is_selected()
-      while not is_checked:
-          mail_history[2].click()
+        area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
+        area_ids = []
+        for select_area in select_areas:
+          if area_id_dict.get(select_area):
+            area_ids.append(area_id_dict.get(select_area))
+        for area_id in area_ids:
+          if 19 <= area_id <= 25:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
+          elif 13 <= area_id <= 18:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
+          elif 26 <= area_id <= 29:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
+          check = region.find_elements(By.ID, value=int(area_id))
           time.sleep(1)
-          is_checked = check_flag.is_selected()
+          driver.execute_script("arguments[0].click();", check[0])
+        save_area = driver.find_elements(By.NAME, value="change")
+        time.sleep(1)
+        save_area[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(1)
+        # 年齢
+        if youngest_age:
+          if 17 < int(youngest_age) < 59:
+            str_youngest_age = youngest_age + "歳"
+          elif 60 <= int(youngest_age):
+            str_youngest_age = "60歳以上"
+          from_age = driver.find_element(By.NAME, value="from_age")
+          select_from_age = Select(from_age)
+          select_from_age.select_by_visible_text(str_youngest_age)
+          time.sleep(1)
+        else:
+          youngest_age = ""
+        if oldest_age:
+          if 17 < int(oldest_age) < 59:
+            str_oldest_age = oldest_age + "歳"
+          elif 60 <= int(oldest_age):
+            str_oldest_age = "60歳以上" 
+          to_age = driver.find_element(By.ID, "to_age")
+          select = Select(to_age)
+          select.select_by_visible_text(str_oldest_age)
+          time.sleep(1)
+        else:
+          youngest_age = ""
+        # ページの高さを取得
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        while True:
+          # ページの最後までスクロール
+          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+          # ページが完全に読み込まれるまで待機
+          time.sleep(2)
+          # 新しい高さを取得
+          new_height = driver.execute_script("return document.body.scrollHeight")
+          # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
+          if new_height == last_height:
+              break
+          last_height = new_height
+        # 履歴あり、なしの設定
+        mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
+        check_flag = driver.find_element(By.ID, value="opt3") 
+        is_checked = check_flag.is_selected()
+        while not is_checked:
+            mail_history[2].click()
+            time.sleep(1)
+            is_checked = check_flag.is_selected()
 
-      enter_button = driver.find_elements(By.ID, value="search1")
-      enter_button[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        enter_button = driver.find_elements(By.ID, value="search1")
+        enter_button[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        # ユーザーリスト並び替え設定
+        user_sort = driver.find_element(By.ID, "sort2")
+        if user_sort.tag_name == "select":
+          select = Select(user_sort)
+          select.select_by_visible_text(user_sort_list[0])
+        if user_sort.tag_name == "div":
+          sort_login = driver.find_elements(By.ID, "sort-login")
+          sort_login[0].click()
+        time.sleep(1)
 
-      # ユーザーリスト並び替え設定
-      user_sort = driver.find_element(By.ID, "sort2")
-      if user_sort.tag_name == "select":
-        select = Select(user_sort)
-        select.select_by_visible_text(user_sort_list[0])
-      if user_sort.tag_name == "div":
-        sort_login = driver.find_elements(By.ID, "sort-login")
-        sort_login[0].click()
-      time.sleep(1)
       # ユーザーを取得
       user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
       users = user_list.find_elements(By.XPATH, value='./div')

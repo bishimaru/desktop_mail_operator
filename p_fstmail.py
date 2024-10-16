@@ -56,7 +56,7 @@ def main(maji_soushin, chara_name_list, end_hour, end_minute, headless):
         "千葉県",
         "埼玉県",
         "神奈川県",
-        "静岡県",
+        # "静岡県",
         # "新潟県",
         # "山梨県",
         # "長野県",
