@@ -1841,6 +1841,22 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
       search_elem.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
+      # /////////////////////////詳細検索画面/////////////////////////
+
+      # /////////////////////////利用制限あり
+      # pref_no
+      # 地域選択
+      select_area = driver.find_elements(By.NAME, value="pref_no")
+      select = Select(select_area[0])
+      select.select_by_visible_text("神奈川県")
+      time.sleep(1)
+      # 年齢makerItem
+      oldest_age = driver.find_elements(By.ID, value="makerItem")
+      select = Select(oldest_age[0])
+      select.select_by_visible_text("29歳")
+
+      time.sleep(100)
+      # /////////////////////////利用制限なし
       # 地域選択
       select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
       if len(select_area):
