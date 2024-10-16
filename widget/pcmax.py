@@ -996,8 +996,12 @@ def check_new_mail(pcmax_info, driver, wait):
               user_name = name_elem[0].text
               for user_address in email_list:
                 site = "pcmax"
-                func.send_conditional(user_name, user_address, mail_address, gmail_password, condition_message, site)
-                print("アドレス内1stメールを送信しました")
+                try:
+                  func.send_conditional(user_name, user_address, mail_address, gmail_password, condition_message, site)
+                  print("アドレス内1stメールを送信しました")
+                except Exception:
+                  print(f"{name} アドレス内1stメールの送信に失敗しました")
+                  
             # 見ちゃいや登録
             latest_mail = driver.find_element(By.ID, value="dlink")
             latest_mail.click()

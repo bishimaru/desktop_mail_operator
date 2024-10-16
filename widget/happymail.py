@@ -1442,8 +1442,6 @@ def check_new_mail(happy_info, driver, wait):
                 while send_msg_elem[-1].text != conditions_message:
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                  print(777)
-                  print(send_msg_elem[-1].text)
                   time.sleep(5)
                   send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
                   reload_cnt += 1
