@@ -25,6 +25,7 @@ import base64
 import requests
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
+import gc
 
 
 # 警告画面

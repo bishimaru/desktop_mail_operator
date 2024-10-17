@@ -20,6 +20,7 @@ from datetime import datetime, timedelta, time as dt_time
 import socket
 from selenium.common.exceptions import WebDriverException
 import urllib3
+import gc
 
 
 
@@ -238,6 +239,7 @@ def check_mail(user_data, headless):
         elapsed_time_formatted = str(elapsed_timedelta)
         driver.quit()
         time.sleep(1)
+        gc.collect()
         # print(f"<<<<<<<<<<<<<<<<<<<<足跡返し総数　　開始時間{current_datetime}, 経過時間{elapsed_time_formatted}>>>>>>>>>>>>>>>>>>>>")
         # print(pcmax_return_foot_count_dic)
         # print("<<<<<<<<<<<<<<<jmail>>>>>>>>>>>>>>>>>>>>>>>")
