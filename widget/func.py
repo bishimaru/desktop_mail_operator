@@ -18,7 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-
+from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -41,29 +41,38 @@ def clear_webdriver_cache():
           except Exception as e:
               print(f"Error clearing webdriver cache: {e}")
 
-def get_driver(headless_flag):
-    # キャッシュをクリア
-    clear_webdriver_cache()
-    options = Options()
-    if headless_flag:
-      options.add_argument('--headless')
-      options.add_argument("--disable-gpu")  # headlessモードの時はこのオプションを追加
-    options.add_argument("--incognito")
-    options.add_argument('--log-level=3')  # これでエラーログが抑制されます
-    options.add_argument('--disable-web-security')
-    options.add_argument('--disable-extensions')
-    options.add_argument('--disable-software-rasterizer')
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--window-size=456,912")
-    options.add_experimental_option("detach", True)
-    options.add_argument("--disable-cache")
-    service = Service(executable_path=ChromeDriverManager().install())
-    driver = webdriver.Chrome(options=options, service=service)
-    wait = WebDriverWait(driver, 18)
+def get_driver(headless_flag, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            # キャッシュをクリア
+            clear_webdriver_cache()
+            options = Options()
+            if headless_flag:
+                options.add_argument('--headless')
+                options.add_argument("--disable-gpu")  # headlessモードの時はこのオプションを追加
+            options.add_argument("--incognito")
+            options.add_argument('--log-level=3')  # これでエラーログが抑制されます
+            options.add_argument('--disable-web-security')
+            options.add_argument('--disable-extensions')
+            options.add_argument('--disable-software-rasterizer')
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--window-size=456,912")
+            options.add_experimental_option("detach", True)
+            options.add_argument("--disable-cache")
+            service = Service(executable_path=ChromeDriverManager().install())
+            driver = webdriver.Chrome(options=options, service=service)
+            wait = WebDriverWait(driver, 18)
 
-    return driver, wait
+            return driver, wait
+
+        except WebDriverException as e:
+            print(f"WebDriverException発生: {e}")
+            print(f"再試行します ({attempt + 1}/{max_retries})")
+            time.sleep(5)
+            if attempt == max_retries - 1:
+                raise
 
 
 def timer(fnc, seconds, h_cnt, p_cnt):  
