@@ -18,7 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -28,6 +28,7 @@ import requests
 import shutil
 import unicodedata
 import platform
+from urllib3.exceptions import MaxRetryError
 
 
 def clear_webdriver_cache():
@@ -67,7 +68,7 @@ def get_driver(headless_flag, max_retries=3):
 
             return driver, wait
 
-        except WebDriverException as e:
+        except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
             print(f"WebDriverException発生: {e}")
             print(f"再試行します ({attempt + 1}/{max_retries})")
             time.sleep(5)
