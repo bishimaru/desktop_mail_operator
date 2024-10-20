@@ -1079,25 +1079,35 @@ def check_new_mail(pcmax_info, driver, wait):
                 no_history_second_mail = False
             # secondメッセージを入力
             if no_history_second_mail:
-              text_area = driver.find_elements(By.ID, value="mdc")
-              if len(text_area):
-                script = "arguments[0].value = arguments[1];"
-                driver.execute_script(script, text_area[0], second_message)
-                # text_area[0].send_keys(second_message)
-                time.sleep(6)
-                send = driver.find_element(By.ID, value="send_n")
-                send.click()
-                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                time.sleep(2)
-                # 連続防止で失敗
-                waiting = driver.find_elements(By.CLASS_NAME, value="banned-word")
-                if len(waiting):
-                  print("<<<<<<<<<<<<<<<<<<<連続防止で失敗>>>>>>>>>>>>>>>>>>>>")
+              if second_message:
+                text_area = driver.find_elements(By.ID, value="mdc")
+                if len(text_area):
+                  script = "arguments[0].value = arguments[1];"
+                  driver.execute_script(script, text_area[0], second_message)
+                  # text_area[0].send_keys(second_message)
                   time.sleep(6)
                   send = driver.find_element(By.ID, value="send_n")
                   send.click()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(2)
+                  # 連続防止で失敗
+                  waiting = driver.find_elements(By.CLASS_NAME, value="banned-word")
+                  if len(waiting):
+                    print("<<<<<<<<<<<<<<<<<<<連続防止で失敗>>>>>>>>>>>>>>>>>>>>")
+                    time.sleep(6)
+                    send = driver.find_element(By.ID, value="send_n")
+                    send.click()
+                    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                    time.sleep(2)
+              else:
+                print('やり取り中')
+                print(sent_by_me[-1].text)
+                name_elem = driver.find_elements(By.CLASS_NAME, value="content_header_center")
+                user_name = name_elem[0].text
+                # print(user_name)
+                # print(received_mail)
+                return_message = f"{name}pcmax,{login_id}:{login_pass}\n{user_name}「{received_mail}」"
+                return_list.append(return_message)
 
           elif func.normalize_text(second_message) == func.normalize_text(sent_by_me[-1].text):
             # 受信メールにアドレスがあるか

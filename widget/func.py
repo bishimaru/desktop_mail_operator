@@ -355,7 +355,7 @@ def h_p_return_footprint(name, h_w, p_w, driver, return_foot_message, cnt, h_ret
         happy_foot_user = driver.find_elements(By.CLASS_NAME, value="ds_post_head_main_info")    
     name_field = happy_foot_user[0].find_element(By.CLASS_NAME, value="ds_like_list_name")
     user_name = name_field.text
-    # print(888)
+    
     # print(user_name)
     # print(history_user_list)
     mail_icon = name_field.find_elements(By.TAG_NAME, value="img")

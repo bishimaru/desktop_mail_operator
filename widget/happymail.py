@@ -1427,6 +1427,7 @@ def check_new_mail(happy_info, driver, wait):
             # print("募集メッセージ" in send_text)
 
             if fst_message_clean == send_text_clean or return_foot_message_clean == send_text_clean or "募集メッセージ" in send_text_clean:
+              if conditions_message:
                 text_area = driver.find_element(By.ID, value="text-message")
                 driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
                 # text_area.send_keys(return_foot_message)
@@ -1451,7 +1452,38 @@ def check_new_mail(happy_info, driver, wait):
                       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                       time.sleep(wait_time)
                       break
-                      
+              else:
+                print('やり取りしてます')
+                user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
+                user_name = user_name.text
+                receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
+                return_message = f"{name}happymail,{login_id}:{login_pass}\n{user_name}「{receive_contents.text}」"
+                return_list.append(return_message)
+                # みちゃいや
+                plus_icon_parent = driver.find_elements(By.CLASS_NAME, value="message__form__action")
+                plus_icon = plus_icon_parent[0].find_elements(By.CLASS_NAME, value="icon-message_plus")
+                
+                driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
+                plus_icon[0].click()
+                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                time.sleep(2)
+                # ds_message_txt_media_text
+                mityaiya = ""
+                candidate_mityaiya = driver.find_elements(By.CLASS_NAME, value="ds_message_txt_media_text")
+                for c_m in candidate_mityaiya:
+                  if c_m.text == "見ちゃいや":
+                      mityaiya = c_m
+                if mityaiya:
+                  # print('<<<<<<<<<<<<<<<<<みちゃいや登録>>>>>>>>>>>>>>>>>>>')
+                  mityaiya.click()
+                  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                  time.sleep(2)
+                  mityaiya_send = driver.find_elements(By.CLASS_NAME, value="input__form__action__button__send")
+                  if len(mityaiya_send):
+                    mityaiya_send[0].click()
+                    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                    time.sleep(1)
+                  
             else:
               print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
@@ -1609,20 +1641,16 @@ def re_registration(name, driver, wait):
   user_data = func.get_user_data()
   chara_data = []
   for i in user_data["happymail"]:
-    # print(777)
     # print(i['name'])
     if i['name'] == name:
       chara_data = i
   if chara_data == []:
     print("照合するデータがありません")
     return
-  print(999)
-  print(chara_data)
   login_id = chara_data["login_id"]
   login_pass = chara_data["password"]
-
+  # print(chara_data)
   driver.delete_all_cookies()
-  # driver.implicitly_wait(15)
   try:
     driver.get("https://happymail.jp/login/")
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1647,14 +1675,11 @@ def re_registration(name, driver, wait):
     print("Timeout reached, retrying...")
     driver.refresh()  # ページをリフレッシュして再試行
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  print(888)
   remodal = driver.find_elements(By.CLASS_NAME,value="remodal-close")
-  print(777)
   if len(remodal):
      remodal[0].click()
      time.sleep(2)
   warning = driver.find_elements(By.CLASS_NAME, value="information__dialog")
-  print(666)
   if len(warning):
      print(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります")
   name_elem = ""
@@ -1679,7 +1704,6 @@ def re_registration(name, driver, wait):
   if not len(nav_list):
       print(f"{name}: 警告画面が出ている可能性があります。")
       return
-  print(444)
   mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
   mypage.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1687,19 +1711,396 @@ def re_registration(name, driver, wait):
   # プロフィールをクリック 
   profile = driver.find_element(By.CLASS_NAME, value="icon-ico_profile ")
   driver.execute_script("arguments[0].click();", profile)
-  # return_footpoint.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(wait_time)
-
-  # name nickname_frame
+  # name 
   name_form = driver.find_elements(By.ID, value="nickname_frame")
-  print(8888)
-  print(len(name_form))
   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", name_form[0])
-
   name_form[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(wait_time)
+  # text_content
+  name_text_area = driver.find_elements(By.CLASS_NAME, value="text_content")
+  print(name_text_area[0].get_attribute("value"))
+  if name_text_area[0].get_attribute("value") != name:
+    name_text_area[0].clear()
+    name_text_area[0].send_keys(name)
+    time.sleep(1)
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # save
+    save_button = driver.find_elements(By.ID, value="save")
+    save_button[0].click()
+    time.sleep(2)
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # modal-button-blue
+    modal_save_button = driver.find_elements(By.CLASS_NAME, value="modal-button-blue")
+    modal_save_button[0].click()
+    time.sleep(2)
+  else:
+    driver.back()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(wait_time)
+  # 年齢
+  if chara_data["age"]:
+    age_text_area = driver.find_elements(By.ID, value="age")
+    select = Select(age_text_area[0])
+    select.select_by_visible_text(chara_data["age"])
+    time.sleep(2)
+    if age_text_area[0].get_attribute("value") != chara_data["age"]:
+      select.select_by_visible_text(chara_data["age"])
+      time.sleep(2)
+
+  # 居住地
+  if chara_data["activity_area"]:
+    activity_area_text_area = driver.find_elements(By.ID, value="area")
+    select = Select(activity_area_text_area[0])
+    select.select_by_visible_text(chara_data["activity_area"])
+    time.sleep(2)
+    if activity_area_text_area[0].get_attribute("value") != chara_data["activity_area"]:
+      select.select_by_visible_text(chara_data["activity_area"])
+      time.sleep(2)
+  # 詳細エリア
+  if chara_data["detail_activity_area"]:
+    
+    detail_activity_area_text_area = driver.find_elements(By.ID, value="city")
+    print(len(detail_activity_area_text_area))
+    select = Select(detail_activity_area_text_area[0])
+    select.select_by_visible_text(chara_data["detail_activity_area"])
+    time.sleep(2)
+    if detail_activity_area_text_area[0].get_attribute("value") != chara_data["detail_activity_area"]:
+      select.select_by_visible_text(chara_data["detail_activity_area"])
+      time.sleep(2)
+  # member_birth_area 
+  if chara_data["birth_place"]:
+    member_birth_area_text_area = driver.find_elements(By.NAME, value="member_birth_area")
+    select = Select(member_birth_area_text_area[0])
+    
+    select.select_by_visible_text(chara_data["birth_place"])
+    time.sleep(2)
+    if member_birth_area_text_area[0].get_attribute("value") != chara_data["birth_place"]:
+      select.select_by_visible_text(chara_data["birth_place"])
+      time.sleep(2)
+  # blood_type
+  if chara_data["blood_type"]:
+    blood_type_text_area = driver.find_elements(By.NAME, value="blood_type")
+    select = Select(blood_type_text_area[0])
+    select.select_by_visible_text(chara_data["blood_type"])
+    time.sleep(2)
+    if blood_type_text_area[0].get_attribute("value") != chara_data["blood_type"]:
+      select.select_by_visible_text(chara_data["blood_type"])
+      time.sleep(2)
+  # constellation
+  if chara_data["constellation"]:
+    constellation_text_area = driver.find_elements(By.NAME, value="constellation")
+    select = Select(constellation_text_area[0])
+    select.select_by_visible_text(chara_data["constellation"])
+    time.sleep(2)
+    if constellation_text_area[0].get_attribute("value") != chara_data["constellation"]:
+      select.select_by_visible_text(chara_data["constellation"])
+      time.sleep(2)
+  # height
+  if chara_data["height"]:
+    height_text_area = driver.find_elements(By.NAME, value="height")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", height_text_area[0])
+    driver.execute_script("arguments[0].click();", height_text_area[0])
+    time.sleep(2)
+    height_choicises_elem = driver.find_elements(By.ID, value="height_choice")
+    height_choices = height_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in height_choices:
+      if i.text == chara_data["height"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # menu_modal_cancel
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # スタイル
+  if chara_data["style"]:
+    style_text_area = driver.find_elements(By.NAME, value="style")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", style_text_area[0])
+    driver.execute_script("arguments[0].click();", style_text_area[0])
+    time.sleep(1)
+    style_choicises_elem = driver.find_elements(By.ID, value="style_choice")
+    style_choices = style_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in style_choices:
+      if i.text == chara_data["style"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # menu_modal_cancel
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # ルックス
+  if chara_data["looks"]:
+    looks_text_area = driver.find_elements(By.NAME, value="type")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", looks_text_area[0])
+    driver.execute_script("arguments[0].click();", looks_text_area[0])
+    time.sleep(1)
+    looks_choicises_elem = driver.find_elements(By.ID, value="type_choice")
+    looks_choices = looks_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in looks_choices:
+      if i.text == chara_data["looks"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # menu_modal_cancel
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # カップ
+  if chara_data["cup"]:
+    cup_text_area = driver.find_elements(By.NAME, value="bust_size")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", cup_text_area[0])
+    driver.execute_script("arguments[0].click();", cup_text_area[0])
+    time.sleep(1)
+    cup_choicises_elem = driver.find_elements(By.ID, value="bust_size_choice")
+    cup_choices = cup_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in cup_choices:
+      if i.text == chara_data["cup"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # menu_modal_cancel
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # 職業
+  if chara_data["job"]:
+    job_text_area = driver.find_elements(By.NAME, value="job")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", job_text_area[0])
+    driver.execute_script("arguments[0].click();", job_text_area[0])
+    time.sleep(1)
+    job_choicises_elem = driver.find_elements(By.ID, value="job_choice")
+    job_choices = job_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in job_choices:
+      if i.text == chara_data["job"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # menu_modal_cancel
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # educational_background
+  if chara_data["education"]:
+    education_text_area = driver.find_elements(By.NAME, value="educational_background")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", education_text_area[0])
+    driver.execute_script("arguments[0].click();", education_text_area[0])
+    time.sleep(1)
+    education_choicises_elem = driver.find_elements(By.ID, value="educational_background_choice")
+    education_choices = education_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in education_choices:
+      if i.text == chara_data["education"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # holiday
+  if chara_data["holiday"]:
+    holiday_text_area = driver.find_elements(By.NAME, value="holiday")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", holiday_text_area[0])
+    driver.execute_script("arguments[0].click();", holiday_text_area[0])
+    time.sleep(1)
+    holiday_choicises_elem = driver.find_elements(By.ID, value="holiday_choice")
+    holiday_choices = holiday_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in holiday_choices:
+      if i.text == chara_data["holiday"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # child
+  if chara_data["having_children"]:
+    child_text_area = driver.find_elements(By.NAME, value="child")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", child_text_area[0])
+    driver.execute_script("arguments[0].click();", child_text_area[0])
+    time.sleep(1)
+    child_choicises_elem = driver.find_elements(By.ID, value="child_choice")
+    child_choices = child_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in child_choices:
+      if i.text == chara_data["having_children"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # intention_to_marry
+  if chara_data["intention_to_marry"]:
+    intention_to_marry_text_area = driver.find_elements(By.NAME, value="child")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", intention_to_marry_text_area[0])
+    driver.execute_script("arguments[0].click();", intention_to_marry_text_area[0])
+    time.sleep(1)
+    intention_to_marry_choicises_elem = driver.find_elements(By.ID, value="intention_to_marry_choice")
+    intention_to_marry_choices = intention_to_marry_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in intention_to_marry_choices:
+      if i.text == chara_data["intention_to_marry"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # tobacco
+  if chara_data["smoking"]:
+    tobacco_text_area = driver.find_elements(By.NAME, value="tobacco")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", tobacco_text_area[0])
+    driver.execute_script("arguments[0].click();", tobacco_text_area[0])
+    time.sleep(1)
+    tobacco_choicises_elem = driver.find_elements(By.ID, value="tobacco_choice")
+    tobacco_choices = tobacco_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in tobacco_choices:
+      if i.text == chara_data["smoking"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # liquor
+  if chara_data["sake"]:
+    liquor_text_area = driver.find_elements(By.NAME, value="liquor")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", liquor_text_area[0])
+    driver.execute_script("arguments[0].click();", liquor_text_area[0])
+    time.sleep(1)
+    liquor_choicises_elem = driver.find_elements(By.ID, value="liquor_choice")
+    liquor_choices = liquor_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in liquor_choices:
+      if i.text == chara_data["sake"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # car
+  if chara_data["car_ownership"]:
+    car_text_area = driver.find_elements(By.NAME, value="car")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", car_text_area[0])
+    driver.execute_script("arguments[0].click();", car_text_area[0])
+    time.sleep(1)
+    car_choicises_elem = driver.find_elements(By.ID, value="car_choice")
+    car_choices = car_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in car_choices:
+      if i.text == chara_data["car_ownership"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # housemate
+  if chara_data["roommate"]:
+    housemate_text_area = driver.find_elements(By.NAME, value="housemate")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", housemate_text_area[0])
+    driver.execute_script("arguments[0].click();", housemate_text_area[0])
+    time.sleep(1)
+    housemate_choicises_elem = driver.find_elements(By.ID, value="housemate_choice")
+    housemate_choices = housemate_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in housemate_choices:
+      if i.text == chara_data["roommate"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # brother
+  if chara_data["brothers_and_sisters"]:
+    brother_text_area = driver.find_elements(By.NAME, value="brother")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", brother_text_area[0])
+    driver.execute_script("arguments[0].click();", brother_text_area[0])
+    time.sleep(1)
+    brother_choicises_elem = driver.find_elements(By.ID, value="brother_choice")
+    brother_choices = brother_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in brother_choices:
+      if i.text == chara_data["brothers_and_sisters"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # hope_before_meet
+  if chara_data["until_we_met"]:
+    hope_before_meet_text_area = driver.find_elements(By.NAME, value="hope_before_meet")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", hope_before_meet_text_area[0])
+    driver.execute_script("arguments[0].click();", hope_before_meet_text_area[0])
+    time.sleep(1)
+    hope_before_meet_choicises_elem = driver.find_elements(By.ID, value="hope_before_meet_choice")
+    hope_before_meet_choices = hope_before_meet_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in hope_before_meet_choices:
+      if i.text == chara_data["until_we_met"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+  # first_date_cost
+  if chara_data["date_expenses"]:
+    first_date_cost_text_area = driver.find_elements(By.NAME, value="first_date_cost")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", first_date_cost_text_area[0])
+    driver.execute_script("arguments[0].click();", first_date_cost_text_area[0])
+    time.sleep(1)
+    first_date_cost_choicises_elem = driver.find_elements(By.ID, value="first_date_cost_choice")
+    first_date_cost_choices = first_date_cost_choicises_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in first_date_cost_choices:
+      if i.text == chara_data["date_expenses"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+    driver.execute_script("window.scrollTo(0, 0);")
+  # profile_confirmation
+  profile_save = driver.find_elements(By.ID, value="profile_confirmation")
+  profile_save[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(2)
 
 
-  time.sleep(100)
+  
+     
+
+
+
