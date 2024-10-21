@@ -938,6 +938,8 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           while send_msg_elem[-1].text != return_foot_message:
              print(777)
              print(send_msg_elem[-1].text)
+             driver.refresh()
+             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
              time.sleep(wait_time)
              send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
              reload_cnt += 1
