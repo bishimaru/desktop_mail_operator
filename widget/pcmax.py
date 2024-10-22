@@ -883,7 +883,6 @@ def check_new_mail(pcmax_info, driver, wait):
             continue
           user_link = user_photo.find_element(By.TAG_NAME, value="a").get_attribute("href")
           start_index = user_link.find("user_id=")
-          # print(777)
           # print(start_index)
           if start_index != -1:
               user_id = user_link[start_index + len("user_id="):]
@@ -1101,7 +1100,6 @@ def check_new_mail(pcmax_info, driver, wait):
                     time.sleep(2)
               else:
                 print('やり取り中')
-                print(sent_by_me[-1].text)
                 name_elem = driver.find_elements(By.CLASS_NAME, value="content_header_center")
                 user_name = name_elem[0].text
                 # print(user_name)
@@ -1180,7 +1178,6 @@ def check_new_mail(pcmax_info, driver, wait):
     user_list = driver.find_element(By.CLASS_NAME, value="list-content")
     div = user_list.find_elements(By.XPATH, value='./div')
     if len(div) > 40:
-      # print(666)
       # print(len(div))
       break
     # 新しい高さを取得
@@ -1345,7 +1342,6 @@ def re_registration(name, driver):
   user_data = func.get_user_data()
   chara_data = []
   for i in user_data["pcmax"]:
-    # print(777)
     # print(i['name'])
     if i['name'] == name:
       chara_data = i

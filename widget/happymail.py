@@ -249,7 +249,6 @@ def re_post(name,  driver, wait, title, post_text):
     for area_text in area_texts_list:
       for area in area_list:
         if area in area_text:
-          # print(888)
           # print(area)
           if area not in list:
               list.append(area)
@@ -936,8 +935,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
           send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
           reload_cnt = 0
           while send_msg_elem[-1].text != return_foot_message:
-             print(777)
-             print(send_msg_elem[-1].text)
+            #  print(send_msg_elem[-1].text)
              driver.refresh()
              wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
              time.sleep(wait_time)
@@ -1537,7 +1535,6 @@ def check_new_mail(happy_info, driver, wait):
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
-                  print(777)
                   send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
                   print(send_msg_elem[-1].text)
                   reload_cnt += 1
