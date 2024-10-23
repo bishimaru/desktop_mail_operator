@@ -67,48 +67,49 @@ def sb_p_all_do(pcmax_chara_list, headless):
 
   print(len(pcmax_chara_list))
   # print(pcmax_chara_list)
-  for pcmax_chara in pcmax_chara_list:
-    # 地域選択（3つまで選択可能）
-    areas = [
-      "東京都",
-      "千葉県",
-      "埼玉県",
-      "神奈川県",
-      # "静岡県",
-      # "新潟県",
-      # "山梨県",
-      # "長野県",
-      # "茨城県",
-      "栃木県",
-      # "群馬県",
-    ]
-    areas.remove("東京都")
-    select_areas = random.sample(areas, 2)
-    select_areas.append("東京都")
-    print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}")
-    try:
-      driver,wait = func.get_driver(headless)
-      return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
-      # if isinstance(return_func, str):
-      #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
-      # elif isinstance(return_func, list):
-      #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
-    except Exception as e:
-      print(f"エラー{pcmax_chara[0]}")
-      print(traceback.format_exc())
-    finally:
-      if driver is not None:
-        driver.quit()
-      time.sleep(1)
-  elapsed_time = time.time() - start_one_rap_time  
-  elapsed_timedelta = timedelta(seconds=elapsed_time)
-  elapsed_time_formatted = str(elapsed_timedelta)
-  print(f"<<<<<<<<<<<<<PCMAX回し一周タイム： {elapsed_time_formatted}>>>>>>>>>>>>>>>>>>")
-  # return_cnt_list.append(f"PCMAX回し一周タイム： {elapsed_time_formatted}")
-  # str_return_cnt_list = ",\n".join(return_cnt_list)
-  
-  # if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
-  #   func.send_mail(str_return_cnt_list, mail_info)
+  for i in range(99):
+    for pcmax_chara in pcmax_chara_list:
+      # 地域選択（3つまで選択可能）
+      areas = [
+        "東京都",
+        "千葉県",
+        "埼玉県",
+        "神奈川県",
+        # "静岡県",
+        # "新潟県",
+        # "山梨県",
+        # "長野県",
+        # "茨城県",
+        "栃木県",
+        # "群馬県",
+      ]
+      areas.remove("東京都")
+      select_areas = random.sample(areas, 2)
+      select_areas.append("東京都")
+      print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}")
+      try:
+        driver,wait = func.get_driver(headless)
+        return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
+        # if isinstance(return_func, str):
+        #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
+        # elif isinstance(return_func, list):
+        #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
+      except Exception as e:
+        print(f"エラー{pcmax_chara[0]}")
+        print(traceback.format_exc())
+      finally:
+        if driver is not None:
+          driver.quit()
+        time.sleep(1)
+    elapsed_time = time.time() - start_one_rap_time  
+    elapsed_timedelta = timedelta(seconds=elapsed_time)
+    elapsed_time_formatted = str(elapsed_timedelta)
+    print(f"<<<<<<<<<<<<<PCMAX回し一周タイム： {elapsed_time_formatted}>>>>>>>>>>>>>>>>>>")
+    # return_cnt_list.append(f"PCMAX回し一周タイム： {elapsed_time_formatted}")
+    # str_return_cnt_list = ",\n".join(return_cnt_list)
+    
+    # if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
+    #   func.send_mail(str_return_cnt_list, mail_info)
 
 if __name__ == '__main__':
 
