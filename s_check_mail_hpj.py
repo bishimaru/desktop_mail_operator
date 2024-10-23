@@ -37,7 +37,8 @@ def wait_if_near_midnight():
         time.sleep(600)
         print("処理を再開します。")
     return
-
+retry_count = 0
+max_retry = 4
 def check_mail(user_data, headless):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
@@ -129,8 +130,9 @@ def check_mail(user_data, headless):
         time.sleep(2)
         driver,wait = func.get_driver(headless)
         # pcmax
-        print(f"<<<<<<<<<<<<PCMAX:新着メール 足あとチェック開始>>>>>>>>>>>>")
-        for pcmax_info in pcmax_list:
+        print(f"<<<<<<<<<<<<PCMAX:新着メール開始>>>>>>>>>>>>")
+        
+        for pcmax_info in pcmax_list:  
             new_mail_lists = []
             try:
                 result = pcmax.check_new_mail(pcmax_info, driver, wait)
@@ -138,7 +140,6 @@ def check_mail(user_data, headless):
                     pcmax_new, return_foot_cnt = result
                 else:
                     pcmax_new, return_foot_cnt = 1, 0
-
                 if pcmax_new != 1:
                     new_mail_lists.append(pcmax_new)
                 # メール送信
@@ -189,10 +190,15 @@ def check_mail(user_data, headless):
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")      
-                print("20秒後に再接続します。")
-                driver.quit()
-                time.sleep(20)  # 10秒待機して再試行
-                check_mail(user_data, headless)
+                if retry_count < max_retry - 1:
+                    print("20秒後に再接続します。")
+                    time.sleep(20)  # 20秒待機して再試行
+                    check_mail(user_data, headless)
+                    retry_count += 1
+                else:
+                    print("リトライ回数の上限に達しました。処理を中止します。")
+                    break
+                
             except Exception as e:
                 print(f"<<<<<<<<<<PCMAX{pcmax_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())

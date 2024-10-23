@@ -45,11 +45,12 @@ def main(maji_soushin, chara_name_list, end_hour, end_minute, headless):
     for order_count in range(len(chara_name_list)):
       # 現在時刻を取得
       current_time = datetime.now()
-      if current_time.hour > int(end_hour) or (current_time.hour == int(end_hour) and current_time.minute >= int(end_minute)):
-          print("終了時刻を過ぎました。")
-          return
-      else:
-          print("現在時刻:", current_time)
+      if end_hour and end_minute:
+        if current_time.hour > int(end_hour) or (current_time.hour == int(end_hour) and current_time.minute >= int(end_minute)):
+            print("終了時刻を過ぎました。")
+            return
+        else:
+            print("現在時刻:", current_time)
       # 地域選択（3つまで選択可能）
       areas = [
         "東京都",
