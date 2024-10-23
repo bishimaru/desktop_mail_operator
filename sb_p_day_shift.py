@@ -39,7 +39,7 @@ def sb_p_all_do(pcmax_chara_list, headless):
   wait_cnt = 3600 / len(pcmax_chara_list)
 
   # メール送信数（上限なしは0）
-  limit_send_cnt = 9
+  limit_send_cnt = 1
 
   # 年齢選択（最小18歳、最高60以上）
   youngest_age = "19"
@@ -87,20 +87,22 @@ def sb_p_all_do(pcmax_chara_list, headless):
       select_areas = random.sample(areas, 2)
       select_areas.append("東京都")
       print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}")
-      try:
-        driver,wait = func.get_driver(headless)
-        return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
-        # if isinstance(return_func, str):
-        #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
-        # elif isinstance(return_func, list):
-        #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
-      except Exception as e:
-        print(f"エラー{pcmax_chara[0]}")
-        print(traceback.format_exc())
-      finally:
-        if driver is not None:
-          driver.quit()
-        time.sleep(1)
+      if "きりこ" == pcmax_chara['name']:
+        
+        try:
+          driver,wait = func.get_driver(headless)
+          return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
+          # if isinstance(return_func, str):
+          #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
+          # elif isinstance(return_func, list):
+          #   return_cnt_list.append(f"{happy_chara['name']}: {return_func}")
+        except Exception as e:
+          print(f"エラー{pcmax_chara[0]}")
+          print(traceback.format_exc())
+        finally:
+          if driver is not None:
+            driver.quit()
+          time.sleep(1)
     elapsed_time = time.time() - start_one_rap_time  
     elapsed_timedelta = timedelta(seconds=elapsed_time)
     elapsed_time_formatted = str(elapsed_timedelta)

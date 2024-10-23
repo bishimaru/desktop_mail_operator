@@ -12,7 +12,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from selenium.webdriver.support.ui import WebDriverWait
 import traceback
-from widget import happymail, func
+from widget import pcmax, func
 import sqlite3
 from selenium.webdriver.chrome.service import Service
 from datetime import timedelta
@@ -20,7 +20,7 @@ from tkinter import messagebox
 from selenium.common.exceptions import NoSuchWindowException
 
 
-def happymail_re_registration(headless, selected_name):
+def pcmax_re_registration(headless, selected_name):
     user_data = func.get_user_data()
     if not user_data:
         return
@@ -30,7 +30,7 @@ def happymail_re_registration(headless, selected_name):
     if not user_data['user'][0]['check_mail_happymail']:
         print("有効期限が切れています")
         return
-    for chara_datas in user_data['happymail']:
+    for chara_datas in user_data['pcmax']:
         if chara_datas['name'] == selected_name:
             chara_data = chara_datas
     
@@ -40,7 +40,7 @@ def happymail_re_registration(headless, selected_name):
         driver.quit()
         sys.exit(0)
     try: 
-        happymail.re_registration(chara_data, driver, wait)
+        pcmax.re_registration(chara_data, driver, wait)
     except NoSuchWindowException:
         pass
     except Exception as e:
@@ -67,7 +67,7 @@ def run_script():
     
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
-    happymail_re_registration(headless, selected_name)
+    pcmax_re_registration(headless, selected_name)
 
 def populate_user_listbox():
     user_data = func.get_user_data()
@@ -76,7 +76,7 @@ def populate_user_listbox():
     happy_user_list = []
     if not user_data:
         return
-    for h_chara_data in user_data["happymail"]:
+    for h_chara_data in user_data["pcmax"]:
         happy_user_list.append(f"{h_chara_data['name']}")
     
     listbox.delete(0, tk.END)
@@ -86,7 +86,7 @@ def populate_user_listbox():
 
 # Tkinter ウィンドウの設定
 root = tk.Tk()
-root.title("ハピメアカウント登録")
+root.title("PCMAXアカウント登録")
 
 # ユーザーリストの表示
 listbox_label = tk.Label(root, text="キャラリスト:")

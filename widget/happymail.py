@@ -1636,19 +1636,7 @@ def check_new_mail(happy_info, driver, wait):
 #   select.select_by_visible_text(age)
 #   time.sleep(1)
 
-def re_registration(name, driver, wait):
-  user_data = func.get_user_data()
-  chara_data = []
-  for i in user_data["happymail"]:
-    # print(i['name'])
-    if i['name'] == name:
-      chara_data = i
-  if chara_data == []:
-    print("照合するデータがありません")
-    return
-  login_id = chara_data["login_id"]
-  login_pass = chara_data["password"]
-  # print(chara_data)
+def re_registration(chara_data, driver, wait):
   driver.delete_all_cookies()
   try:
     driver.get("https://happymail.jp/login/")
@@ -1661,9 +1649,9 @@ def re_registration(name, driver, wait):
   wait_time = random.uniform(2, 3)
   time.sleep(wait_time)
   id_form = driver.find_element(By.ID, value="TelNo")
-  id_form.send_keys(login_id)
+  id_form.send_keys(chara_data["login_id"])
   pass_form = driver.find_element(By.ID, value="TelPass")
-  pass_form.send_keys(login_pass)
+  pass_form.send_keys(chara_data["password"])
   time.sleep(wait_time)
   send_form = driver.find_element(By.ID, value="login_btn")
   try:
@@ -1680,7 +1668,7 @@ def re_registration(name, driver, wait):
      time.sleep(2)
   warning = driver.find_elements(By.CLASS_NAME, value="information__dialog")
   if len(warning):
-     print(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります")
+     print(f"{chara_data['name']},{chara_data['login_id']}:{chara_data['password']} ハッピーメールに警告画面が出ている可能性があります")
   name_elem = ""
   try:
     name_elem = driver.find_element(By.CLASS_NAME, "ds_user_display_name")
@@ -1691,17 +1679,17 @@ def re_registration(name, driver, wait):
         name_elem = name_elem[0]
       pass
   if not name_elem:
-     print(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります.....")
+     print(f"{chara_data['name']},{chara_data['login_id']}:{chara_data['password']} ハッピーメールに警告画面が出ている可能性があります")
   # 画像チェック
   top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
   if len(top_img_element):
      top_img = top_img_element[0].get_attribute("style")
      if "noimage" in top_img:
-        print(f"{name}のトップ画の設定がNoImageです")
+        print(f"{chara_data['name']}のトップ画の設定がNoImageです")
   # マイページをクリック
   nav_list = driver.find_elements(By.ID, value='ds_nav')
   if not len(nav_list):
-      print(f"{name}: 警告画面が出ている可能性があります。")
+      print(f"{chara_data['name']}: 警告画面が出ている可能性があります。")
       return
   mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
   mypage.click()
@@ -1721,9 +1709,9 @@ def re_registration(name, driver, wait):
   # text_content
   name_text_area = driver.find_elements(By.CLASS_NAME, value="text_content")
   print(name_text_area[0].get_attribute("value"))
-  if name_text_area[0].get_attribute("value") != name:
+  if name_text_area[0].get_attribute("value") != chara_data["name"]:
     name_text_area[0].clear()
-    name_text_area[0].send_keys(name)
+    name_text_area[0].send_keys(chara_data["name"])
     time.sleep(1)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     # save

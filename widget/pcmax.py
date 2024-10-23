@@ -1339,22 +1339,8 @@ def check_new_mail(pcmax_info, driver, wait):
     return 1, 0
 
   
-def re_registration(name, driver):
-  print(name)
-
-  user_data = func.get_user_data()
-  chara_data = []
-  for i in user_data["pcmax"]:
-    # print(i['name'])
-    if i['name'] == name:
-      chara_data = i
-  if chara_data == []:
-    print("照合するデータがありません")
-    return
+def re_registration(chara_data, driver, wait):
   print(chara_data)
-  
-
-  wait = WebDriverWait(driver, 15)  
   
   login_id = chara_data["login_id"]
   login_pass = chara_data["password"]
