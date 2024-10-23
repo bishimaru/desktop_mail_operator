@@ -1688,6 +1688,7 @@ def re_registration(chara_data, driver, wait):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
   # 旅行・宿泊
+
   # 出身地
   # 学歴
   # 年収
@@ -1840,7 +1841,9 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
       # /////////////////////////詳細検索画面/////////////////////////
       
       select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-      if not len(select_area):
+      reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
+      
+      if not len(select_area) and not len(reset_area):
         # /////////////////////////利用制限あり
         print(f"{name}利用制限あり")
         # 地域選択
@@ -1871,7 +1874,7 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
           select_link[0].click()
         else:
           # 都道府県の変更、リセット
-          reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
+          
           reset_area[0].click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(1)
