@@ -124,7 +124,7 @@ def check_mail(user_data, headless):
                 traceback.print_exc() 
                 func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
             wait_if_near_midnight()
-            driver.refresh()
+            # driver.refresh()
         if driver is not None:
             driver.quit()
         time.sleep(2)

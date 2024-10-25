@@ -52,6 +52,7 @@ def get_driver(headless_flag, max_retries=3):
                 options.add_argument('--headless')
                 options.add_argument("--disable-gpu")  # headlessモードの時はこのオプションを追加
             options.add_argument("--incognito")
+            options.add_argument('--enable-unsafe-swiftshader')
             options.add_argument('--log-level=3')  # これでエラーログが抑制されます
             options.add_argument('--disable-web-security')
             options.add_argument('--disable-extensions')
