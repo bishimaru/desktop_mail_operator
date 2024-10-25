@@ -37,8 +37,7 @@ def wait_if_near_midnight():
         time.sleep(600)
         print("処理を再開します。")
     return
-retry_count = 0
-max_retry = 4
+
 def check_mail(user_data, headless):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
@@ -189,16 +188,11 @@ def check_mail(user_data, headless):
                 time.sleep(300)  # 300秒（5分）間待機
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
-                print(f"接続エラーが発生しました: {e}")      
-                if retry_count < max_retry - 1:
-                    print("20秒後に再接続します。")
-                    time.sleep(20)  # 20秒待機して再試行
-                    check_mail(user_data, headless)
-                    retry_count += 1
-                else:
-                    print("リトライ回数の上限に達しました。処理を中止します。")
-                    break
-                
+                print(f"タイムアウトエラーが発生しました: {e}")      
+                print("30秒後に再接続します。")
+                time.sleep(30)  # 30秒待機して再試行
+                check_mail(user_data, headless)
+              
             except Exception as e:
                 print(f"<<<<<<<<<<PCMAX{pcmax_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
