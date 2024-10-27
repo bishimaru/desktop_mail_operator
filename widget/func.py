@@ -42,7 +42,6 @@ def clear_webdriver_cache():
     if os.path.exists(cache_dir):
         try:
             shutil.rmtree(cache_dir)
-            print(f"Webdriver cache cleared: {cache_dir}")
         except Exception as e:
             print(f"Error clearing webdriver cache: {e}")
 
