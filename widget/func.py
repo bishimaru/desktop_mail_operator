@@ -34,13 +34,18 @@ from urllib3.exceptions import MaxRetryError
 def clear_webdriver_cache():
     os_name = platform.system()
     if os_name == "Darwin":
-      cache_dir = os.path.expanduser("~/.wdm/drivers")
-      if os.path.exists(cache_dir):
-          try:
-              shutil.rmtree(cache_dir)
-              
-          except Exception as e:
-              print(f"Error clearing webdriver cache: {e}")
+        cache_dir = os.path.expanduser("~/.wdm/drivers")
+    elif os_name == "Windows":
+        cache_dir = os.path.join(os.getenv('USERPROFILE'), '.wdm', 'drivers')
+    else:
+        return  # サポートしていないOSの場合は何もしない
+    if os.path.exists(cache_dir):
+        try:
+            shutil.rmtree(cache_dir)
+            print(f"Webdriver cache cleared: {cache_dir}")
+        except Exception as e:
+            print(f"Error clearing webdriver cache: {e}")
+
 
 def get_driver(headless_flag, max_retries=3):
     for attempt in range(max_retries):
