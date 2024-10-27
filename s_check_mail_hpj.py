@@ -21,6 +21,8 @@ import socket
 from selenium.common.exceptions import WebDriverException
 import urllib3
 import gc
+from requests import exceptions
+
 
 
 
@@ -116,6 +118,10 @@ def check_mail(user_data, headless):
                 print("20秒後に再接続します。")
                 driver.quit()
                 time.sleep(20)  # 10秒待機して再試行
+                check_mail(user_data, headless)
+            except exceptions.ConnectionError as e:
+                print(f"ネットワーク回線がオフラインの可能性があります. {360 // 60} 分後にリトライします。")
+                time.sleep(360)
                 check_mail(user_data, headless)
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
