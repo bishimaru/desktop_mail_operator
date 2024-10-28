@@ -39,7 +39,7 @@ def sb_p_all_do(pcmax_chara_list, headless):
   wait_cnt = 3600 / len(pcmax_chara_list)
 
   # メール送信数（上限なしは0）
-  limit_send_cnt = 10
+  limit_send_cnt = 11
 
   # 年齢選択（最小18歳、最高60以上）
   youngest_age = "19"

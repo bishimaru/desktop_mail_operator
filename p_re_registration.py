@@ -68,6 +68,8 @@ def run_script():
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
     pcmax_re_registration(headless, selected_name)
+    root.quit()
+    sys.exit(0)
 
 def populate_user_listbox():
     user_data = func.get_user_data()

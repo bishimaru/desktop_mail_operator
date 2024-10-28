@@ -116,6 +116,7 @@ def run_scheduler():
 
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
+    # root.quit()
     start_scheduler(schedule_data, sorted_happymail, headless)
 
 def add_form(user_info_list):

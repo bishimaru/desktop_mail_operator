@@ -1774,7 +1774,7 @@ def re_registration(chara_data, driver, wait):
   # 結婚
   if chara_data["marry"]:
     prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
-    marry_link = prof_list[20].find_elements(By.TAG_NAME, value="a")
+    marry_link = prof_list[21].find_elements(By.TAG_NAME, value="a")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", marry_link[0])
     time.sleep(1)
     marry_link[0].click()
@@ -1791,7 +1791,7 @@ def re_registration(chara_data, driver, wait):
   # 子供
   if chara_data["child"]:
     prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
-    child_link = prof_list[20].find_elements(By.TAG_NAME, value="a")
+    child_link = prof_list[22].find_elements(By.TAG_NAME, value="a")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", child_link[0])
     time.sleep(1)
     child_link[0].click()
@@ -1808,7 +1808,7 @@ def re_registration(chara_data, driver, wait):
   # 家事・育児
   if chara_data["housework"]:
     prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
-    housework_link = prof_list[20].find_elements(By.TAG_NAME, value="a")
+    housework_link = prof_list[23].find_elements(By.TAG_NAME, value="a")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", housework_link[0])
     time.sleep(1)
     housework_link[0].click()
@@ -1825,7 +1825,7 @@ def re_registration(chara_data, driver, wait):
   # 社交性
   if chara_data["sociability"]:
     prof_list = driver.find_elements(By.CLASS_NAME, value="prof_lst")
-    sociability_link = prof_list[20].find_elements(By.TAG_NAME, value="a")
+    sociability_link = prof_list[24].find_elements(By.TAG_NAME, value="a")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", sociability_link[0])
     time.sleep(1)
     sociability_link[0].click()
