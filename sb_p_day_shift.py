@@ -39,7 +39,7 @@ def sb_p_all_do(pcmax_chara_list, headless):
   wait_cnt = 3600 / len(pcmax_chara_list)
 
   # メール送信数（上限なしは0）
-  limit_send_cnt = 11
+  limit_send_cnt = 1
 
   # 年齢選択（最小18歳、最高60以上）
   youngest_age = "19"
@@ -86,7 +86,9 @@ def sb_p_all_do(pcmax_chara_list, headless):
       areas.remove("東京都")
       select_areas = random.sample(areas, 2)
       select_areas.append("東京都")
-      print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}")        
+      print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}") 
+      if "ゆっこ" != pcmax_chara['name']:
+        continue     
       try:
         driver,wait = func.get_driver(headless)
         return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
@@ -118,5 +120,5 @@ if __name__ == '__main__':
   # ['えりか', '50010903495', 'ebbh72781', 'セクシー女優に偏見ない人。長期せふれさん', '〜\u3000Profile\u3000〜\r\n・えりか/25歳/Dcup/セクシー女優\r\n・AV女優のお仕事がない時は会員制のデリヘルで働いてます！\r\n・温泉巡りが趣味でたまに連休とって体を休めています◎\r\n\r\n投稿見てくれてありがとうございます♪\r\nまずは簡単にプロフィール書いてみました！\r\n\r\nAVのお仕事もデリヘルのお仕事もえっちが好きで人と関わるのが大好きな私にとってはすっごく楽しいです♪( ´θ｀)ノ\r\nとはいえプライベートはプライベートで大事にしたいと思ってます！\r\n\r\nここではプライベートを一緒に楽しめる方を探しています◎\r\nえっちについては私自身プロだし仕事柄プロの男優さんとか会ってきたので上手さとかそういうのは逆に気にしないですm(__)m\r\nその代わりに長期的な関係ってのがあまりないので、経験少ない人とどんどん相性良くなっていける関係が理想かなって思ってます！\r\n\r\n私の職業に偏見なくて長期的な関係でも大丈夫って方いたらメッセージもらえると嬉しいです(*ﾟ▽ﾟ*)', '足跡からです！m(__)m\r\nセクシー女優と会員制のデリヘルでお仕事しています◎\r\n\r\nプライベートでえっちなことができるせふれさんを探しています！\r\n仕事ではプロの男優さんとかと会うので上手さとかは逆に気にしないですm(__)m\r\nその代わりに長期的な関係ってのがあまりないので、経験少ない人とどんどん相性良くなっていける関係が理想かなって思ってます♪( ´▽｀)\r\n\r\nもし仕事に偏見なく会ってくれる人いたら連絡もらいたいです！']
   ]
   pcmax_chara_list = func.get_user_data()['pcmax']
-  headless = True
+  headless = False
   sb_p_all_do(pcmax_chara_list, headless)
