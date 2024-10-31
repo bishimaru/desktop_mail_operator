@@ -1340,8 +1340,7 @@ def check_new_mail(pcmax_info, driver, wait):
 
   
 def re_registration(chara_data, driver, wait):
-  print(chara_data)
-  
+  # print(chara_data)
   login_id = chara_data["login_id"]
   login_pass = chara_data["password"]
   date_of_birth = chara_data["date_of_birth"]
@@ -1451,7 +1450,9 @@ def re_registration(chara_data, driver, wait):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(1)
     text_area = driver.find_elements(By.ID, value="comment")
-    text_area[0].send_keys(self_promotion)
+    script = "arguments[0].value = arguments[1];"
+    driver.execute_script(script, text_area[0], self_promotion)
+    # text_area[0].send_keys(self_promotion)
     time.sleep(2)
     set_button = driver.find_elements(By.ID, value="p_reg_btn")
     set_button[0].click()

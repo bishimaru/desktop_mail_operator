@@ -1363,8 +1363,8 @@ def check_new_mail(happy_info, driver, wait):
      only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[1]
      only_new_message.click()
      time.sleep(1)
-    
-     new_mail = driver.find_elements(By.CLASS_NAME, value="ds_list_r_kidoku")  
+    #  ds_message_list_mini
+     new_mail = driver.find_elements(By.CLASS_NAME, value="ds_message_list_mini")  
      if not len(new_mail):
          list_load = driver.find_elements(By.ID, value="load_bL")
          if len(list_load):
@@ -1376,12 +1376,18 @@ def check_new_mail(happy_info, driver, wait):
     #     b+= 1  
      
      while len(new_mail):
-        parent_element = new_mail[0].find_element(By.XPATH, value="..")
-        next_element = parent_element.find_element(By.XPATH, value="following-sibling::*")
-        date = next_element.find_elements(By.CLASS_NAME, value="ds_message_date")
+        # parent_element = new_mail[0].find_element(By.XPATH, value="..")
+        # next_element = parent_element.find_element(By.XPATH, value="following-sibling::*")
+        date = new_mail[0].find_elements(By.CLASS_NAME, value="ds_message_date")        
         date_numbers = re.findall(r'\d+', date[0].text)
-        arrival_datetime = datetime(int(datetime.now().year), int(date_numbers[0]), int(date_numbers[1]), int(date_numbers[2]), int(date_numbers[3])) 
         now = datetime.today()
+        arrival_datetime = datetime(
+          year=now.year,
+          month=now.month,
+          day=now.day,
+          hour=int(date_numbers[0]),
+          minute=int(date_numbers[1])
+        )
         elapsed_time = now - arrival_datetime
         print(f"メール到着からの経過時間{elapsed_time}")
         # 4分経過しているか
@@ -1410,6 +1416,7 @@ def check_new_mail(happy_info, driver, wait):
             send_text_clean = func.normalize_text(send_text)
             fst_message_clean = func.normalize_text(fst_message)
             return_foot_message_clean = func.normalize_text(return_foot_message)
+            conditions_message_clean = func.normalize_text(conditions_message)
             
             # 変換後のデバッグ表示
             # print("---------------------------------------")
@@ -1441,7 +1448,9 @@ def check_new_mail(happy_info, driver, wait):
                 time.sleep(wait_time)
                 send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
                 reload_cnt = 0
-                while send_msg_elem[-1].text != conditions_message:
+                send_text_clean = func.normalize_text(send_msg_elem[-1].text)
+                while send_text_clean != conditions_message_clean:
+                  
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
