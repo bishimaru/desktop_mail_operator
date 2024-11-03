@@ -72,20 +72,23 @@ def sb_p_all_do(pcmax_chara_list, headless):
       # 地域選択（3つまで選択可能）
       areas = [
         "東京都",
-        "千葉県",
-        "埼玉県",
-        "神奈川県",
+        # "千葉県",
+        # "埼玉県",
+        # "神奈川県",
         # "静岡県",
         # "新潟県",
         # "山梨県",
         # "長野県",
         # "茨城県",
-        "栃木県",
+        # "栃木県",
         # "群馬県",
       ]
-      areas.remove("東京都")
-      select_areas = random.sample(areas, 2)
-      select_areas.append("東京都")
+      if len(areas) > 1:
+        areas.remove("東京都")
+        select_areas = random.sample(areas, 2)
+        select_areas.append("東京都")
+      elif len(areas) == 1:
+        select_areas = areas
       print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}") 
       if "ゆっこ" != pcmax_chara['name']:
         continue     

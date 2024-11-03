@@ -1990,14 +1990,19 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
         # /////////////////////////利用制限あり
         print(f"{name}利用制限あり")
         # 地域選択
-        # 選択確率の重みを設定
-        weights = [0.2, 0.2, 0.6]  # 東京都は60%、千葉県と埼玉県は20%ずつの確率
-        selected_area = random.choices(select_areas, weights=weights)[0]
-        print(f"決定地域:{selected_area}")
-        select_area = driver.find_elements(By.NAME, value="pref_no")
-        select = Select(select_area[0])
-        select.select_by_visible_text(selected_area)
-        time.sleep(1)
+        if len(select_areas) == 1:
+          select_area = driver.find_elements(By.NAME, value="pref_no")
+          select = Select(select_area[0])
+          select.select_by_visible_text(selected_area[0])
+        elif len(select_areas) > 1:
+          # 選択確率の重みを設定
+          weights = [0.2, 0.2, 0.6]  # 東京都は60%、千葉県と埼玉県は20%ずつの確率
+          selected_area = random.choices(select_areas, weights=weights)[0]
+          print(f"決定地域:{selected_area}")
+          select_area = driver.find_elements(By.NAME, value="pref_no")
+          select = Select(select_area[0])
+          select.select_by_visible_text(selected_area)
+          time.sleep(1)
         # 年齢
         oldest_age = driver.find_elements(By.ID, value="makerItem")
         select = Select(oldest_age[0])
