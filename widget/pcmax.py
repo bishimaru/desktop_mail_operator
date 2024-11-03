@@ -793,7 +793,7 @@ def check_new_mail(pcmax_info, driver, wait):
   number_lock = driver.find_elements(By.ID, value="content_header2")
   if len(warning) or len(warning2) or len(warning3) or len(number_lock):
     print(f"{name}に警告画面が出ている可能性があります")
-    # return_list.append(f"{name}pcmaxに警告画面が出ている可能性があります")
+    return_list.append(f"{name}pcmaxに警告画面が出ている可能性があります")
     if len(return_list):
       return return_list, 0
     else:
