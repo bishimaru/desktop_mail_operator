@@ -1993,7 +1993,7 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
         if len(select_areas) == 1:
           select_area = driver.find_elements(By.NAME, value="pref_no")
           select = Select(select_area[0])
-          select.select_by_visible_text(selected_area[0])
+          select.select_by_visible_text(select_areas[0])
         elif len(select_areas) > 1:
           # 選択確率の重みを設定
           weights = [0.2, 0.2, 0.6]  # 東京都は60%、千葉県と埼玉県は20%ずつの確率
