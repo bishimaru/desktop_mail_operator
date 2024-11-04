@@ -90,8 +90,7 @@ def sb_p_all_do(pcmax_chara_list, headless):
       elif len(areas) == 1:
         select_areas = areas
       print(f"キャラ:{pcmax_chara['name']}、選択地域:{select_areas}") 
-      if "ゆっこ" != pcmax_chara['name']:
-        continue     
+      
       try:
         driver,wait = func.get_driver(headless)
         return_func = timer(wait_cnt, [lambda: pcmax.send_fst_mail(pcmax_chara['name'], pcmax_chara['login_id'], pcmax_chara['password'], pcmax_chara['fst_mail'], pcmax_chara['mail_img'], pcmax_chara['second_message'], maji_soushin, select_areas, youngest_age, oldest_age, ng_words, limit_send_cnt, user_sort, driver, wait)])
