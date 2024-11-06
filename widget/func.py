@@ -67,7 +67,7 @@ def get_driver(headless_flag, max_retries=3):
             options.add_argument("--window-size=456,912")
             options.add_experimental_option("detach", True)
             options.add_argument("--disable-cache")
-            service = Service(executable_path=ChromeDriverManager().install())
+            service = Service(executable_path=ChromeDriverManager(version="latest").install())
             driver = webdriver.Chrome(options=options, service=service)
             wait = WebDriverWait(driver, 18)
 

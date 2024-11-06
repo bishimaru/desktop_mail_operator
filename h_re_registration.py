@@ -27,7 +27,7 @@ def happymail_re_registration(headless, selected_name):
     if user_data == 2:
         print("ユーザーデータを登録してください。")
         return
-    if not user_data['user'][0]['check_mail_happymail']:
+    if not user_data['user'][0]['check_mail']:
         print("有効期限が切れています")
         return
     for chara_datas in user_data['happymail']:
