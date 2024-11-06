@@ -29,6 +29,7 @@ import shutil
 import unicodedata
 import platform
 from urllib3.exceptions import MaxRetryError
+from webdriver_manager.core.driver_cache import DriverCacheManager
 
 
 def clear_webdriver_cache():
@@ -47,6 +48,7 @@ def clear_webdriver_cache():
 
 
 def get_driver(headless_flag, max_retries=3):
+    os_name = platform.system()
     for attempt in range(max_retries):
         try:
             # キャッシュをクリア
@@ -67,7 +69,11 @@ def get_driver(headless_flag, max_retries=3):
             options.add_argument("--window-size=456,912")
             options.add_experimental_option("detach", True)
             options.add_argument("--disable-cache")
-            service = Service(executable_path=ChromeDriverManager(version="latest").install())
+            if os_name == "Darwin":
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
+            elif os_name == "Windows":
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager()).install())
+            
             driver = webdriver.Chrome(options=options, service=service)
             wait = WebDriverWait(driver, 18)
 
