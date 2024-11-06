@@ -35,8 +35,8 @@ def clear_webdriver_cache():
     os_name = platform.system()
     if os_name == "Darwin":
         cache_dir = os.path.expanduser("~/.wdm/drivers")
-    elif os_name == "Windows":
-        cache_dir = os.path.join(os.getenv('USERPROFILE'), '.wdm', 'drivers')
+    # elif os_name == "Windows":
+    #     cache_dir = os.path.join(os.getenv('USERPROFILE'), '.wdm', 'drivers')
     else:
         return  # サポートしていないOSの場合は何もしない
     if os.path.exists(cache_dir):
