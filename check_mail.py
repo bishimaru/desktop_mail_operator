@@ -24,7 +24,7 @@ global user_data
 user_data = func.get_user_data()
 
 def check_mail_hpj(headless): 
-    check_mail_flug = user_data["user"][0]['check_mail_happymail']
+    check_mail_flug = user_data["user"][0]['check_mail']
     if not check_mail_flug:
         print("有効期限が切れています。")
         return
