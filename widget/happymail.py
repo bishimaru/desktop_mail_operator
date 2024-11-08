@@ -1394,7 +1394,7 @@ def check_new_mail(happy_info, driver, wait):
             minute=int(date_numbers[1])
           )
           elapsed_time = now - arrival_datetime
-          print(f"メール到着からの経過時間{elapsed_time}")
+          # print(f"メール到着からの経過時間{elapsed_time}")
           # 4分経過しているか
           # if True:
           if elapsed_time >= timedelta(minutes=4):
@@ -1402,7 +1402,7 @@ def check_new_mail(happy_info, driver, wait):
           else:
              for_minutes_passed = False
         if for_minutes_passed:
-          # print("4分以上経過しています。")
+          print("4分以上経過しているメッセージあり。")
           # s = driver.find_elements(By.CLASS_NAME, value="ds_message_list_top")
           # s[0].click()
           new_mail[0].click()
@@ -1471,7 +1471,7 @@ def check_new_mail(happy_info, driver, wait):
                       time.sleep(wait_time)
                       break
               else:
-                print('やり取りしてます')
+                # print('やり取りしてます')
                 user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
                 user_name = user_name.text
                 receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
@@ -1503,7 +1503,7 @@ def check_new_mail(happy_info, driver, wait):
                     time.sleep(1)
                   
             else:
-              print('やり取りしてます')
+              # print('やり取りしてます')
               user_name = driver.find_elements(By.CLASS_NAME, value="app__navbar__item--title")[1]
               user_name = user_name.text
               receive_contents = driver.find_elements(By.CLASS_NAME, value="message__block--receive")[-1]
@@ -1554,7 +1554,7 @@ def check_new_mail(happy_info, driver, wait):
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
                   send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
-                  print(send_msg_elem[-1].text)
+                  # print(send_msg_elem[-1].text)
                   reload_cnt += 1
                   if reload_cnt == 3:
                       driver.refresh()
