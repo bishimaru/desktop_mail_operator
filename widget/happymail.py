@@ -1275,8 +1275,6 @@ def send_fst_message(happy_user_list, driver, wait):
 def check_new_mail(happy_info, driver, wait):
   return_list = []
   name = happy_info["name"]
-  if name != "つむぎ":
-     return
   login_id = happy_info["login_id"]
   login_pass = happy_info["password"]
   fst_message = happy_info["fst_message"]
