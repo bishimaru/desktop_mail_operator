@@ -1275,6 +1275,8 @@ def send_fst_message(happy_user_list, driver, wait):
 def check_new_mail(happy_info, driver, wait):
   return_list = []
   name = happy_info["name"]
+  if name != "つむぎ":
+     continue
   login_id = happy_info["login_id"]
   login_pass = happy_info["password"]
   fst_message = happy_info["fst_message"]
@@ -1459,7 +1461,7 @@ def check_new_mail(happy_info, driver, wait):
                 reload_cnt = 0
                 send_text_clean = func.normalize_text(send_msg_elem[-1].text)
                 while send_text_clean != conditions_message_clean:
-                  
+                  print(send_text_clean)
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
@@ -1571,6 +1573,8 @@ def check_new_mail(happy_info, driver, wait):
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
         new_mail = driver.find_elements(By.CLASS_NAME, value="ds_list_r_kidoku")
+        print(777)
+        print(len(new_mail))
      
   if len(return_list):
     return return_list

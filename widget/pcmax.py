@@ -86,14 +86,13 @@ def login(driver, wait):
     return login(driver, wait)
   
     
-def re_post(name, driver, wait):
+def re_post(pcmax_chara_dict, driver, wait):
   wait = WebDriverWait(driver, 15)
-  
-  row = []
-  login_id = row[0]
-  login_pass = row[1]
-  post_title = row[2]
-  post_contents = row[3] 
+  print(pcmax_chara_dict)
+  login_id = pcmax_chara_dict["login_id"]
+  login_pass = pcmax_chara_dict["password"]
+  post_title = pcmax_chara_dict["post_title"]
+  post_contents = pcmax_chara_dict["post_content"]
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -124,7 +123,7 @@ def re_post(name, driver, wait):
   # 利用制限中
   suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
   if len(suspend):
-    print(f'{name}pcmax利用制限中です')
+    print(f"{pcmax_chara_dict['name']}pcmax利用制限中です")
     return  
   wait_time = random.uniform(3, 4)
   login(driver, wait)
@@ -221,24 +220,24 @@ def re_post(name, driver, wait):
           break
         # https://pcmax.jp/pcm/index.php
         driver.get("https://pcmax.jp/pcm/index.php")
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(wait_time)
+        # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        # time.sleep(wait_time)
         
-        # MENUをクリック
-        menu = driver.find_element(By.ID, value='sp_nav')
-        menu.click()
-        time.sleep(wait_time)
-        # 掲示板書き込みをクリック　
-        bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
-        bulletin_board_history = bulletin_board_history.find_elements(By.TAG_NAME, value="dd")
-        for i in bulletin_board_history:
-          if i.text == "掲示板書込み":
-            bulletin_board_history = i.find_element(By.TAG_NAME, value="a")
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
-            bulletin_board_history.click()
-            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-            time.sleep(wait_time)
-            break
+        # # MENUをクリック
+        # menu = driver.find_element(By.ID, value='sp_nav')
+        # menu.click()
+        # time.sleep(wait_time)
+        # # 掲示板書き込みをクリック　
+        # bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
+        # bulletin_board_history = bulletin_board_history.find_elements(By.TAG_NAME, value="dd")
+        # for i in bulletin_board_history:
+        #   if i.text == "掲示板書込み":
+        #     bulletin_board_history = i.find_element(By.TAG_NAME, value="a")
+        #     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
+        #     bulletin_board_history.click()
+        #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        #     time.sleep(wait_time)
+        #     break
       
       
     
@@ -278,9 +277,9 @@ def re_post(name, driver, wait):
     wait = WebDriverWait(driver, 15)
     time.sleep(wait_time)
     # ジャンルを選択
-    select_genre = driver.find_element(By.ID, value="selectb")
-    select = Select(select_genre)
-    select.select_by_visible_text(genre_dic[genre_flag])
+    # select_genre = driver.find_element(By.ID, value="selectb")
+    # select = Select(select_genre)
+    # select.select_by_visible_text(genre_dic[genre_flag])
     time.sleep(1)
 
     # 投稿地域を選択
@@ -2295,3 +2294,6 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
     else:
       print("エラー")
       print(traceback.format_exc())
+
+def return_foot_and_fst():
+  print(888)
