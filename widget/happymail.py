@@ -1461,9 +1461,7 @@ def check_new_mail(happy_info, driver, wait):
                 reload_cnt = 0
                 send_text_clean = func.normalize_text(send_msg_elem[-1].text)
                 while send_text_clean != conditions_message_clean:
-                  print(send_text_clean)
-                  print("~~~~~~~~~~")
-                  print(conditions_message_clean)
+                  
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
