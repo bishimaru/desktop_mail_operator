@@ -1462,6 +1462,8 @@ def check_new_mail(happy_info, driver, wait):
                 send_text_clean = func.normalize_text(send_msg_elem[-1].text)
                 while send_text_clean != conditions_message_clean:
                   print(send_text_clean)
+                  print("~~~~~~~~~~")
+                  print(conditions_message_clean)
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
@@ -1572,7 +1574,7 @@ def check_new_mail(happy_info, driver, wait):
         driver.get("https://happymail.co.jp/sp/app/html/message_list.php")
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
-        new_mail = driver.find_elements(By.CLASS_NAME, value="ds_list_r_kidoku")
+        new_mail = driver.find_elements(By.CLASS_NAME, value="happy_blue_10")
         print(777)
         print(len(new_mail))
      
