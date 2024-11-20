@@ -55,20 +55,8 @@ def start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug):
     except Exception as err:
         print(f"Other error occurred: {err}")
     
-    pcmax.repost_and_footprint_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug)
-    for data in schedule_data:
-        hour, minute = data
-        print(data)
-        # scheduler.add_job(
-        #     sb_h_all_do, 
-        #     'cron', 
-        #     hour=int(hour), 
-        #     minute=int(minute), 
-        #     args=[int(match_args), int(type_args), int(args), pcmax_chara_list, headless], 
-        #     max_instances=2, 
-        #     misfire_grace_time=60*60
-        # )
-        print(f"スケジュール設定: {hour}時{minute}分")
+    pcmax.repost_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug)
+    
 
     print("Ctrl+{0} を押すと終了します。".format('Break' if os.name == 'nt' else 'C'))
 

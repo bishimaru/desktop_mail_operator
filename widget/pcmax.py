@@ -2320,7 +2320,7 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
       print(traceback.format_exc())
 
 
-def repost_and_footprint(sorted_pcmax, headless, detail_area_flug):
+def repost_one_rap(sorted_pcmax, headless, detail_area_flug):
   def timer(sec, functions):
     start_time = time.time() 
     for func in functions:
@@ -2364,14 +2364,15 @@ def repost_and_footprint(sorted_pcmax, headless, detail_area_flug):
 
 
 
-def repost_and_footprint_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
+def repost_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
   def background_task():
-    while True:
-        # 必要な処理をここに記述
-        # print("バックグラウンドタスクを実行中...")
-        # make_footprints(driver, wait, select_areas, youngest_age, oldest_age,)
-        # time.sleep(5) 
-        print("待機中...")
+    # while True:
+    #     # 必要な処理をここに記述
+    #     # print("バックグラウンドタスクを実行中...")
+    #     # make_footprints(driver, wait, select_areas, youngest_age, oldest_age,)
+    #     # time.sleep(5) 
+    print("待機中...")
+    
 
   # スケジューラのジョブリスナー
   def job_listener(event):
@@ -2383,12 +2384,11 @@ def repost_and_footprint_scheduler(schedule_data, sorted_pcmax, headless, detail
   #メインのスケジューラ関数
   def start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
       scheduler = BlockingScheduler()
-      repost_and_footprint(sorted_pcmax, headless, detail_area_flug,)
       for r_time in schedule_data:
         hour, minute, = r_time
-        print(f"{hour}   {minute}")
+        # print(f"{hour}   {minute}")
         scheduler.add_job(
-            repost_and_footprint, 
+            repost_one_rap, 
             'cron', 
             hour=int(hour), 
             minute=int(minute), 
