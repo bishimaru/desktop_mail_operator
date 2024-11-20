@@ -27,9 +27,7 @@ from requests import exceptions
 
 
 def wait_if_near_midnight():
-    # 現在時刻を取得
     now = datetime.now()
-    # 現在時刻の時間と分を取得
     current_hour = now.hour
     current_minute = now.minute
     # もし現在時刻が23:55を過ぎていたら
@@ -58,8 +56,8 @@ def check_mail(user_data, headless):
         driver,wait = func.get_driver(headless)
         for happy_info in happymail_list:
             new_mail_lists = []
-            if happy_info["name"] != "つむぎ":
-                continue
+            # if happy_info["name"] != "ハル":
+            #     continue
             try:
                 happymail_new = happymail.check_new_mail(happy_info, driver, wait)
                 if happymail_new:
@@ -113,13 +111,13 @@ def check_mail(user_data, headless):
                 print(f"メール送信中にエラーが発生しました: {e}")
                 print("5分間待機して再試行します...")
                 driver.quit()
-                time.sleep(300)  # 300秒（5分）間待機
+                time.sleep(300) 
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")
                 print("20秒後に再接続します。")
                 driver.quit()
-                time.sleep(20)  # 10秒待機して再試行
+                time.sleep(20) 
                 check_mail(user_data, headless)
             except exceptions.ConnectionError as e:
                 print(f"ネットワーク回線がオフラインの可能性があります. {360 // 60} 分後にリトライします。")

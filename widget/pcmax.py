@@ -24,6 +24,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 import urllib3
 from selenium.common.exceptions import StaleElementReferenceException
+import threading
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+
 
 
 
@@ -86,9 +90,8 @@ def login(driver, wait):
     return login(driver, wait)
   
     
-def re_post(pcmax_chara_dict, driver, wait):
-  wait = WebDriverWait(driver, 15)
-  print(pcmax_chara_dict)
+def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
+  name = pcmax_chara_dict["name"]
   login_id = pcmax_chara_dict["login_id"]
   login_pass = pcmax_chara_dict["password"]
   post_title = pcmax_chara_dict["post_title"]
@@ -147,79 +150,80 @@ def re_post(pcmax_chara_dict, driver, wait):
   no_post = driver.find_elements(By.CLASS_NAME, value="write_text")
   if len(no_post):
     if no_post[0].text == "まだ掲示板への投稿はありません。":
-      print(no_post[0].text)
-      add_post = driver.find_elements(By.CLASS_NAME, value="white_last")
-      add_post_button = add_post[0].find_elements(By.TAG_NAME, value="a")
-      add_post_button[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-      if genre_flag == 0:
-          choices = driver.find_elements(By.CLASS_NAME, value="choice")
-          for choice in choices:
-            candidate_choice = choice.get_attribute('href')
-            if candidate_choice is not None:
-                if choice.text == "スグ会いたい":
-                  add_post_link = candidate_choice
-            else:
-                continue
-      driver.get(add_post_link)
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time) 
-      for kanto_region, kanto_area in post_area_dic.items():
-        # # アダルトを選択
-        adult = driver.find_element(By.ID, value="genre2")
-        adult.click()
-        title = driver.find_element(By.ID, value="title1") 
-        title.send_keys(post_title)
-        time.sleep(1)
-        post_text = driver.find_element(By.ID, value="textarea1") 
-        post_text.send_keys(post_contents)
-        time.sleep(1)
-        # 投稿地域を選択
-        area = driver.find_element(By.ID, "prech")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", area)
-        time.sleep(1)
-        select = Select(area)
-        select.select_by_visible_text(kanto_region)
-        time.sleep(1)
-        # 詳細地域を選択
-        detailed_area = driver.find_element(By.NAME, value="city_id")
-        select = Select(detailed_area)
-        detail_area = random.choice(kanto_area)
-        print('今回の詳細地域 ~' + str(detail_area) + "~")
-        select.select_by_visible_text(detail_area)
-        time.sleep(1)
-        # メール受付数を変更
-        mail_reception = driver.find_element(By.NAME, "max_reception_count")
-        select = Select(mail_reception)
-        select.select_by_visible_text("5通")
-        time.sleep(1)
-        # チェック項目にチェック
-        today_check = driver.find_element(By.ID, value="bty_4")
-        today_check.click()
-        ask_date = driver.find_element(By.ID, value="bty_5")
-        ask_date.click()
-        check3 = driver.find_element(By.ID, value="bty_6")
-        check3.click()
-        check4 = driver.find_element(By.ID, value="bty_7")
-        check4.click()
-        check5 = driver.find_element(By.ID, value="bty_8")
-        check5.click()
-        check6 = driver.find_element(By.ID, value="bty_9")
-        check6.click()
-        # 掲示板に書く 
-        write_bulletin_board = driver.find_element(By.ID, value="bbs_write_btn")
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", write_bulletin_board)
-        write_bulletin_board.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(wait_time)
-        # 利用制限チェック
-        usage_limit = driver.find_elements(By.CLASS_NAME, value="white_box")
-        if len(usage_limit):
-          print(f"{name}pcmax利用制限画面が出ました")
-          break
-        # https://pcmax.jp/pcm/index.php
-        driver.get("https://pcmax.jp/pcm/index.php")
+      return
+      # print(no_post[0].text)
+      # add_post = driver.find_elements(By.CLASS_NAME, value="white_last")
+      # add_post_button = add_post[0].find_elements(By.TAG_NAME, value="a")
+      # add_post_button[0].click()
+      # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      # time.sleep(wait_time)
+      # if genre_flag == 0:
+      #     choices = driver.find_elements(By.CLASS_NAME, value="choice")
+      #     for choice in choices:
+      #       candidate_choice = choice.get_attribute('href')
+      #       if candidate_choice is not None:
+      #           if choice.text == "スグ会いたい":
+      #             add_post_link = candidate_choice
+      #       else:
+      #           continue
+      # driver.get(add_post_link)
+      # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      # time.sleep(wait_time) 
+      # for kanto_region, kanto_area in post_area_dic.items():
+      #   # # アダルトを選択
+      #   adult = driver.find_element(By.ID, value="genre2")
+      #   adult.click()
+      #   title = driver.find_element(By.ID, value="title1") 
+      #   title.send_keys(post_title)
+      #   time.sleep(1)
+      #   post_text = driver.find_element(By.ID, value="textarea1") 
+      #   post_text.send_keys(post_contents)
+      #   time.sleep(1)
+      #   # 投稿地域を選択
+      #   area = driver.find_element(By.ID, "prech")
+      #   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", area)
+      #   time.sleep(1)
+      #   select = Select(area)
+      #   select.select_by_visible_text(kanto_region)
+      #   time.sleep(1)
+      #   # 詳細地域を選択
+      #   detailed_area = driver.find_element(By.NAME, value="city_id")
+      #   select = Select(detailed_area)
+      #   detail_area = random.choice(kanto_area)
+      #   print('今回の詳細地域 ~' + str(detail_area) + "~")
+      #   select.select_by_visible_text(detail_area)
+      #   time.sleep(1)
+      #   # メール受付数を変更
+      #   mail_reception = driver.find_element(By.NAME, "max_reception_count")
+      #   select = Select(mail_reception)
+      #   select.select_by_visible_text("5通")
+      #   time.sleep(1)
+      #   # チェック項目にチェック
+      #   today_check = driver.find_element(By.ID, value="bty_4")
+      #   today_check.click()
+      #   ask_date = driver.find_element(By.ID, value="bty_5")
+      #   ask_date.click()
+      #   check3 = driver.find_element(By.ID, value="bty_6")
+      #   check3.click()
+      #   check4 = driver.find_element(By.ID, value="bty_7")
+      #   check4.click()
+      #   check5 = driver.find_element(By.ID, value="bty_8")
+      #   check5.click()
+      #   check6 = driver.find_element(By.ID, value="bty_9")
+      #   check6.click()
+      #   # 掲示板に書く 
+      #   write_bulletin_board = driver.find_element(By.ID, value="bbs_write_btn")
+      #   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", write_bulletin_board)
+      #   write_bulletin_board.click()
+      #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      #   time.sleep(wait_time)
+      #   # 利用制限チェック
+      #   usage_limit = driver.find_elements(By.CLASS_NAME, value="white_box")
+      #   if len(usage_limit):
+      #     print(f"{name}pcmax利用制限画面が出ました")
+      #     break
+      #   # https://pcmax.jp/pcm/index.php
+      #   driver.get("https://pcmax.jp/pcm/index.php")
         # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         # time.sleep(wait_time)
         
@@ -239,136 +243,156 @@ def re_post(pcmax_chara_dict, driver, wait):
         #     time.sleep(wait_time)
         #     break
       
-      
-    
   #掲示板4つ再投稿
   link_list = []
   posts = driver.find_elements(By.CLASS_NAME, value="bbs_posted_wrap")
+  
   if not len(posts):
     return
-  for i in range(len(posts)):
-
-    copy = posts[i].find_elements(By.TAG_NAME, value="a")
-    for a_element in copy:
-      link_text = a_element.text
-      if link_text == "コピーする":
-        link = a_element.get_attribute("href")
-        link_list.append(link)
-  for i in link_list:
-    driver.get(i)
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(wait_time)
-    detail_selected = driver.find_elements(By.CLASS_NAME, value="back_in_box")
-    detail_selected = detail_selected[2].find_element(By.CLASS_NAME, value="item_r")
-    detail_selected = detail_selected.text.replace(' ', '')
-    
-    # 前回の都道府県を取得
-    last_area = driver.find_elements(By.CLASS_NAME, value="back_in_box")
-    last_area = last_area[1].find_element(By.CLASS_NAME, value="item_r")
-    last_area = last_area.text.replace(' ', '')
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    print(last_area)
-    print("前回の詳細地域 ~" + str(detail_selected) + "~" )
-    # 編集するをクリック 
-    edit_post = driver.find_element(By.ID, value="alink")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", edit_post)
-    time.sleep(1)
-    edit_post.click()
-    wait = WebDriverWait(driver, 15)
-    time.sleep(wait_time)
-    # ジャンルを選択
-    # select_genre = driver.find_element(By.ID, value="selectb")
-    # select = Select(select_genre)
-    # select.select_by_visible_text(genre_dic[genre_flag])
-    time.sleep(1)
-
-    # 投稿地域を選択
-    area = driver.find_element(By.ID, "prech")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", area)
-    time.sleep(1)
-    select = Select(area)
-    select.select_by_visible_text(last_area)
-    time.sleep(1)
-    # 詳細地域を選択
-    detailed_area = driver.find_element(By.NAME, value="city_id")
-    select = Select(detailed_area)
-    try:
-      post_area_dic[last_area].remove(detail_selected)
-    except ValueError:
-      pass
-    detail_area = random.choice(post_area_dic[last_area])
-    print('今回の詳細地域 ~' + str(detail_area) + "~")
-    select.select_by_visible_text(detail_area)
-    time.sleep(1)
-    # メール受付数を変更
-    mail_reception = driver.find_element(By.NAME, "max_reception_count")
-    select = Select(mail_reception)
-    select.select_by_visible_text("5通")
-    time.sleep(1)
-    # 掲示板に書く 
-    write_bulletin_board = driver.find_element(By.ID, value="bbs_write_btn")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", write_bulletin_board)
-    write_bulletin_board.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(wait_time)
-    # 利用制限チェック
-    usage_limit = driver.find_elements(By.CLASS_NAME, value="white_box")
-    if len(usage_limit):
-      print(f"{name}pcmax利用制限画面が出ました")
-      top_logo = driver.find_elements(By.ID, value="top")
-      a = top_logo[0].find_element(By.TAG_NAME, value="a")
-      a.click()
+  skip_cnt = 0
+  while len(posts):
+    if skip_cnt >= len(posts):
+      break
+    reposted_time_element = posts[skip_cnt].find_elements(By.CLASS_NAME, value="posted-time")
+    reposted_time = reposted_time_element[0].text
+    reposted_time_obj = datetime.strptime(reposted_time, "%Y/%m/%d %H:%M")
+    now = datetime.now()
+    # 2時間後と比較
+    if now >= reposted_time_obj + timedelta(hours=1):
+      print("1時間以上経過しています。")
+      copy_button = posts[skip_cnt].find_elements(By.TAG_NAME, value="button")
+      copy_button[0].click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
-      # MENUをクリック
-      menu = driver.find_element(By.ID, value='sp_nav')
-      menu.click()
+      detail_selected = driver.find_elements(By.CLASS_NAME, value="back_in_box")
+      detail_selected = detail_selected[2].find_element(By.CLASS_NAME, value="item_r")
+      detail_selected = detail_selected.text.replace(' ', '')
+      
+      # 前回の都道府県を取得
+      last_area = driver.find_elements(By.CLASS_NAME, value="back_in_box")
+      last_area = last_area[1].find_element(By.CLASS_NAME, value="item_r")
+      last_area = last_area.text.replace(' ', '')
+      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+      print(last_area)
+      print("前回の詳細地域 ~" + str(detail_selected) + "~" )
+      # 編集するをクリック 
+      edit_post = driver.find_element(By.ID, value="alink")
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", edit_post)
+      time.sleep(1)
+      edit_post.click()
+      wait = WebDriverWait(driver, 15)
       time.sleep(wait_time)
-      # 掲示板履歴をクリック　
-      bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
-      bulletin_board_history = bulletin_board_history.find_elements(By.TAG_NAME, value="dd")
-      for i in bulletin_board_history:
-        if i.text == "投稿履歴・編集":
-          bulletin_board_history = i.find_element(By.TAG_NAME, value="a")
-          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
-          bulletin_board_history.click()
-          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-          time.sleep(wait_time)
-          break
-      #掲示板4つ再投稿
-      link_list = []
-      posts = driver.find_elements(By.CLASS_NAME, value="copy_title")
-      if not len(posts):
-        return
-      for i in range(len(posts)):
-        copy = posts[i].find_elements(By.TAG_NAME, value="a")
-        for a_element in copy:
-          link_text = a_element.text
-          if link_text == "コピーする":
-            link = a_element.get_attribute("href")
-            link_list.append(link)
-      repost_cnt = 1
-      for i in link_list:
+      # ジャンルを選択
+      # select_genre = driver.find_element(By.ID, value="selectb")
+      # select = Select(select_genre)
+      # select.select_by_visible_text(genre_dic[genre_flag])
+      time.sleep(1)
+
+      # 投稿地域を選択
+      area = driver.find_element(By.ID, "prech")
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", area)
+      time.sleep(1)
+      select = Select(area)
+      select.select_by_visible_text(last_area)
+      time.sleep(1)
+      print(888)
+      print(detail_area_flug)
+      if detail_area_flug == "same":
+        # 詳細地域を選択
+        detailed_area = driver.find_element(By.NAME, value="city_id")
+        select = Select(detailed_area)
+        
+        print('今回の詳細地域 ~' + str(detail_selected) + "~")
+        select.select_by_visible_text(detail_selected)
+        time.sleep(1)
+      else:
+        # 詳細地域を選択
+        detailed_area = driver.find_element(By.NAME, value="city_id")
+        select = Select(detailed_area)
         try:
-          driver.get(i)
-          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-          time.sleep(wait_time)
-        except TimeoutException as e:
-          print("TimeoutException")
-          driver.refresh()
-          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-          time.sleep(wait_time)
-        submit = driver.find_element(By.CLASS_NAME, value="write_btn")
-        submit.click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          post_area_dic[last_area].remove(detail_selected)
+        except ValueError:
+          pass
+        detail_area = random.choice(post_area_dic[last_area])
+        print('今回の詳細地域 ~' + str(detail_area) + "~")
+        select.select_by_visible_text(detail_area)
+        time.sleep(1)
+      # メール受付数を変更
+      mail_reception = driver.find_element(By.NAME, "max_reception_count")
+      select = Select(mail_reception)
+      select.select_by_visible_text("5通")
+      time.sleep(1)
+      # 掲示板に書く 
+      write_bulletin_board = driver.find_element(By.ID, value="bbs_write_btn")
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", write_bulletin_board)
+      write_bulletin_board.click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(wait_time)
+      # 利用制限チェック
+      usage_limit = driver.find_elements(By.CLASS_NAME, value="white_box")
+      if len(usage_limit):
+        print(f"{name}pcmax利用制限画面が出ました")
+        top_logo = driver.find_elements(By.ID, value="top")
+        a = top_logo[0].find_element(By.TAG_NAME, value="a")
+        a.click()
         time.sleep(wait_time)
-        print(f"再投稿 {repost_cnt}件")
-        repost_cnt += 1
-      return
-    # 掲示板投稿履歴をクリック
-    bulletin_board_history = driver.find_element(By.XPATH, value="//*[@id='wrap']/div[2]/table/tbody/tr/td[3]/a")
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
-    bulletin_board_history.click()
-    time.sleep(1)
+        # MENUをクリック
+        menu = driver.find_element(By.ID, value='sp_nav')
+        menu.click()
+        time.sleep(wait_time)
+        # 掲示板履歴をクリック　
+        bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
+        bulletin_board_history = bulletin_board_history.find_elements(By.TAG_NAME, value="dd")
+        for i in bulletin_board_history:
+          if i.text == "投稿履歴・編集":
+            bulletin_board_history = i.find_element(By.TAG_NAME, value="a")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
+            bulletin_board_history.click()
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+            time.sleep(wait_time)
+            break
+        #掲示板4つ再投稿
+        link_list = []
+        posts = driver.find_elements(By.CLASS_NAME, value="copy_title")
+        if not len(posts):
+          return
+        for i in range(len(posts)):
+          copy = posts[i].find_elements(By.TAG_NAME, value="a")
+          for a_element in copy:
+            link_text = a_element.text
+            if link_text == "コピーする":
+              link = a_element.get_attribute("href")
+              link_list.append(link)
+        repost_cnt = 1
+        for i in link_list:
+          try:
+            driver.get(i)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+            time.sleep(wait_time)
+          except TimeoutException as e:
+            print("TimeoutException")
+            driver.refresh()
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+            time.sleep(wait_time)
+          submit = driver.find_element(By.CLASS_NAME, value="write_btn")
+          submit.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(wait_time)
+          print(f"再投稿 {repost_cnt}件")
+          repost_cnt += 1
+        return
+      # 掲示板投稿履歴をクリック
+      bulletin_board_history = driver.find_element(By.XPATH, value="//*[@id='wrap']/div[2]/table/tbody/tr/td[3]/a")
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", bulletin_board_history)
+      bulletin_board_history.click()
+      time.sleep(1)
+      posts = driver.find_elements(By.CLASS_NAME, value="bbs_posted_wrap")
+    else:
+        print("まだ1時間経過していません。")
+        skip_cnt += 1
+        if skip_cnt > 3:
+          break
+    
   driver.get("https://pcmax.jp/pcm/index.php")
   
 def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt, return_foot_img):
@@ -537,7 +561,7 @@ def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt,
       break
   driver.get("https://pcmax.jp/pcm/index.php")
 
-def make_footprints(name, pcmax_id, pcmax_pass, driver, wait, select_areas, youngest_age, oldest_age,):
+def make_footprints(driver, wait, select_areas, youngest_age, oldest_age,):
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2295,5 +2319,99 @@ def send_fst_mail(name, login_id, login_pass, fst_message, fst_message_img, seco
       print("エラー")
       print(traceback.format_exc())
 
-def return_foot_and_fst():
-  print(888)
+
+def repost_and_footprint(sorted_pcmax, headless, detail_area_flug):
+  def timer(sec, functions):
+    start_time = time.time() 
+    for func in functions:
+      try:
+        return_func = func()
+      except Exception as e:
+        print(e)
+        return_func = 0
+    elapsed_time = time.time() - start_time  # 経過時間を計算する
+    while elapsed_time < sec:
+      # make_footprints_repost_later()
+      time.sleep(30)
+      elapsed_time = time.time() - start_time  # 経過時間を計算する
+      # print(f"待機中~~ {elapsed_time} ")
+    
+    return return_func
+  
+  wait_cnt = 7200 / len(sorted_pcmax)
+
+  start_one_rap_time = time.time() 
+  driver,wait = func.get_driver(headless)
+
+  for pcmax_chara in sorted_pcmax:
+    
+    print(len(sorted_pcmax))
+    print(pcmax_chara["name"])
+    try:
+      return_func = timer(wait_cnt, [lambda: re_post(pcmax_chara, driver, wait, detail_area_flug)])
+      
+    except Exception as e:
+      print(f"エラー{pcmax_chara['name']}")
+      print(traceback.format_exc())
+      # func.send_error(chara, traceback.format_exc())
+  elapsed_time = time.time() - start_one_rap_time  
+  elapsed_timedelta = timedelta(seconds=elapsed_time)
+  elapsed_time_formatted = str(elapsed_timedelta)
+  driver.quit()
+  
+
+  
+
+
+
+def repost_and_footprint_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
+  def background_task():
+    while True:
+        # 必要な処理をここに記述
+        # print("バックグラウンドタスクを実行中...")
+        # make_footprints(driver, wait, select_areas, youngest_age, oldest_age,)
+        # time.sleep(5) 
+        print("待機中...")
+
+  # スケジューラのジョブリスナー
+  def job_listener(event):
+      if event.exception:
+          print(f"ジョブでエラーが発生しました: {event.job_id}")
+      else:
+          print(f"ジョブが正常に完了しました: {event.job_id}")
+
+  #メインのスケジューラ関数
+  def start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
+      scheduler = BlockingScheduler()
+      repost_and_footprint(sorted_pcmax, headless, detail_area_flug,)
+      for r_time in schedule_data:
+        hour, minute, = r_time
+        print(f"{hour}   {minute}")
+        scheduler.add_job(
+            repost_and_footprint, 
+            'cron', 
+            hour=int(hour), 
+            minute=int(minute), 
+            args=[sorted_pcmax, headless, detail_area_flug,], 
+            max_instances=2, 
+            misfire_grace_time=60*60
+        )
+        print(f"掲示板スケジュール設定: {hour}時{minute}分, ")
+
+
+
+      # イベントリスナーを追加
+      scheduler.add_listener(job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+
+      # バックグラウンドタスクのスレッドを起動
+      threading.Thread(target=background_task, daemon=True).start()
+
+      try:
+          # スケジューラの開始
+          scheduler.start()
+      except (KeyboardInterrupt, SystemExit):
+          print("スケジューラを停止します。")
+          scheduler.shutdown()
+  
+  # スケジューラを開始
+  start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,)

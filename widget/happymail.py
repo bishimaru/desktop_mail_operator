@@ -26,6 +26,8 @@ import requests
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 import gc
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 # 警告画面
@@ -1459,7 +1461,9 @@ def check_new_mail(happy_info, driver, wait):
                 reload_cnt = 0
                 send_text_clean = func.normalize_text(send_msg_elem[-1].text)
                 while send_text_clean != conditions_message_clean:
-                  
+                  print(send_text_clean)
+                  print("~~~~~~~~~~~~~~~~~~~~~")
+                  print(conditions_message_clean)
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(5)
@@ -1728,7 +1732,6 @@ def re_registration(chara_data, driver, wait):
   time.sleep(wait_time)
   # text_content
   name_text_area = driver.find_elements(By.CLASS_NAME, value="text_content")
-  print(name_text_area[0].get_attribute("value"))
   if name_text_area[0].get_attribute("value") != chara_data["name"]:
     name_text_area[0].clear()
     name_text_area[0].send_keys(chara_data["name"])
@@ -1743,19 +1746,21 @@ def re_registration(chara_data, driver, wait):
     modal_save_button = driver.find_elements(By.CLASS_NAME, value="modal-button-blue")
     modal_save_button[0].click()
     time.sleep(2)
+    print(f"名前{chara_data['name']}")
   else:
     driver.back()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
   # 年齢
   if chara_data["age"]:
-    age_text_area = driver.find_elements(By.ID, value="age")
+    age_text_area = driver.find_elements(By.ID, value="age")    
     select = Select(age_text_area[0])
     select.select_by_visible_text(chara_data["age"])
-    time.sleep(2)
+    time.sleep(1)
     if age_text_area[0].get_attribute("value") != chara_data["age"]:
       select.select_by_visible_text(chara_data["age"])
       time.sleep(2)
+    print(f"年齢：{chara_data['age']}")
 
   # 居住地
   if chara_data["activity_area"]:
@@ -1766,17 +1771,17 @@ def re_registration(chara_data, driver, wait):
     if activity_area_text_area[0].get_attribute("value") != chara_data["activity_area"]:
       select.select_by_visible_text(chara_data["activity_area"])
       time.sleep(2)
+    print(f"居住地:{chara_data['activity_area']}")
   # 詳細エリア
   if chara_data["detail_activity_area"]:
-    
     detail_activity_area_text_area = driver.find_elements(By.ID, value="city")
-    print(len(detail_activity_area_text_area))
     select = Select(detail_activity_area_text_area[0])
     select.select_by_visible_text(chara_data["detail_activity_area"])
     time.sleep(2)
     if detail_activity_area_text_area[0].get_attribute("value") != chara_data["detail_activity_area"]:
       select.select_by_visible_text(chara_data["detail_activity_area"])
       time.sleep(2)
+    print(f"詳細エリア:{chara_data['detail_activity_area']}")
   # member_birth_area 
   if chara_data["birth_place"]:
     member_birth_area_text_area = driver.find_elements(By.NAME, value="member_birth_area")
@@ -1787,6 +1792,7 @@ def re_registration(chara_data, driver, wait):
     if member_birth_area_text_area[0].get_attribute("value") != chara_data["birth_place"]:
       select.select_by_visible_text(chara_data["birth_place"])
       time.sleep(2)
+    print(f"出身地:{chara_data['birth_place']}")
   # blood_type
   if chara_data["blood_type"]:
     blood_type_text_area = driver.find_elements(By.NAME, value="blood_type")
@@ -1796,6 +1802,7 @@ def re_registration(chara_data, driver, wait):
     if blood_type_text_area[0].get_attribute("value") != chara_data["blood_type"]:
       select.select_by_visible_text(chara_data["blood_type"])
       time.sleep(2)
+    print(f"血液型:{chara_data['blood_type']}")
   # constellation
   if chara_data["constellation"]:
     constellation_text_area = driver.find_elements(By.NAME, value="constellation")
@@ -1805,6 +1812,7 @@ def re_registration(chara_data, driver, wait):
     if constellation_text_area[0].get_attribute("value") != chara_data["constellation"]:
       select.select_by_visible_text(chara_data["constellation"])
       time.sleep(2)
+    print(f"星座:{chara_data['constellation']}")
   # height
   if chara_data["height"]:
     height_text_area = driver.find_elements(By.NAME, value="height")
@@ -1824,6 +1832,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"身長:{chara_data['height']}")
   # スタイル
   if chara_data["style"]:
     style_text_area = driver.find_elements(By.NAME, value="style")
@@ -1843,6 +1852,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"スタイル:{chara_data['style']}")
   # ルックス
   if chara_data["looks"]:
     looks_text_area = driver.find_elements(By.NAME, value="type")
@@ -1862,6 +1872,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"ルックス:{chara_data['looks']}")
   # カップ
   if chara_data["cup"]:
     cup_text_area = driver.find_elements(By.NAME, value="bust_size")
@@ -1881,6 +1892,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"カップ:{chara_data['cup']}")
   # 職業
   if chara_data["job"]:
     job_text_area = driver.find_elements(By.NAME, value="job")
@@ -1900,6 +1912,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"職業:{chara_data['job']}")
   # educational_background
   if chara_data["education"]:
     education_text_area = driver.find_elements(By.NAME, value="educational_background")
@@ -1918,6 +1931,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"学歴:{chara_data['education']}")
   # holiday
   if chara_data["holiday"]:
     holiday_text_area = driver.find_elements(By.NAME, value="holiday")
@@ -1936,6 +1950,26 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"休日:{chara_data['holiday']}")
+  # 交際ステータス
+  if chara_data["relationship_status"]:
+    relationship_status_text_area = driver.find_elements(By.NAME, value="marriage")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", relationship_status_text_area[0])
+    driver.execute_script("arguments[0].click();", relationship_status_text_area[0])
+    time.sleep(1)
+    relationship_status_elem = driver.find_elements(By.ID, value="marriage_choice")
+    relationship_status_choices = relationship_status_elem[0].find_elements(By.TAG_NAME, value="span")
+    for i in relationship_status_choices:
+      if i.text == chara_data["relationship_status"]:
+          classes = i.get_attribute("class")
+          if not "chose" in classes.split():
+            i.click()
+            time.sleep(2)
+            wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
+    modal_cancel[0].click()
+    time.sleep(2)
+    print(f"交際ステータス:{chara_data['relationship_status']}")
   # child
   if chara_data["having_children"]:
     child_text_area = driver.find_elements(By.NAME, value="child")
@@ -1954,9 +1988,10 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
-  # intention_to_marry
+    print(f"子供:{chara_data['having_children']}")
+  # 結婚に対する意思
   if chara_data["intention_to_marry"]:
-    intention_to_marry_text_area = driver.find_elements(By.NAME, value="child")
+    intention_to_marry_text_area = driver.find_elements(By.NAME, value="intention_to_marry")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", intention_to_marry_text_area[0])
     driver.execute_script("arguments[0].click();", intention_to_marry_text_area[0])
     time.sleep(1)
@@ -1972,6 +2007,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"結婚に対する意思:{chara_data['intention_to_marry']}")
   # tobacco
   if chara_data["smoking"]:
     tobacco_text_area = driver.find_elements(By.NAME, value="tobacco")
@@ -1990,6 +2026,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"タバコ:{chara_data['smoking']}")
   # liquor
   if chara_data["sake"]:
     liquor_text_area = driver.find_elements(By.NAME, value="liquor")
@@ -2008,6 +2045,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"酒:{chara_data['sake']}")
   # car
   if chara_data["car_ownership"]:
     car_text_area = driver.find_elements(By.NAME, value="car")
@@ -2026,6 +2064,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"クルマ:{chara_data['car_ownership']}")
   # housemate
   if chara_data["roommate"]:
     housemate_text_area = driver.find_elements(By.NAME, value="housemate")
@@ -2044,6 +2083,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"同居人:{chara_data['roommate']}")
   # brother
   if chara_data["brothers_and_sisters"]:
     brother_text_area = driver.find_elements(By.NAME, value="brother")
@@ -2062,6 +2102,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"兄弟姉妹:{chara_data['brothers_and_sisters']}")
   # hope_before_meet
   if chara_data["until_we_met"]:
     hope_before_meet_text_area = driver.find_elements(By.NAME, value="hope_before_meet")
@@ -2080,6 +2121,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
     modal_cancel[0].click()
     time.sleep(2)
+    print(f"会うまでのプロセス:{chara_data['until_we_met']}")
   # first_date_cost
   if chara_data["date_expenses"]:
     first_date_cost_text_area = driver.find_elements(By.NAME, value="first_date_cost")
@@ -2099,6 +2141,7 @@ def re_registration(chara_data, driver, wait):
     modal_cancel[0].click()
     time.sleep(2)
     driver.execute_script("window.scrollTo(0, 0);")
+    print(f"デート費用:{chara_data['date_expenses']}")
   # profile_confirmation
   profile_save = driver.find_elements(By.ID, value="profile_confirmation")
   profile_save[0].click()
