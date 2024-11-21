@@ -75,7 +75,7 @@ def main(maji_soushin, chara_name_list, headless):
 
 if __name__ == '__main__':
   maji_soushin = True
-  headless = False      
+  headless = True      
   
   chara_name_list = func.get_user_data()
   pcmax_chara_list = chara_name_list["pcmax"]

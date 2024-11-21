@@ -2067,8 +2067,6 @@ def send_fst_mail(pcmax_chara, maji_soushin, select_areas, youngest_age, oldest_
         new_height = driver.execute_script("return document.body.scrollHeight")
         # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
         if new_height == last_height:
-            print(888888)
-            time.sleep(20)
             break
         last_height = new_height
       # ユーザーのhrefを取得
@@ -2281,8 +2279,7 @@ def repost_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
     #     # make_footprints(driver, wait, select_areas, youngest_age, oldest_age,)
     #     # time.sleep(5) 
     print("待機中...")
-    
-
+  
   # スケジューラのジョブリスナー
   def job_listener(event):
       if event.exception:
@@ -2306,9 +2303,6 @@ def repost_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug,):
             misfire_grace_time=60*60
         )
         print(f"掲示板スケジュール設定: {hour}時{minute}分, ")
-
-
-
       # イベントリスナーを追加
       scheduler.add_listener(job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 
@@ -2590,8 +2584,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
   
   if send_count <= send_limit:
-    
-    # fst~~~~~~~~~~~~~~~~~~~~~~
     login(driver, wait)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
@@ -2621,6 +2613,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     if not len(select_area) and not len(reset_area):
       # /////////////////////////利用制限あり
       print(f"{name}利用制限あり")
+      return
       # 地域選択
       if len(select_areas) == 1:
         select_area = driver.find_elements(By.NAME, value="pref_no")
