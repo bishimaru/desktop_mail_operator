@@ -611,7 +611,7 @@ def check_new_mail_gmail(driver, wait, name, mail_address):
   else:
     return None
 
-def get_user_data_kenta():
+def get_user_data_ken2():
   # APIエンドポイントURL
   api_url = "https://meruopetyan.com/api/user-data/"
   # DEBUG
@@ -622,7 +622,7 @@ def get_user_data_kenta():
 
   # POSTリクエストのペイロード
   data = {
-      'name': "kenta",
+      'name': "ken2",
       'password': "7234"
   }
   while retry_count < max_retries:
