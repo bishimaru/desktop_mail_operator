@@ -2462,11 +2462,11 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         # print(link)
         link_list.append(link)
       user_cnt += 1
-  mohu = 0
+  # mohu = 0
   for i in link_list:
-    mohu += 1
-    if mohu == 2:
-      break
+    # mohu += 1
+    # if mohu == 2:
+    #   break
     
     if send_count >= send_limit:
       print("送信上限に達しました")
