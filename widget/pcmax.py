@@ -2968,17 +2968,17 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug):
   wait_cnt = 3600 / len(sorted_pcmax)
   start_one_rap_time = time.time() 
   
-
-  for pcmax_chara in sorted_pcmax:
-    try:
-      return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
-      
-    except Exception as e:
-      print(f"エラー{pcmax_chara['name']}")
-      print(traceback.format_exc())
-      # func.send_error(chara, traceback.format_exc())
-  # elapsed_time = time.time() - start_one_rap_time  
-  # elapsed_timedelta = timedelta(seconds=elapsed_time)
-  # elapsed_time_formatted = str(elapsed_timedelta)
-  driver.quit()
+  while True:
+    for pcmax_chara in sorted_pcmax:
+      try:
+        return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
+        
+      except Exception as e:
+        print(f"エラー{pcmax_chara['name']}")
+        print(traceback.format_exc())
+        # func.send_error(chara, traceback.format_exc())
+    # elapsed_time = time.time() - start_one_rap_time  
+    # elapsed_timedelta = timedelta(seconds=elapsed_time)
+    # elapsed_time_formatted = str(elapsed_timedelta)
+    driver.quit()
   
