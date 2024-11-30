@@ -2360,7 +2360,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   # 利用制限中
   suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
   if len(suspend):
-    print(f"{pcmax_chara_dict['name']}pcmax利用制限中です")
+    print(f"{sorted_pcmax['name']}pcmax利用制限中です")
     return  
   wait_time = random.uniform(3, 4)
   login(driver, wait)
@@ -2981,7 +2981,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
           print(traceback.format_exc())
           # func.send_error(chara, traceback.format_exc())
       if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
-        func.send_mail(str_return_cnt_list, mail_info)
+        func.send_mail(send_cnt_list, mail_info)
       # elapsed_time = time.time() - start_one_rap_time  
       # elapsed_timedelta = timedelta(seconds=elapsed_time)
       # elapsed_time_formatted = str(elapsed_timedelta)
