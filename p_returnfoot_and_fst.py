@@ -23,6 +23,11 @@ root.title("スケジューラ設定")
 
 def run_scheduler():
     global user_data  
+    mail_info = [
+        user_data["user"][0]["user_email"],
+        user_data["user"][0]["gmail_account"],
+        user_data["user"][0]["gmail_account_password"],
+    ]
     pcmax_chara_list = [listbox.get(i) for i in range(listbox.size())]  # リストボックスからキャラリストを取得
     headless = check_var.get()  # チェックボックスの値を取得
     one_four_flug = one_hour_var.get()
@@ -42,7 +47,7 @@ def run_scheduler():
     root.withdraw()  # 実行ボタンを押した時にウィンドウを非表示にする
     root.update()  # Tkinterのイベントループを更新
     # root.quit()
-    pcmax.returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug)
+    pcmax.returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, mail_info)
     
 def populate_user_listbox():
     global user_data  # グローバル変数に代入

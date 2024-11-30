@@ -2474,7 +2474,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     
     if send_count >= send_limit:
       print("送信上限に達しました")
-      return
+      return send_count
     # if mail_history == 7:
     #   break
     driver.get(i)
@@ -2559,8 +2559,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     driver.execute_script(script, text_area, return_foot_message)
     # text_area.send_keys(return_foot_message)
     time.sleep(6)
-    
-
     # メッセージを送信
     if maji_soushin:
       send = driver.find_element(By.CLASS_NAME, value="maji_send")
@@ -2586,7 +2584,8 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       send_count += 1
       mail_history = 0
       print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
-  
+  returnfoot_cnt = send_count
+  # ////////////fst////////////////////////////
   if send_count <= send_limit:
     login(driver, wait)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2922,7 +2921,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         print(str(name) + ": pcmax、fst_mail マジ送信 " + str(maji_soushin) + " ~" + str(send_count) + "~ " + str(user_age) + " " + str(area_of_activity) + " " + str(user_name))
         if send_count > send_limit:
           print("送信上限に達しました")
-          return
+          return returnfoot_cnt
         
       
     try:
@@ -2934,9 +2933,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       driver.refresh()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(2)
-
-
-
+    return returnfoot_cnt
 
 
   # if send_count:
@@ -2947,7 +2944,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   # else:
   #   return 1, send_count
   
-def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug):
+def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, mail_info):
   if one_four_flug:
     print("1時間後に実行します")
     time.sleep(3600)
@@ -2974,14 +2971,17 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug):
   while True:
     try:
       driver,wait = func.get_driver(headless)
+      send_cnt_list = []
       for pcmax_chara in sorted_pcmax:
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
-          
+          send_cnt_list.append(f"{pcmax_chara['name']}: {return_func}")
         except Exception as e:
           print(f"エラー{pcmax_chara['name']}")
           print(traceback.format_exc())
           # func.send_error(chara, traceback.format_exc())
+      if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
+        func.send_mail(str_return_cnt_list, mail_info)
       # elapsed_time = time.time() - start_one_rap_time  
       # elapsed_timedelta = timedelta(seconds=elapsed_time)
       # elapsed_time_formatted = str(elapsed_timedelta)
