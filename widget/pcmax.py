@@ -2972,18 +2972,22 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug):
   start_one_rap_time = time.time() 
   
   while True:
-    driver,wait = func.get_driver(headless)
-    for pcmax_chara in sorted_pcmax:
-      try:
-        return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
-        
-      except Exception as e:
-        print(f"エラー{pcmax_chara['name']}")
-        print(traceback.format_exc())
-        # func.send_error(chara, traceback.format_exc())
-    # elapsed_time = time.time() - start_one_rap_time  
-    # elapsed_timedelta = timedelta(seconds=elapsed_time)
-    # elapsed_time_formatted = str(elapsed_timedelta)
-    driver.quit()
-    time.sleep(2)
-  
+    try:
+      driver,wait = func.get_driver(headless)
+      for pcmax_chara in sorted_pcmax:
+        try:
+          return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
+          
+        except Exception as e:
+          print(f"エラー{pcmax_chara['name']}")
+          print(traceback.format_exc())
+          # func.send_error(chara, traceback.format_exc())
+      # elapsed_time = time.time() - start_one_rap_time  
+      # elapsed_timedelta = timedelta(seconds=elapsed_time)
+      # elapsed_time_formatted = str(elapsed_timedelta)
+    except Exception as e:
+      print(7777777777777)
+      print(e)
+      driver.quit()
+      time.sleep(2)
+    
