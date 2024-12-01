@@ -148,11 +148,11 @@ def send_error(chara, error_message):
   
   smtpobj.close()
 
-def send_mail(message, mail_info):
+def send_mail(message, mail_info, title):
   mailaddress = mail_info[1]
   password = mail_info[2]
   text = message
-  subject = "ハッピーメールサイト回し件数"
+  subject = title
   address_from = mail_info[1]
   address_to = mail_info[0]
   smtpobj = smtplib.SMTP('smtp.gmail.com', 587)

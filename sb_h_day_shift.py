@@ -58,7 +58,8 @@ def sb_h_all_do(matching_cnt, type_cnt, return_foot_cnt, happy_chara_list, headl
   str_return_cnt_list = ",\n".join(return_cnt_list)
   
   if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
-    func.send_mail(str_return_cnt_list, mail_info)
+    title = "ハッピーメールサイト回し件数"
+    func.send_mail(str_return_cnt_list, mail_info, title)
 
 if __name__ == '__main__':
   if len(sys.argv) < 2:

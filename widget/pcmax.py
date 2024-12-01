@@ -561,16 +561,16 @@ def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt,
       break
   driver.get("https://pcmax.jp/pcm/index.php")
 
-def make_footprints(driver, wait, select_areas, youngest_age, oldest_age,):
+def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age,):
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(3, 6)
+  wait_time = random.uniform(2, 5)
   time.sleep(2)
   id_form = driver.find_element(By.ID, value="login_id")
-  id_form.send_keys(pcmax_id)
+  id_form.send_keys(str(chara_data['login_id']))
   pass_form = driver.find_element(By.ID, value="login_pw")
-  pass_form.send_keys(pcmax_pass)
+  pass_form.send_keys(str(chara_data['password']))
   time.sleep(1)
   send_form = driver.find_element(By.NAME, value="login")
   send_form.click()
@@ -579,7 +579,7 @@ def make_footprints(driver, wait, select_areas, youngest_age, oldest_age,):
   # 利用制限中
   suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
   if len(suspend):
-    print(f'{name}利用制限中です')  
+    print(f"{chara_data['name']}利用制限中です")  
   #プロフ検索をクリック
   footer_icons = driver.find_element(By.ID, value="sp_footer")
   search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
@@ -591,110 +591,163 @@ def make_footprints(driver, wait, select_areas, youngest_age, oldest_age,):
   search_elem.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(1)
-  # 地域選択
-  select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-  if len(select_area):
-    select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-    select_link[0].click()
-  else:
-    # 都道府県の変更、リセット
-    reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
-    reset_area[0].click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(1)
-    reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
-    reset_area_orange[0].click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(1)
-    ok_button = driver.find_element(By.ID, value="link_OK")
-    ok_button.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(1)
-    select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-    # たまにエラー
-    select_area_cnt = 0
-    while not len(select_area):
-      time.sleep(1)
-      print("select_areaが取得できません")
-      select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-      select_area_cnt += 1
-      if select_area_cnt == 10:
-        break
-    select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-    select_link[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(1)
-  area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
-  area_ids = []
-  for select_area in select_areas:
-    if area_id_dict.get(select_area):
-      area_ids.append(area_id_dict.get(select_area))
-  for area_id in area_ids:
-    if 19 <= area_id <= 25:
-      region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
-    elif 13 <= area_id <= 18:
-      region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
-    elif 26 <= area_id <= 29:
-      region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
-    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
-    check = region.find_elements(By.ID, value=int(area_id))
-    time.sleep(1)
-    driver.execute_script("arguments[0].click();", check[0])
-  save_area = driver.find_elements(By.NAME, value="change")
-  time.sleep(1)
-  save_area[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(1)
-  # 年齢
-  if youngest_age:
-    if 17 < int(youngest_age) < 59:
-      str_youngest_age = youngest_age + "歳"
-    elif 60 <= int(youngest_age):
-      str_youngest_age = "60歳以上"
-    from_age = driver.find_element(By.NAME, value="from_age")
-    select_from_age = Select(from_age)
-    select_from_age.select_by_visible_text(str_youngest_age)
-    time.sleep(1)
-  else:
-    youngest_age = ""
-  if oldest_age:
-    if 17 < int(oldest_age) < 59:
-      str_oldest_age = oldest_age + "歳"
-    elif 60 <= int(oldest_age):
-      str_oldest_age = "60歳以上" 
-    to_age = driver.find_element(By.ID, "to_age")
-    select = Select(to_age)
-    select.select_by_visible_text(str_oldest_age)
-    time.sleep(1)
-  else:
-    youngest_age = ""
+  # /////////////////////////詳細検索画面/////////////////////////
   
-
-  # ページの高さを取得
-  last_height = driver.execute_script("return document.body.scrollHeight")
-  while True:
-    # ページの最後までスクロール
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # ページが完全に読み込まれるまで待機
-    time.sleep(2)
-    # 新しい高さを取得
-    new_height = driver.execute_script("return document.body.scrollHeight")
-    # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
-    if new_height == last_height:
-        break
-    last_height = new_height
-  # 履歴あり、なしの設定
-  mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
-  check_flag = driver.find_element(By.ID, value="opt3") 
-  is_checked = check_flag.is_selected()
-  if is_checked:
-      print("送信履歴にチェックあり")
+  select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+  reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
+  
+ 
+  user_sort_list = [
+    "ログイン順",
+    # "登録順", 
+    # "自己PR更新順"
+  ]
+  if not len(select_area) and not len(reset_area):
+    print(f"{chara_data['name']}利用制限あり")
+    
+    # # 地域選択
+    # if len(select_areas) == 1:
+    #   select_area = driver.find_elements(By.NAME, value="pref_no")
+    #   select = Select(select_area[0])
+    #   select.select_by_visible_text(select_areas[0])
+    # elif len(select_areas) > 1:
+    #   # 選択確率の重みを設定
+    #   weights = [0.2, 0.2, 0.6]  # 東京都は60%、千葉県と埼玉県は20%ずつの確率
+    #   selected_area = random.choices(select_areas, weights=weights)[0]
+    #   print(f"決定地域:{selected_area}")
+    #   select_area = driver.find_elements(By.NAME, value="pref_no")
+    #   select = Select(select_area[0])
+    #   select.select_by_visible_text(selected_area)
+    #   time.sleep(1)
+    # # 年齢
+    # oldest_age_element = driver.find_elements(By.ID, value="makerItem")
+    # select = Select(oldest_age_element[0])
+    # oldest = str(oldest_age) + "歳"
+    # print(oldest)
+    # select.select_by_visible_text(oldest)
+    # time.sleep(1)
+    # # 上記の条件で検索するボタン送信
+    # filtered_send = driver.find_elements(By.NAME, value="send")
+    # filtered_send[0].click()
+    # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # time.sleep(wait_time) 
   else:
-      mail_history[2].click()
+    print(f"{chara_data['name']}利用制限なし")
+    # 地域選択
+    if len(select_area):
+      select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+      select_link[0].click()
+    else:
+      # 都道府県の変更、リセット
+      
+      reset_area[0].click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
-  enter_button = driver.find_elements(By.ID, value="search1")
-  enter_button[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
+      reset_area_orange[0].click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(1)
+      ok_button = driver.find_element(By.ID, value="link_OK")
+      ok_button.click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(1)
+      select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+      # たまにエラー
+      select_area_cnt = 0
+      while not len(select_area):
+        time.sleep(1)
+        # print("select_areaが取得できません")
+        select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+        select_area_cnt += 1
+        if select_area_cnt == 10:
+          break
+
+      select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+      select_link[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(1)
+    area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
+    area_ids = []
+    for select_area in select_areas:
+      if area_id_dict.get(select_area):
+        area_ids.append(area_id_dict.get(select_area))
+    for area_id in area_ids:
+      if 19 <= area_id <= 25:
+        region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
+      elif 13 <= area_id <= 18:
+        region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
+      elif 26 <= area_id <= 29:
+        region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
+      check = region.find_elements(By.ID, value=int(area_id))
+      time.sleep(1)
+      driver.execute_script("arguments[0].click();", check[0])
+    save_area = driver.find_elements(By.NAME, value="change")
+    time.sleep(1)
+    save_area[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(1)
+    # 年齢
+    if youngest_age:
+      if 17 < int(youngest_age) < 59:
+        str_youngest_age = str(youngest_age) + "歳"
+      elif 60 <= int(youngest_age):
+        str_youngest_age = "60歳以上"
+      from_age = driver.find_element(By.NAME, value="from_age")
+      select_from_age = Select(from_age)
+      select_from_age.select_by_visible_text(str_youngest_age)
+      time.sleep(1)
+    else:
+      youngest_age = ""
+    if oldest_age:
+      if 17 < int(oldest_age) < 59:
+        str_oldest_age = str(oldest_age) + "歳"
+      elif 60 <= int(oldest_age):
+        str_oldest_age = "60歳以上" 
+      to_age = driver.find_element(By.ID, "to_age")
+      select = Select(to_age)
+      select.select_by_visible_text(str_oldest_age)
+      time.sleep(1)
+    else:
+      youngest_age = ""
+    # ページの高さを取得
+    last_height = driver.execute_script("return document.body.scrollHeight")
+    while True:
+      # ページの最後までスクロール
+      driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+      # ページが完全に読み込まれるまで待機
+      time.sleep(2)
+      # 新しい高さを取得
+      new_height = driver.execute_script("return document.body.scrollHeight")
+      # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
+      if new_height == last_height:
+          break
+      last_height = new_height
+    # 履歴あり、なしの設定
+    mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
+    check_flag = driver.find_element(By.ID, value="opt3") 
+    is_checked = check_flag.is_selected()
+    while not is_checked:
+        mail_history[2].click()
+        time.sleep(1)
+        is_checked = check_flag.is_selected()
+
+    enter_button = driver.find_elements(By.ID, value="search1")
+    enter_button[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    # ユーザーリスト並び替え設定
+    user_sort = driver.find_element(By.ID, "sort2")
+    if user_sort.tag_name == "select":
+      select = Select(user_sort)
+      select.select_by_visible_text(user_sort_list[0])
+    if user_sort.tag_name == "div":
+      sort_login = driver.find_elements(By.ID, "sort-login")
+      sort_login[0].click()
+
+  time.sleep(1)
+  # ユーザーを取得
+  user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
+  users = user_list.find_elements(By.XPATH, value='./div')
   # ページの高さを取得
   last_height = driver.execute_script("return document.body.scrollHeight")
   while True:
@@ -705,56 +758,44 @@ def make_footprints(driver, wait, select_areas, youngest_age, oldest_age,):
     user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
     users = user_list.find_elements(By.XPATH, value='./div')
     # print(len(users))
-    if len(users) > 50:
-       print('ユーザー件数50　OVER')
-       break
+    if len(users) > 200:
+      print('ユーザー件数200　OVER')
+      break
     # 新しい高さを取得
     new_height = driver.execute_script("return document.body.scrollHeight")
     # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
     if new_height == last_height:
         break
     last_height = new_height
-  # https://pcmax.jp/mobile/profile_detail.php?user_id=" + user_id + "&search=prof&condition=648ac5f23df62&page=1&sort=&stmp_counter=13&js=1
-  # リンクを取得
+  # ユーザーのhrefを取得
   user_cnt = 1
   link_list = []
   for user_cnt in range(len(users)):
-    # # 実行確率（80%の場合）
-    # execution_probability = 0.80
-    # # ランダムな数値を生成し、実行確率と比較
-    # if random.random() < execution_probability:
-    user_id = users[user_cnt].get_attribute("id")
-    if user_id == "loading":
-      print('id=loading')
-      while user_id != "loading":
-        time.sleep(2)
-        user_id = users[user_cnt].get_attribute("id")
-    link = "https://pcmax.jp/mobile/profile_detail.php?user_id=" + user_id + "&search=prof&condition=648ac5f23df62&page=1&sort=&stmp_counter=13&js=1"
-    link_list.append(link)
-    # else:
-      #  print('無双RUSH終了')
-  print(f"ユーザー件数：{len(link_list)}")
-  for i, link_url in enumerate(link_list):
-      like_flag = False
-      driver.get(link_url)
-      time.sleep(wait_time)
-      # いいね
-      # ランダムな数値を生成し、実行確率と比較
-      # 実行確率
-      # execution_probability = 0.40
-      # if random.random() < execution_probability:
-      #   like_flag = True
-      #   like = driver.find_elements(By.ID, value="type_maru")
-      #   like[0].click()
-      # time.sleep(wait_time)
-      # if like_flag:
-      #   print(f"{name}: pcmax、足ペタ件数: {i + 1} いいね")
-      # else:
-      #   print(f"{name}: pcmax、足ペタ件数: {i + 1}")
-      # if i == 21:
-      #    break
-      print(f"{name}: pcmax、足ペタ件数: {i + 1}")
-  driver.refresh()
+    # 実行確率（80%の場合）
+    execution_probability = 0.99
+    # ランダムな数値を生成し、実行確率と比較
+    if random.random() < execution_probability:
+      user_id = users[user_cnt].get_attribute("id")
+      if user_id == "loading":
+        # print('id=loading')
+        while user_id != "loading":
+          time.sleep(2)
+          user_id = users[user_cnt].get_attribute("id")
+      link = "https://pcmax.jp/mobile/profile_detail.php?user_id=" + user_id + "&search=prof&condition=648ac5f23df62&page=1&sort=&stmp_counter=13&js=1"
+      random_index = random.randint(0, len(link_list))
+      link_list.insert(random_index, link)
+
+  print(f'リンクリストの数{len(link_list)}')
+  # メール送信
+  f_cnt = 0
+  for idx, link_url in enumerate(link_list, 1):
+    driver.get(link_url)
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(wait_time)
+    f_cnt += 1
+    print(f"{chara_data['name']} 足跡　{f_cnt}件")
+
+    
 
 def check_new_mail(pcmax_info, driver, wait):
   return_list = []
@@ -1938,118 +1979,118 @@ def send_fst_mail(pcmax_chara, maji_soushin, select_areas, youngest_age, oldest_
       else:
         # /////////////////////////利用制限なし
         print(f"{pcmax_chara['name']}利用制限なし")
-        return
-        # # 地域選択
-        # if len(select_area):
-        #   select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-        #   select_link[0].click()
-        # else:
-        #   # 都道府県の変更、リセット
+        
+        # 地域選択
+        if len(select_area):
+          select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+          select_link[0].click()
+        else:
+          # 都道府県の変更、リセット
           
-        #   reset_area[0].click()
-        #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        #   time.sleep(1)
-        #   reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
-        #   reset_area_orange[0].click()
-        #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        #   time.sleep(1)
-        #   ok_button = driver.find_element(By.ID, value="link_OK")
-        #   ok_button.click()
-        #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        #   time.sleep(1)
-        #   select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-        #   # たまにエラー
-        #   select_area_cnt = 0
-        #   while not len(select_area):
-        #     time.sleep(1)
-        #     # print("select_areaが取得できません")
-        #     select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
-        #     select_area_cnt += 1
-        #     if select_area_cnt == 10:
-        #       break
+          reset_area[0].click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+          reset_area_orange = driver.find_elements(By.CLASS_NAME, value="btn-orange")
+          reset_area_orange[0].click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+          ok_button = driver.find_element(By.ID, value="link_OK")
+          ok_button.click()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+          select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+          # たまにエラー
+          select_area_cnt = 0
+          while not len(select_area):
+            time.sleep(1)
+            # print("select_areaが取得できません")
+            select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
+            select_area_cnt += 1
+            if select_area_cnt == 10:
+              break
 
-        #   select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
-        #   select_link[0].click()
-        # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        # time.sleep(1)
-        # area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
-        # area_ids = []
-        # for select_area in select_areas:
-        #   if area_id_dict.get(select_area):
-        #     area_ids.append(area_id_dict.get(select_area))
-        # for area_id in area_ids:
-        #   if 19 <= area_id <= 25:
-        #     region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
-        #   elif 13 <= area_id <= 18:
-        #     region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
-        #   elif 26 <= area_id <= 29:
-        #     region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
-        #   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
-        #   check = region.find_elements(By.ID, value=int(area_id))
-        #   time.sleep(1)
-        #   driver.execute_script("arguments[0].click();", check[0])
-        # save_area = driver.find_elements(By.NAME, value="change")
-        # time.sleep(1)
-        # save_area[0].click()
-        # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        # time.sleep(1)
-        # # 年齢
-        # if youngest_age:
-        #   if 17 < int(youngest_age) < 59:
-        #     str_youngest_age = youngest_age + "歳"
-        #   elif 60 <= int(youngest_age):
-        #     str_youngest_age = "60歳以上"
-        #   from_age = driver.find_element(By.NAME, value="from_age")
-        #   select_from_age = Select(from_age)
-        #   select_from_age.select_by_visible_text(str_youngest_age)
-        #   time.sleep(1)
-        # else:
-        #   youngest_age = ""
-        # if oldest_age:
-        #   if 17 < int(oldest_age) < 59:
-        #     str_oldest_age = oldest_age + "歳"
-        #   elif 60 <= int(oldest_age):
-        #     str_oldest_age = "60歳以上" 
-        #   to_age = driver.find_element(By.ID, "to_age")
-        #   select = Select(to_age)
-        #   select.select_by_visible_text(str_oldest_age)
-        #   time.sleep(1)
-        # else:
-        #   youngest_age = ""
-        # # ページの高さを取得
-        # last_height = driver.execute_script("return document.body.scrollHeight")
-        # while True:
-        #   # ページの最後までスクロール
-        #   driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        #   # ページが完全に読み込まれるまで待機
-        #   time.sleep(2)
-        #   # 新しい高さを取得
-        #   new_height = driver.execute_script("return document.body.scrollHeight")
-        #   # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
-        #   if new_height == last_height:
-        #       break
-        #   last_height = new_height
-        # # 履歴あり、なしの設定
-        # mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
-        # check_flag = driver.find_element(By.ID, value="opt3") 
-        # is_checked = check_flag.is_selected()
-        # while not is_checked:
-        #     mail_history[2].click()
-        #     time.sleep(1)
-        #     is_checked = check_flag.is_selected()
+          select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
+          select_link[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(1)
+        area_id_dict = {"静岡県":27, "新潟県":13, "山梨県":17, "長野県":18, "茨城県":19, "栃木県":20, "群馬県":21, "東京都":22, "神奈川県":23, "埼玉県":24, "千葉県":25}
+        area_ids = []
+        for select_area in select_areas:
+          if area_id_dict.get(select_area):
+            area_ids.append(area_id_dict.get(select_area))
+        for area_id in area_ids:
+          if 19 <= area_id <= 25:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[1]
+          elif 13 <= area_id <= 18:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[2]
+          elif 26 <= area_id <= 29:
+            region = driver.find_elements(By.CLASS_NAME, value="select-details-area")[4]
+          driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", region)
+          check = region.find_elements(By.ID, value=int(area_id))
+          time.sleep(1)
+          driver.execute_script("arguments[0].click();", check[0])
+        save_area = driver.find_elements(By.NAME, value="change")
+        time.sleep(1)
+        save_area[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(1)
+        # 年齢
+        if youngest_age:
+          if 17 < int(youngest_age) < 59:
+            str_youngest_age = youngest_age + "歳"
+          elif 60 <= int(youngest_age):
+            str_youngest_age = "60歳以上"
+          from_age = driver.find_element(By.NAME, value="from_age")
+          select_from_age = Select(from_age)
+          select_from_age.select_by_visible_text(str_youngest_age)
+          time.sleep(1)
+        else:
+          youngest_age = ""
+        if oldest_age:
+          if 17 < int(oldest_age) < 59:
+            str_oldest_age = oldest_age + "歳"
+          elif 60 <= int(oldest_age):
+            str_oldest_age = "60歳以上" 
+          to_age = driver.find_element(By.ID, "to_age")
+          select = Select(to_age)
+          select.select_by_visible_text(str_oldest_age)
+          time.sleep(1)
+        else:
+          youngest_age = ""
+        # ページの高さを取得
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        while True:
+          # ページの最後までスクロール
+          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+          # ページが完全に読み込まれるまで待機
+          time.sleep(2)
+          # 新しい高さを取得
+          new_height = driver.execute_script("return document.body.scrollHeight")
+          # ページの高さが変わらなければ、すべての要素が読み込まれたことを意味する
+          if new_height == last_height:
+              break
+          last_height = new_height
+        # 履歴あり、なしの設定
+        mail_history = driver.find_elements(By.CLASS_NAME, value="thumbnail-c")
+        check_flag = driver.find_element(By.ID, value="opt3") 
+        is_checked = check_flag.is_selected()
+        while not is_checked:
+            mail_history[2].click()
+            time.sleep(1)
+            is_checked = check_flag.is_selected()
 
-        # enter_button = driver.find_elements(By.ID, value="search1")
-        # enter_button[0].click()
-        # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        # # ユーザーリスト並び替え設定
-        # user_sort = driver.find_element(By.ID, "sort2")
-        # if user_sort.tag_name == "select":
-        #   select = Select(user_sort)
-        #   select.select_by_visible_text(user_sort_list[0])
-        # if user_sort.tag_name == "div":
-        #   sort_login = driver.find_elements(By.ID, "sort-login")
-        #   sort_login[0].click()
-        # time.sleep(1)
+        enter_button = driver.find_elements(By.ID, value="search1")
+        enter_button[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        # ユーザーリスト並び替え設定
+        user_sort = driver.find_element(By.ID, "sort2")
+        if user_sort.tag_name == "select":
+          select = Select(user_sort)
+          select.select_by_visible_text(user_sort_list[0])
+        if user_sort.tag_name == "div":
+          sort_login = driver.find_elements(By.ID, "sort-login")
+          sort_login[0].click()
+        time.sleep(1)
 
       # ユーザーを取得
       user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
@@ -2982,7 +3023,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
           # func.send_error(chara, traceback.format_exc())
       if len(mail_info) and mail_info[0] != "" and mail_info[1] != "" and mail_info[2] != "":
         str_return_cnt_list = ",\n".join(send_cnt_list)
-        func.send_mail(str_return_cnt_list, mail_info)
+        title = "PCMAX足跡件数"
+        func.send_mail(str_return_cnt_list, mail_info, title)
       # elapsed_time = time.time() - start_one_rap_time  
       # elapsed_timedelta = timedelta(seconds=elapsed_time)
       # elapsed_time_formatted = str(elapsed_timedelta)
