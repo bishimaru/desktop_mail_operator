@@ -2473,7 +2473,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     #   break
     
     if send_count >= send_limit:
-      print("送信上限に達しました")
+      print("〜〜〜〜送信上限に達しました〜〜〜〜")
       return send_count
     # if mail_history == 7:
     #   break
@@ -2987,7 +2987,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       # elapsed_time_formatted = str(elapsed_timedelta)
     except Exception as e:
       print(7777777777777)
-      print(e)
+      print(traceback.format_exc())
       driver.quit()
       time.sleep(2)
     
