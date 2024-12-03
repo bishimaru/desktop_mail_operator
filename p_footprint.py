@@ -44,9 +44,7 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
         # "群馬県",
     ]
     youngest_age = 18
-    oldest_age = 31
-    
-    
+    oldest_age = 31  
     api_url = "https://meruopetyan.com/api/user-data/"
     # DEBUG
     # api_url = "http://127.0.0.1:8000/api/user-data/"

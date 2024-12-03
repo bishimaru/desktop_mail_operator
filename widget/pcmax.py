@@ -2646,6 +2646,23 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
     reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
     select_areas = ["東京都",]
+    # 地域選択（3つまで選択可能）
+    areas = [
+      "東京都",
+      "千葉県",
+      "埼玉県",
+      "神奈川県",
+      # "静岡県",
+      # "新潟県",
+      # "山梨県",
+      # "長野県",
+      # "茨城県",
+      "栃木県",
+      # "群馬県",
+    ]
+    areas.remove("東京都")
+    select_areas = random.sample(areas, 2)
+    select_areas.append("東京都")
     youngest_age = "19"
     oldest_age = "30"
     user_sort_list = [
@@ -2739,7 +2756,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
       # 年齢
-      
       if youngest_age:
         if 17 < int(youngest_age) < 59:
           str_youngest_age = youngest_age + "歳"
