@@ -23,7 +23,7 @@ user_data = func.get_user_data()
 
 # フォームを追加するためのカウンタ
 form_count = 0
-max_forms = 6
+max_forms = 2
 
 # Tkinter ウィンドウの設定
 root = tk.Tk()
@@ -42,20 +42,9 @@ def start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug):
     # api_url = "http://127.0.0.1:8000/api/user-data/"
     # スケジュールデータを文字列に変換して保存
     schedule_strings = [f"{hour}:{minute}" for (hour, minute) in schedule_data]
-    try:
-        user_id = user_data["user"][0]["user"]
-        update_data = {
-            "p_schedule_time": schedule_strings
-        }
-
-        response = requests.patch(f"{api_url}{user_id}/", json=update_data)
-        response.raise_for_status()
-    except HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err}")
-    except Exception as err:
-        print(f"Other error occurred: {err}")
-    
-    pcmax.repost_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug)
+    print(schedule_data)
+    schedule_data = [(6, 0), (20, 0)]
+    pcmax.repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug)
     
 
     print("Ctrl+{0} を押すと終了します。".format('Break' if os.name == 'nt' else 'C'))
@@ -102,10 +91,7 @@ def run_scheduler():
 
 def add_form(user_info_list):
     global form_count, form_label_added
-    print(777)
-    print(max_forms)
     if form_count >= max_forms:
-        print(999)
         return  
     # 掲示板予約時間のラベルがまだ追加されていなければ追加
     if not form_label_added:
@@ -133,14 +119,7 @@ def add_form(user_info_list):
     minute_labels.append(minute_label)
 
     
-    while len(user_info_list) <= form_count:
-        user_info_list.append(["", ""])
-    # 初期値を設定（空文字列に対応）
-    hour_value = int(user_info_list[form_count][0]) if user_info_list[form_count][0].isdigit() else 0
-    minute_value = int(user_info_list[form_count][1]) if user_info_list[form_count][1].isdigit() else 0
-   
-    hour_var.set(hour_value)   
-    minute_var.set(minute_value)  
+    
    
 
     form_count += 1  # カウンタを更新

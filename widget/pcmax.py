@@ -258,8 +258,8 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
     reposted_time_obj = datetime.strptime(reposted_time, "%Y/%m/%d %H:%M")
     now = datetime.now()
     # 2時間後と比較
-    if now >= reposted_time_obj + timedelta(hours=1):
-      print("1時間以上経過しています。")
+    if now >= reposted_time_obj + timedelta(minutes=10):
+      print("10分以上経過しています。")
       copy_button = posts[skip_cnt].find_elements(By.TAG_NAME, value="button")
       copy_button[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -295,7 +295,6 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
       select = Select(area)
       select.select_by_visible_text(last_area)
       time.sleep(1)
-      print(888)
       print(detail_area_flug)
       if detail_area_flug == "same":
         # 詳細地域を選択
@@ -388,7 +387,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
       time.sleep(1)
       posts = driver.find_elements(By.CLASS_NAME, value="bbs_posted_wrap")
     else:
-        print("まだ1時間経過していません。")
+        print("まだ10分経過していません。")
         skip_cnt += 1
         if skip_cnt > 3:
           break
@@ -3034,3 +3033,52 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       driver.quit()
       time.sleep(2)
     
+def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
+  def timer(sec, functions):
+    start_time = time.time() 
+    for func in functions:
+      try:
+        return_func = func()
+      except Exception as e:
+        print(e)
+        return_func = 0
+    elapsed_time = time.time() - start_time  # 経過時間を計算する
+    while elapsed_time < sec:
+      # make_footprints_repost_later()
+      time.sleep(30)
+      elapsed_time = time.time() - start_time  # 経過時間を計算する
+      # print(f"待機中~~ {elapsed_time} ")
+    
+    return return_func
+  
+  wait_cnt = 1800 / len(sorted_pcmax)
+
+  start_one_rap_time = time.time() 
+  
+
+  while True:
+    # 現在の時刻を取得
+    now = datetime.now()
+
+    # 午前6時から午後8時の間だけ実行
+    if 6 <= now.hour < 20:
+      driver,wait = func.get_driver(headless)
+      for pcmax_chara in sorted_pcmax:
+          print(len(sorted_pcmax))
+          print(pcmax_chara["name"])
+          try:
+              # ループ内で処理を実行
+              return_func = timer(wait_cnt, [lambda: re_post(pcmax_chara, driver, wait, detail_area_flug)])
+          except Exception as e:
+              print(f"エラー{pcmax_chara['name']}")
+              print(traceback.format_exc())
+              # func.send_error(pcmax_chara, traceback.format_exc())
+      driver.quit()
+      time.sleep(1)
+    else:
+        print("現在の時間帯は処理時間外です。午前6時から午後8時まで実行されます。")
+    # 1分ごとに再チェック（処理負荷を下げるため）
+    time.sleep(60)
+  
+
+  
