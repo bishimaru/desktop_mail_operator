@@ -1553,18 +1553,30 @@ def check_new_mail(happy_info, driver, wait):
             time.sleep(wait_time)
             send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
             reload_cnt = 0
-            while send_msg_elem[-1].text != fst_message:
+            while not len(send_msg_elem):
+              driver.refresh()
+              wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+              time.sleep(wait_time)
+              send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
+              reload_cnt += 1
+              if reload_cnt == 3:
                   driver.refresh()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                  time.sleep(5)
-                  send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
-                  # print(send_msg_elem[-1].text)
-                  reload_cnt += 1
-                  if reload_cnt == 3:
-                      driver.refresh()
-                      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                      time.sleep(wait_time)
-                      break
+                  time.sleep(wait_time)
+                  break
+            reload_cnt = 0
+            while send_msg_elem[-1].text != fst_message:
+              driver.refresh()
+              wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+              time.sleep(5)
+              send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
+              # print(send_msg_elem[-1].text)
+              reload_cnt += 1
+              if reload_cnt == 3:
+                  driver.refresh()
+                  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                  time.sleep(wait_time)
+                  break
            
         else:
           if len(return_list):
