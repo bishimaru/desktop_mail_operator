@@ -126,5 +126,9 @@ run_button.pack()
 # ユーザーリストの読み込み
 populate_user_listbox()
 
-# Tkinter メインループの開始
-root.mainloop()
+
+try:
+    root.mainloop()
+except KeyboardInterrupt:
+    print("\nKeyboardInterrupt in mainloop. Exiting...")
+    root.quit()

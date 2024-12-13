@@ -3028,6 +3028,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
     try:
       driver,wait = func.get_driver(headless)
       send_cnt_list = []
+      print("~~キャラリスト数~~~~~")
+      print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
