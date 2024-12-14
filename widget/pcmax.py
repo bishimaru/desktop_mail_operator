@@ -560,11 +560,11 @@ def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt,
       break
   driver.get("https://pcmax.jp/pcm/index.php")
 
-def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age,):
+def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age, foot_cnt):
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(2, 5)
+  wait_time = random.uniform(3, 7)
   time.sleep(2)
   id_form = driver.find_element(By.ID, value="login_id")
   id_form.send_keys(str(chara_data['login_id']))
@@ -757,8 +757,8 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
     user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
     users = user_list.find_elements(By.XPATH, value='./div')
     # print(len(users))
-    if len(users) > 200:
-      print('ユーザー件数200　OVER')
+    if len(users) > 50:
+      print('ユーザー件数50　OVER')
       break
     # 新しい高さを取得
     new_height = driver.execute_script("return document.body.scrollHeight")
@@ -786,15 +786,13 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
 
   print(f'リンクリストの数{len(link_list)}')
   # メール送信
-  f_cnt = 0
   for idx, link_url in enumerate(link_list, 1):
     driver.get(link_url)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
-    f_cnt += 1
-    print(f"{chara_data['name']} 足跡　{f_cnt}件")
-
-    
+    print(f"{chara_data['name']} 足跡　{idx}件")
+    if int(idx) == int(foot_cnt):
+      break
 
 def check_new_mail(pcmax_info, driver, wait):
   return_list = []

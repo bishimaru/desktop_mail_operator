@@ -55,7 +55,7 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
             # print(chara_data['name'])
             try:
                 # if chara_data['name'] == "つむぎ":
-                    pcmax.make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age,)
+                    pcmax.make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age, foot_cnt,)
             
             except Exception as e:
                 print(traceback.format_exc())
