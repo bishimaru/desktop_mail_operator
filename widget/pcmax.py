@@ -2927,6 +2927,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
             maji_soushin = False
         else:
           time.sleep(wait_time)
+          maji_soushin = False
           continue
         time.sleep(1)
       
