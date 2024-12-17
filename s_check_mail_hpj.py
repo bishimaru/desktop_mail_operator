@@ -41,6 +41,7 @@ def wait_if_near_midnight():
 def check_mail(user_data, headless):
   happymail_list = user_data['happymail']
   pcmax_list = user_data['pcmax']
+  jmail_list = user_data['jmail']
   mailaddress = user_data['user'][0]['gmail_account']
   gmail_password = user_data['user'][0]['gmail_account_password']
   receiving_address = user_data['user'][0]['recieve_mailaddress']
@@ -218,7 +219,7 @@ def check_mail(user_data, headless):
             # jmail
             # try:
             #     driver, wait = get_driver(debug)
-            #     jmail_new, return_foot_cnt = jmail.check_new_mail(driver, wait, order_info[0])
+            #     jmail_new, return_foot_cnt = jmail.check_new_mail(driver, wait, jmail_list)
             #     if jmail_new == 2:
             #         new_mail_lists.append(f"jmail:{order_info[0]} ログインできませんでした")
             #     elif jmail_new != 1:
