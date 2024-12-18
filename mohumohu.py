@@ -220,21 +220,56 @@ def check_mail(user_data, headless):
         # jmail
         print(f"<<<<<<<<<<<<Jmail:新着メール開始>>>>>>>>>>>>")
         try:
+            send_info = ""
             driver, wait = func.get_driver(headless)
             for jmail_info in jmail_list:  
-              jmail.check_new_mail(driver, wait, jmail_info)
-              # if jmail_new == 2:
-              #     new_mail_lists.append(f"jmail:{jmail_info['name']} ログインできませんでした")
-              # elif jmail_new != 1:
-              #     new_mail_lists.append(jmail_new)
-              # if return_foot_cnt:     
-              #     for r_f_user in jmail_return_foot_count_dic:
-              #         if order_info[0] == r_f_user:
-              #             # print(777)
-              #             # print(jmail_return_foot_count_dic[r_f_user])
-              #             # print(return_foot_cnt)
-              #             jmail_return_foot_count_dic[r_f_user] = jmail_return_foot_count_dic[r_f_user] + return_foot_cnt
-              #             # print(jmail_return_foot_count_dic[r_f_user])
+              jmail_send_info = jmail.check_new_mail(driver, wait, jmail_info)
+              # メール送信
+              smtpobj = None
+              if len(jmail_send_info) == 0:
+                  now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                  print(f'{jmail_info["name"]}チェック完了  {now}')
+                  pass
+              else:
+                  
+                  if mailaddress and gmail_password and receiving_address:
+                      now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                      print(f'チェック完了　要確認メールあり  {now}')
+                      print(jmail_send_info)
+                      text = ""
+                      subject = "新着メッセージ"
+                  
+                      for new_mail_list in jmail_send_info:
+                          print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
+                          print(new_mail_list)
+                          for new_mail in new_mail_list:
+
+                              text = text + new_mail + ",\n"
+                              if "警告" in text:
+                                  subject = "メッセージ"
+                  else:
+                      print("~~~~~~~~~~~~")
+                      print(f"自動送信に必要な情報が不足しています。　{mailaddress} {gmail_password} {receiving_address}")
+                      
+                  try:
+                      smtpobj = smtplib.SMTP('smtp.gmail.com', 587)
+                      smtpobj.starttls()
+                      smtpobj.set_debuglevel(0)
+                      smtpobj.login(mailaddress, gmail_password)
+                      msg = MIMEText(text)
+                      msg['Subject'] = subject
+                      msg['From'] = mailaddress
+                      msg['To'] = receiving_address
+                      msg['Date'] = formatdate()
+                      smtpobj.send_message(msg)
+                  except smtplib.SMTPDataError as e:
+                      print(f"SMTPDataError: {e}")
+                  except Exception as e:
+                      print(f"An error occurred: {e}")
+                  finally:
+                      if smtpobj: 
+                          smtpobj.close()   
+                        # print(jmail_return_foot_count_dic[r_f_user])
             driver.quit()
         except Exception as e:
             print(f"<<<<<<<<<<メールチェックエラー：jmail{jmail_info['name']}>>>>>>>>>>>")

@@ -30,6 +30,7 @@ import unicodedata
 import platform
 from urllib3.exceptions import MaxRetryError
 from webdriver_manager.core.driver_cache import DriverCacheManager
+import tempfile
 
 
 def clear_webdriver_cache():
@@ -56,7 +57,7 @@ def get_driver(headless_flag, max_retries=3):
             options = Options()
             if headless_flag:
                 options.add_argument('--headless')
-                options.add_argument("--disable-gpu")  # headlessモードの時はこのオプションを追加
+                options.add_argument("--disable-gpu") 
             options.add_argument("--incognito")
             options.add_argument('--enable-unsafe-swiftshader')
             options.add_argument('--log-level=3')  # これでエラーログが抑制されます
@@ -88,7 +89,6 @@ def get_driver(headless_flag, max_retries=3):
             time.sleep(5)
             if attempt == max_retries - 1:
                 raise
-
 
 def timer(fnc, seconds, h_cnt, p_cnt):  
   start_time = time.time() 

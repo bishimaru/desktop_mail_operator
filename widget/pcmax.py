@@ -2625,6 +2625,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
   returnfoot_cnt = send_count
   # ////////////fst////////////////////////////
+  
   if send_count <= send_limit:
     login(driver, wait)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2915,21 +2916,21 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
           if send_status == False:
             break
       # 残ポイントチェック
-      if maji_soushin:
-        point = driver.find_elements(By.ID, value="point")
-        if len(point):
-          point = point[0].find_element(By.TAG_NAME, value="span").text
-          pattern = r'\d+'
-          match = re.findall(pattern, point)
-          if int(match[0]) > 1:
-            maji_soushin = True
-          else:
-            maji_soushin = False
+      # 残ポイントチェック
+      point = driver.find_elements(By.ID, value="point")
+      if len(point):
+        point = point[0].find_element(By.TAG_NAME, value="span").text
+        pattern = r'\d+'
+        match = re.findall(pattern, point)
+        if int(match[0]) > 1:
+          maji_soushin = True
         else:
-          time.sleep(wait_time)
           maji_soushin = False
-          continue
-        time.sleep(1)
+      else:
+        time.sleep(4)
+        maji_soushin = False
+        continue
+      time.sleep(1)
       
       # メッセージを送信
       if send_status:
