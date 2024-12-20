@@ -159,24 +159,28 @@ def check_new_mail(driver, wait, jmail_info):
   c.execute('SELECT * FROM jmail WHERE name = ? AND login_id = ? AND password = ?', (name, login_id, password))
   sqlite_jmail_result = c.fetchone()  
   if sqlite_jmail_result is None:
+      print("ローカルに合致するギャラデータなし")
       c.execute('SELECT * FROM jmail WHERE name = ?', (name,))
       conn.commit()
       sqlite_jmail_result = c.fetchone()
      
       # 名前で検索結果なし
       if sqlite_jmail_result is None:
+        print("ローカルに名前も合致するギャラデータなし")
         c.execute("INSERT INTO jmail (name, login_id, password, send_list) VALUES (?,?,?,?)", (name, login_id, password, ""))
         conn.commit()  
       else:
+        print("ローカルに名前だけ合致するギャラデータあり")
         c.execute("UPDATE jmail SET login_id = ?, password = ?, send_list = ? WHERE name = ?", (login_id, password, "", name))
+        conn.commit()  
       submitted_users = []
   else:
-    if sqlite_jmail_result is not None:
-      submitted_users = sqlite_jmail_result[4]
-    else:
-      submitted_users = []
+    print("ローカルに合致するギャラデータあり")
+    submitted_users = sqlite_jmail_result[4]
+    
   conn.close()
-
+  print("送信履歴ありリスト")
+  print(submitted_users)
   fst_message = jmail_info['fst_message']
   return_foot_message = jmail_info['return_foot_message']
   second_message = jmail_info['conditions_message']
@@ -219,9 +223,9 @@ def check_new_mail(driver, wait, jmail_info):
 
     # NEWアイコンがあるかチェック
     new_icon = interacting_users[interacting_user_cnt].find_elements(By.TAG_NAME, value="img")
-    # if "未読" in interacting_users[interacting_user_cnt].text or len(new_icon):
+    if "未読" in interacting_users[interacting_user_cnt].text or len(new_icon):
     # deug
-    if "やん" in interacting_users[interacting_user_cnt].text:
+    # if "やん" in interacting_users[interacting_user_cnt].text:
       # 時間を取得　align_right
       parent_usr_info = interacting_users[interacting_user_cnt].find_element(By.XPATH, "./..")
       parent_usr_info = parent_usr_info.find_element(By.XPATH, "./..")
@@ -236,8 +240,7 @@ def check_new_mail(driver, wait, jmail_info):
       print(interacting_users[interacting_user_cnt].text)
       print(f"メール到着からの経過時間{elapsed_time}")
       print(interacting_user_name)
-      if interacting_user_name == "やん":
-      # if elapsed_time >= timedelta(minutes=4):
+      if elapsed_time >= timedelta(minutes=4):
         print("4分以上経過しています。")
         print(interacting_user_name)
         send_message = ""
@@ -250,8 +253,8 @@ def check_new_mail(driver, wait, jmail_info):
         # 相手からのメッセージが何通目か確認する
         if not sended_mail:
           send_by_me = driver.find_elements(By.CLASS_NAME, value="balloon_right")
-          print(888)
-          print(len(send_by_me))
+          # print(888)
+          # print(len(send_by_me))
           if len(send_by_me) == 0:
             send_message = fst_message
             send_image = True
@@ -468,10 +471,10 @@ def check_new_mail(driver, wait, jmail_info):
         print(888)
         print(send_complete)
         display_value = send_complete_element[0].value_of_css_property("display")
-        print(display_value)
+        wait_cnt = 0
         while send_complete != "送信完了しました":
           time.sleep(4)
-          print(display_value)
+          print(send_complete)
           wait_cnt += 1
           if wait_cnt > 4:
             print("ロード時間が15秒以上かかっています")

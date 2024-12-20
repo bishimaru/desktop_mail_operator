@@ -271,6 +271,7 @@ def check_mail(user_data, headless):
                           smtpobj.close()   
                         # print(jmail_return_foot_count_dic[r_f_user])
             driver.quit()
+            time.sleep(600)
         except Exception as e:
             print(f"<<<<<<<<<<メールチェックエラー：jmail{jmail_info['name']}>>>>>>>>>>>")
             print(traceback.format_exc())
