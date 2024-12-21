@@ -402,11 +402,11 @@ def check_new_mail(driver, wait, jmail_info):
   for foot_return_cnt in range(len(name_element)):
     # 年齢を取得
     next_to_element = name_element[foot_return_cnt].find_element(By.XPATH, "following-sibling::*[1]")
-    print(next_to_element.text)
+    user_age = next_to_element.text.replace
+    # print(next_to_element.text)
     age_list = ["18~21", "22~25", "26~29", "30~34", ]
-    if any(age in next_to_element.text.replace("～", "~") for age in age_list):
-      print("age_list の中の文字列が string に含まれています。")
-    
+    if any(age in user_age.replace("～", "~") for age in age_list):
+      # print("age_list の中の文字列が string に含まれています。")
       # 地域を判定
       next_to_next_element = name_element[foot_return_cnt].find_element(By.XPATH, "following-sibling::*[2]")
       if "大阪" in next_to_next_element.text or "兵庫" in next_to_next_element.text or "石川" in next_to_next_element.text:
@@ -475,7 +475,7 @@ def check_new_mail(driver, wait, jmail_info):
             # ユーザー名を保存
             interacting_user_list.append(foot_user_name)
             send_count += 1
-            print(f"jmail足跡返し {name}: {send_count}件送信")
+            print(f"jmail足跡返し {name} {user_age}: {send_count}件送信")
             if send_count == send_limit:
               print("送信数の上限に達しました")
               break
