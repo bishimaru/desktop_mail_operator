@@ -479,11 +479,11 @@ def check_new_mail(driver, wait, jmail_info):
             if send_count == send_limit:
               print("送信数の上限に達しました")
               break
-      # あしあとリストに戻る
-      driver.back()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
+        # あしあとリストに戻る
+        driver.back()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(2)
+        name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
   # interacting_user_listを保存
   send_list_string = " ".join(interacting_user_list)
   # send_list_string = " ".join([' ウヌ', ' サンドリ', ' けん', ' はる', ' れん'])
