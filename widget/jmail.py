@@ -243,6 +243,8 @@ def check_new_mail(driver, wait, jmail_info):
         driver.get(link_element.get_attribute("href"))
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
+        send_by_user = driver.find_elements(By.CLASS_NAME, value="balloon_left")
+        send_by_user_message = send_by_user[0].find_elements(By.CLASS_NAME, value="balloon")[0].text
         # 相手からのメッセージが何通目か確認する
         if not sended_mail:
           send_by_me = driver.find_elements(By.CLASS_NAME, value="balloon_right")
