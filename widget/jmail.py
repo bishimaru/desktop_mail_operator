@@ -424,6 +424,7 @@ def check_new_mail(driver, wait, jmail_info):
         foot_user_name = foot_user_name.replace(" ", "")
       if "　" in foot_user_name:
         foot_user_name = foot_user_name.replace("　", "")
+      # 送信済かチェック
       if foot_user_name not in interacting_user_list:
         send_status = True
         # print(f"{foot_user_name}はメールリストになかった")
@@ -483,13 +484,12 @@ def check_new_mail(driver, wait, jmail_info):
             if send_count == send_limit:
               print("送信数の上限に達しました")
               break
-    # あしあとリストに戻る
-
-    driver.back()
-    print(22222)
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(200)
-    name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
+        # あしあとリストに戻る
+        driver.back()
+        print(22222)
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(2)
+        name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
   # interacting_user_listを保存
   send_list_string = " ".join(interacting_user_list)
   # send_list_string = " ".join([' ウヌ', ' サンドリ', ' けん', ' はる', ' れん'])
