@@ -402,7 +402,7 @@ def check_new_mail(driver, wait, jmail_info):
   for foot_return_cnt in range(len(name_element)):
     # 年齢を取得
     next_to_element = name_element[foot_return_cnt].find_element(By.XPATH, "following-sibling::*[1]")
-    user_age = next_to_element.text.replace
+    user_age = next_to_element.text
     # print(next_to_element.text)
     age_list = ["18~21", "22~25", "26~29", "30~34", ]
     if any(age in user_age.replace("～", "~") for age in age_list):
