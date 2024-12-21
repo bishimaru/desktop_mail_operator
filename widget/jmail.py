@@ -401,6 +401,8 @@ def check_new_mail(driver, wait, jmail_info):
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
   name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
+  print(111111111)
+  print(len(name_element))
   for foot_return_cnt in range(len(name_element)):
     # 年齢を取得
     next_to_element = name_element[foot_return_cnt].find_element(By.XPATH, "following-sibling::*[1]")
