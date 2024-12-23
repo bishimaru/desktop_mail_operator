@@ -2664,7 +2664,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     select_areas = random.sample(areas, 2)
     select_areas.append("東京都")
     youngest_age = "19"
-    oldest_age = "30"
+    oldest_age = "33"
     user_sort_list = [
       "ログイン順",
       # "登録順", 
@@ -3047,7 +3047,6 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       # elapsed_timedelta = timedelta(seconds=elapsed_time)
       # elapsed_time_formatted = str(elapsed_timedelta)
     except Exception as e:
-      print(7777777777777)
       print(traceback.format_exc())
       driver.quit()
       time.sleep(2)
