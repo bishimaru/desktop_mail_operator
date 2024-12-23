@@ -564,7 +564,7 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(4, 8)
+  wait_time = random.uniform(4, 9)
   time.sleep(2)
   id_form = driver.find_element(By.ID, value="login_id")
   id_form.send_keys(str(chara_data['login_id']))
