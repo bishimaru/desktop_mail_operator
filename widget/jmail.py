@@ -376,7 +376,7 @@ def check_new_mail(driver, wait, jmail_info):
               send_button[0].click()
               wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
               time.sleep(2)
-              send_count += 1
+              
             # メール一覧に戻る　message_back
             back_parent = driver.find_elements(By.CLASS_NAME, value="message_back")
             back = back_parent[0].find_elements(By.TAG_NAME, value="a")
@@ -425,7 +425,8 @@ def check_new_mail(driver, wait, jmail_info):
       if "　" in foot_user_name:
         foot_user_name = foot_user_name.replace("　", "")
       # 送信済かチェック
-      if foot_user_name not in interacting_user_list:
+      # if foot_user_name not in interacting_user_list:
+      if True:#DEBUG 
         send_status = True
         # print(f"{foot_user_name}はメールリストになかった")
         foot_user_link = name_element[foot_return_cnt].find_element(By.XPATH, "./..")
@@ -450,7 +451,7 @@ def check_new_mail(driver, wait, jmail_info):
           time.sleep(4)
           # 画像があれば送付
           # DEBUG用　
-          mail_img = ""
+          mail_img = True
           if mail_img:
             img_input = driver.find_elements(By.ID, value="upload_file")
             img_input[0].send_keys(mail_img)
@@ -484,12 +485,11 @@ def check_new_mail(driver, wait, jmail_info):
             if send_count == send_limit:
               print("送信数の上限に達しました")
               break
-        # あしあとリストに戻る
-        driver.back()
-        print(22222)
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(2)
-        name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
+          # あしあとリストに戻る
+          driver.back()
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(2)
+          name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
   # interacting_user_listを保存
   send_list_string = " ".join(interacting_user_list)
   # send_list_string = " ".join([' ウヌ', ' サンドリ', ' けん', ' はる', ' れん'])
