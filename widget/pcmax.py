@@ -376,11 +376,11 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
           submit = driver.find_element(By.CLASS_NAME, value="write_btn")
           submit.click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-          time.sleep(wait_time)
-          now = datetime.now().strftime('%m-%d %H:%M:%S')
-          print(f"{name} 再投稿{repost_cnt}件 {last_area}:{detail_area}  time:{now}")
+          time.sleep(wait_time)   
           repost_cnt += 1
         return
+      now = datetime.now().strftime('%m-%d %H:%M:%S')
+      print(f"{name} 再投稿{repost_cnt}件 {last_area}:{detail_area}  time:{now}")
         
       # 掲示板投稿履歴をクリック
       bulletin_board_history = driver.find_element(By.XPATH, value="//*[@id='wrap']/div[2]/table/tbody/tr/td[3]/a")
