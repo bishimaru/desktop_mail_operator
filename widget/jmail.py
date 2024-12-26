@@ -156,9 +156,6 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   else:
     image_path = ""
     image_filename = None 
-  
-  print(name)
-  print(mail_img)
   # データベース接続とテーブル作成
   conn = sqlite3.connect('user_data.db')
   c = conn.cursor()
@@ -193,7 +190,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
     # print("ローカルに合致するギャラデータあり")
     submitted_users = sqlite_jmail_result[4] 
   conn.close()
-  print("送信履歴ありリスト")
+  print(f"送信履歴ありリスト {len(submitted_users)}人")
   print(submitted_users)
   fst_message = jmail_info['fst_message']
   return_foot_message = jmail_info['return_foot_message']
