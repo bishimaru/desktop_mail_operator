@@ -2709,8 +2709,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
         select_link[0].click()
       else:
-        # 都道府県の変更、リセット
-        
+        # 都道府県の変更、リセット  
         reset_area[0].click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(1)
@@ -2732,7 +2731,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
           select_area_cnt += 1
           if select_area_cnt == 10:
             break
-
         select_link = select_area[0].find_elements(By.TAG_NAME, value="a")
         select_link[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2802,7 +2800,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
           mail_history[2].click()
           time.sleep(1)
           is_checked = check_flag.is_selected()
-
       enter_button = driver.find_elements(By.ID, value="search1")
       enter_button[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2815,7 +2812,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         sort_login = driver.find_elements(By.ID, "sort-login")
         sort_login[0].click()
       time.sleep(1)
-
     # ユーザーを取得
     user_list = driver.find_element(By.CLASS_NAME, value="content_inner")
     users = user_list.find_elements(By.XPATH, value='./div')
@@ -2855,7 +2851,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         link = "https://pcmax.jp/mobile/profile_detail.php?user_id=" + user_id + "&search=prof&condition=648ac5f23df62&page=1&sort=&stmp_counter=13&js=1"
         random_index = random.randint(0, len(link_list))
         link_list.insert(random_index, link)
-
     # print(f'リンクリストの数{len(link_list)}')
     # メール送信
     for idx, link_url in enumerate(link_list, 1):

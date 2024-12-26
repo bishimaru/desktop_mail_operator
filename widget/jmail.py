@@ -479,6 +479,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
         driver.back()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
+        users_elem = driver.find_elements(By.CLASS_NAME, value="search_list_col")
 
   # あしあと返し
   #メニューをクリック
