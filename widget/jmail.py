@@ -275,7 +275,9 @@ def check_new_mail(driver, wait, jmail_info):
           driver.execute_script(script, text_area[0], send_message)
           time.sleep(4)
           # 画像があれば送信
-          mail_img = ""
+          if send_message == fst_message and mail_img == True:
+            print(777777777)
+          return
           if send_image and mail_img:
             img_input = driver.find_elements(By.NAME, value="image1")
             img_input[0].send_keys(mail_img)
@@ -351,6 +353,7 @@ def check_new_mail(driver, wait, jmail_info):
               send_by_me = driver.find_elements(By.CLASS_NAME, value="balloon_right")
               if len(send_by_me) == 0:
                 send_message = fst_message
+                mail_img = True
               elif len(send_by_me) == 1:
                 send_message = second_message
               elif second_message in send_by_me[0].text:
@@ -372,6 +375,8 @@ def check_new_mail(driver, wait, jmail_info):
               driver.execute_script(script, text_area[0], send_message)
               time.sleep(4)
               # 画像があれば送信
+              if mail_img:
+                print(7777777777777777777777777777777777)
               send_button = driver.find_elements(By.NAME, value="sendbutton")
               send_button[0].click()
               wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -386,6 +391,55 @@ def check_new_mail(driver, wait, jmail_info):
         pager = driver.find_elements(By.CLASS_NAME, value="pager")
         if len(pager):
           pager_link = pager[0].find_elements(By.TAG_NAME, value="a")
+  print(66666)
+  # 初めまして送信
+  #メニューをクリック
+  menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
+  menu_icon[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(2)
+  menu = driver.find_elements(By.CLASS_NAME, value="iconMenu")
+  #プロフ検索をクリック
+  foot_menus = menu[0].find_elements(By.TAG_NAME, value="p")
+  foot_menu = foot_menus[0].find_elements(By.XPATH, "//*[contains(text(), 'プロフ検索')]")
+  foot_menu_link = foot_menu[0].find_element(By.XPATH, "./..")
+  driver.get(foot_menu_link.get_attribute("href"))
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(2)
+  users_elem = driver.find_elements(By.CLASS_NAME, value="search_list_col")
+  print(len(users_elem))
+  for i in range(len(users_elem)):
+    user_name = users_elem[i].find_element(By.CLASS_NAME, value="prof_name").text
+    print(user_name)
+    print("=====")
+    print(interacting_user_list)
+
+    print("=====")
+    # 送信済かチェック
+    if user_name not in interacting_user_list:
+      interacting_user_list.append(user_name)
+      print(222)
+      users_elem[i].click()
+    print(1111)
+    # 自己紹介文チェック
+    profile = driver.find_elements(By.CLASS_NAME, value="prof_pr")
+    if len(profile):
+      profile = profile[0].text.replace(" ", "").replace("\n", "")
+      if '通報' in profile or '業者' in profile:
+        print('自己紹介文に危険なワードが含まれていました')
+        interacting_user_list.append(user_name)
+        continue
+    text_area = driver.find_elements(By.ID, value="textarea")
+    driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area[0])
+    time.sleep(1)
+    script = "arguments[0].value = arguments[1];"
+    driver.execute_script(script, text_area[0], fst_message)
+    time.sleep(4)
+    # 画像があれば送付
+    # DEBUG用　
+    mail_img = True
+    time.sleep(100)
+  return
   # あしあと返し
   #メニューをクリック
   menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
