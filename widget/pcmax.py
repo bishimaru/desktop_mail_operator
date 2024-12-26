@@ -2509,10 +2509,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       user_cnt += 1
   # mohu = 0
   for i in link_list:
-    # mohu += 1
-    # if mohu == 2:
-    #   break
-    
     if send_count >= send_limit:
       print("〜〜〜〜送信上限に達しました〜〜〜〜")
       return send_count
@@ -3009,7 +3005,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       try:
         return_func = func()
       except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         return_func = 0
     elapsed_time = time.time() - start_time  # 経過時間を計算する
     while elapsed_time < sec:
