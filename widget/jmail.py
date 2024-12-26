@@ -190,7 +190,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
     # print("ローカルに合致するギャラデータあり")
     submitted_users = sqlite_jmail_result[4] 
   conn.close()
-  print(f"送信履歴ありリスト {len(submitted_users)}人")
+  print(f"送信履歴ありリスト")
   print(submitted_users)
   fst_message = jmail_info['fst_message']
   return_foot_message = jmail_info['return_foot_message']
@@ -584,7 +584,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   #         name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
   
   # interacting_user_listを保存
-  print("送信済ユーザーリスト")
+  print(f"送信済ユーザーリスト {len(interacting_user_list)}人")
   print(interacting_user_list)
   send_list_string = " ".join(interacting_user_list)
   conn = sqlite3.connect('user_data.db')
