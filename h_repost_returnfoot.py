@@ -47,13 +47,14 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
   time.sleep(2)
   return_foot_counted = 0
   repost_flug = ""
-  try:
-    repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
-  except Exception as e:
-    print(f"ハッピーメール掲示板エラー{name}")
-    print(traceback.format_exc())
-    func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
-  time.sleep(2)
+
+  # try:
+  #   repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
+  # except Exception as e:
+  #   print(f"ハッピーメール掲示板エラー{name}")
+  #   print(traceback.format_exc())
+  #   func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
+  # time.sleep(2)
   try:
     return_foot_counted = happymail.return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type_cnt, return_foot_cnt, return_foot_img, fst_message)
   except Exception as e:
@@ -73,7 +74,12 @@ if __name__ == '__main__':
     cnt = int(sys.argv[2])
     # matching_cnt = int(sys.argv[3])
     # type_cnt = int(sys.argv[4])
-  happy_chara_list ={'id': 49, 'name': 'わかな', 'login_id': '08025371921', 'password': 'be8162', 'fst_message': "777", 'return_foot_message': "🐰💓", 'conditions_message': None, 'post_title': '3人でエッチを楽しめる方探してます♪', 'post_contents': '初めまして( ＾∀＾)\r\nあすかです！友達のゆかとセフレさん探しの為に始めてみました♪♪\r\n\r\n2人とも都内のメンズ専門の脱毛サロンで働いてるんですけど、VIOの脱毛専門で施術中にエッチな気分になっちゃてるちょっと変態な2人組です(⸝⸝⸝´꒳`⸝⸝⸝)ﾃﾚｯ\r\n\r\n私もゆかもちょっと刺激が欲しいなって思ってて、、\r\n折角セフレさんになってもらうなら3人でエッチを楽しめる人を探してます！\r\n\r\n3Pとかに興味ある方は連絡くださいね♪♪\r\n因みに、2人ともエッチで人懐っこい性格なので会って損はしないと思います♪笑', 'is_active': True, 'chara_image': '', 'user_id': 4}
+  happy_chara_list = func.get_user_data()["happymail"]
+  for i in happy_chara_list:
+    if i['name'] == "アスカ":
+      happy_chara_list = i
+  print(happy_chara_list)
+
   matching_cnt = 0
   type_cnt = 0
   headless = False

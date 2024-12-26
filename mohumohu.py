@@ -219,11 +219,11 @@ def check_mail(user_data, headless):
 
         # jmail
         print(f"<<<<<<<<<<<<Jmail:新着メール開始>>>>>>>>>>>>")
+        try_cnt = 0
         try:
-            send_info = ""
             driver, wait = func.get_driver(headless)
             for jmail_info in jmail_list:  
-              jmail_send_info = jmail.check_new_mail(driver, wait, jmail_info)
+              jmail_send_info = jmail.check_new_mail(driver, wait, jmail_info, try_cnt)
               # メール送信
               smtpobj = None
               if len(jmail_send_info) == 0:
@@ -271,6 +271,7 @@ def check_mail(user_data, headless):
                           smtpobj.close()   
                         # print(jmail_return_foot_count_dic[r_f_user])
             driver.quit()
+            try_cnt += 1
             time.sleep(600)
         except Exception as e:
             print(f"<<<<<<<<<<メールチェックエラー：jmail{jmail_info['name']}>>>>>>>>>>>")
