@@ -401,7 +401,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
         if len(pager):
           pager_link = pager[0].find_elements(By.TAG_NAME, value="a")
   # ///////////////初めまして送信///////////////////////////////////////////////
-  send_limit = 2
+  send_limit = 1
   if try_cnt % 3 == 0:
     #メニューをクリック
     menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
