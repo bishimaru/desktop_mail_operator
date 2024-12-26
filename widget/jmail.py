@@ -175,22 +175,22 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   c.execute('SELECT * FROM jmail WHERE name = ? AND login_id = ? AND password = ?', (name, login_id, password))
   sqlite_jmail_result = c.fetchone()  
   if sqlite_jmail_result is None:
-      print("ローカルに合致するギャラデータなし")
+      # print("ローカルに合致するギャラデータなし")
       c.execute('SELECT * FROM jmail WHERE name = ?', (name,))
       conn.commit()
       sqlite_jmail_result = c.fetchone()
       # 名前で検索結果なし
       if sqlite_jmail_result is None:
-        print("ローカルに名前も合致するギャラデータなし")
+        # print("ローカルに名前も合致するギャラデータなし")
         c.execute("INSERT INTO jmail (name, login_id, password, send_list) VALUES (?,?,?,?)", (name, login_id, password, ""))
         conn.commit()  
       else:
-        print("ローカルに名前だけ合致するギャラデータあり")
+        # print("ローカルに名前だけ合致するギャラデータあり")
         c.execute("UPDATE jmail SET login_id = ?, password = ?, send_list = ? WHERE name = ?", (login_id, password, "", name))
         conn.commit()  
       submitted_users = []
   else:
-    print("ローカルに合致するギャラデータあり")
+    # print("ローカルに合致するギャラデータあり")
     submitted_users = sqlite_jmail_result[4] 
   conn.close()
   print("送信履歴ありリスト")
@@ -459,6 +459,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
         send_complete_element = driver.find_elements(By.ID, value="modal_title")
         send_complete = send_complete_element[0].text
         wait_cnt = 0
+        send_status = True
         while send_complete != "送信完了しました":
           time.sleep(4)
           print(send_complete)
@@ -469,7 +470,9 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
             send_status = False
             break
           send_complete = send_complete_element[0].text
-        fst_mail_cnt += 1
+        if send_status:
+          fst_mail_cnt += 1
+          print(f"jmail 1st_mail {name} : {fst_mail_cnt}件送信")
         if fst_mail_cnt == send_limit:
           print("送信上限に達しました")
           break
@@ -583,6 +586,8 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   #         name_element = driver.find_elements(By.CLASS_NAME, value="icon_sex_m")
   
   # interacting_user_listを保存
+  print("送信済ユーザーリスト")
+  print(interacting_user_list)
   send_list_string = " ".join(interacting_user_list)
   conn = sqlite3.connect('user_data.db')
   c = conn.cursor()
