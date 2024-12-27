@@ -289,7 +289,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
           # 画像があれば送信
           if send_message == fst_message and image_path:
             img_input = driver.find_elements(By.NAME, value="image1")
-            img_input[0].send_keys(mail_img)
+            img_input[0].send_keys(image_path)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
             time.sleep(2)
           send_button = driver.find_elements(By.NAME, value="sendbutton")
