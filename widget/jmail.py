@@ -483,7 +483,8 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
     # /////////////////////////あしあと返し
     #メニューをクリック
     menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
-    menu_icon[0].click()
+    driver.execute_script("arguments[0].click();", menu_icon[0])
+    # menu_icon[0].click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
     menu = driver.find_elements(By.CLASS_NAME, value="iconMenu")
