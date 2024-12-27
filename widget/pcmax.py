@@ -1395,6 +1395,7 @@ def check_new_mail(pcmax_info, driver, wait):
   
 def re_registration(chara_data, driver, wait):
   # print(chara_data)
+  name = chara_data["name"]
   login_id = chara_data["login_id"]
   login_pass = chara_data["password"]
   date_of_birth = chara_data["date_of_birth"]
@@ -1525,6 +1526,9 @@ def re_registration(chara_data, driver, wait):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
     body_shape_select = driver.find_elements(By.CLASS_NAME, value="s_select")
+    if not len(body_shape_select):
+      time.sleep(3)
+      print(len(body_shape_select))
     select = Select(body_shape_select[0])
     select.select_by_visible_text(body_shape)
     time.sleep(1)

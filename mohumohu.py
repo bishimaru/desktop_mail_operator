@@ -240,15 +240,14 @@ def check_mail(user_data, headless):
                         print(jmail_send_info)
                         text = ""
                         subject = "新着メッセージ"
-                    
                         for new_mail_list in jmail_send_info:
                             print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
                             print(new_mail_list)
-                            for new_mail in new_mail_list:
-
-                                text = text + new_mail + ",\n"
-                                if "警告" in text:
-                                    subject = "メッセージ"
+                            text = text + new_mail_list + ",\n"
+                            if "警告" in text:
+                                subject = "メッセージ"
+                            
+                                
                     else:
                         print("~~~~~~~~~~~~")
                         print(f"自動送信に必要な情報が不足しています。　{mailaddress} {gmail_password} {receiving_address}")
