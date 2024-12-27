@@ -846,8 +846,18 @@ def check_new_mail(pcmax_info, driver, wait):
   warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
   number_lock = driver.find_elements(By.ID, value="content_header2")
   if len(warning) or len(warning2) or len(warning3) or len(number_lock):
-    print(f"{name}に警告画面が出ている可能性があります")
-    return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
+    # kiyaku-btn
+    kiyaku_btn = driver.find_elements(By.CLASS_NAME, value="kiyaku-btn")
+    kiyaku_btn_text = kiyaku_btn[0].text
+    print(555555555)
+    print(kiyaku_btn_text)
+    if kiyaku_btn_text == "上記を了承する":
+      driver.execute_script("arguments[0].click();", kiyaku_btn[0])
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(3)
+    else:
+      print(f"{name}に警告画面が出ている可能性があります")
+      return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
     if len(return_list):
       return return_list, 0
     else:
