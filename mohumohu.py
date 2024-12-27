@@ -219,8 +219,8 @@ def check_mail(user_data, headless):
 
         # jmail
         now = datetime.now()
-        # 午前6時から午後8時の間だけ実行
-        if 6 <= now.hour < 24:
+        # 午前6時から午後23時の間だけ実行
+        if 6 <= now.hour < 23:
             print(f"<<<<<<<<<<<<Jmail:新着メール開始>>>>>>>>>>>>")
             try_cnt = 0
             try:
