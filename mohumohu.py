@@ -244,6 +244,8 @@ def check_mail(user_data, headless):
                             print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
                             print(new_mail_list)
                             text = text + new_mail_list + ",\n"
+                            print('<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>')
+                            print(text)
                             if "警告" in text:
                                 subject = "メッセージ"
                             
@@ -257,6 +259,8 @@ def check_mail(user_data, headless):
                         smtpobj.starttls()
                         smtpobj.set_debuglevel(0)
                         smtpobj.login(mailaddress, gmail_password)
+                        print(777)
+                        print(text)
                         msg = MIMEText(text)
                         msg['Subject'] = subject
                         msg['From'] = mailaddress
