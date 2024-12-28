@@ -3069,7 +3069,7 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
       try:
         return_func = func()
       except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         return_func = 0
     elapsed_time = time.time() - start_time  # 経過時間を計算する
     while elapsed_time < sec:
