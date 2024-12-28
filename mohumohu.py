@@ -39,13 +39,13 @@ def wait_if_near_midnight():
     return
 
 def check_mail(user_data, headless):
-  happymail_list = user_data['happymail']
-  pcmax_list = user_data['pcmax']
+#   happymail_list = user_data['happymail']
+#   pcmax_list = user_data['pcmax']
   jmail_list = user_data['jmail']
   mailaddress = user_data['user'][0]['gmail_account']
   gmail_password = user_data['user'][0]['gmail_account_password']
   receiving_address = user_data['user'][0]['recieve_mailaddress']
-
+  try_cnt = 0
 #   print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
   while True:
         send_flug = True
@@ -219,10 +219,11 @@ def check_mail(user_data, headless):
 
         # jmail
         now = datetime.now()
+        
         # 午前6時から午後23時の間だけ実行
         if 6 <= now.hour < 23:
             print(f"<<<<<<<<<<<<Jmail:新着メール開始>>>>>>>>>>>>")
-            try_cnt = 0
+            
             try:
                 driver, wait = func.get_driver(headless)
                 for jmail_info in jmail_list:  
@@ -285,10 +286,6 @@ def check_mail(user_data, headless):
                 driver.quit()
                 
             
-                        
-            elapsed_time = time.time() - start_time  
-            elapsed_timedelta = timedelta(seconds=elapsed_time)
-            elapsed_time_formatted = str(elapsed_timedelta)
             driver.quit()
             time.sleep(1)
             gc.collect()

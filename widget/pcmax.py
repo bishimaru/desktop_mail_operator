@@ -379,6 +379,8 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
           time.sleep(wait_time)   
           repost_cnt += 1
         return
+      else:
+        repost_cnt += 1
       now = datetime.now().strftime('%m-%d %H:%M:%S')
       print(f"{name} 再投稿{repost_cnt}件 {last_area}:{detail_area}  time:{now}")
         
@@ -3082,7 +3084,6 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
 
   start_one_rap_time = time.time() 
   
-
   while True:
     # 現在の時刻を取得
     now = datetime.now()
@@ -3091,8 +3092,12 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
     if 6 <= now.hour < 20:
       driver,wait = func.get_driver(headless)
       for pcmax_chara in sorted_pcmax:
-          print(len(sorted_pcmax))
-          print(pcmax_chara["name"])
+          
+          # print(len(sorted_pcmax))
+          # print(pcmax_chara["name"])
+          # if pcmax_chara["name"] != "わかな":
+          #   print(666)
+          #   continue
           try:
               # ループ内で処理を実行
               return_func = timer(wait_cnt, [lambda: re_post(pcmax_chara, driver, wait, detail_area_flug)])

@@ -250,7 +250,9 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
       print(interacting_user_name)
       if elapsed_time >= timedelta(minutes=4):
         print("4分以上経過しています。")
-        print(interacting_user_name)
+        if interacting_user_name not in interacting_user_list:
+          interacting_user_name = " " + interacting_user_name
+          interacting_user_list.append(interacting_user_name)
         send_message = ""
         # リンクを取得
         link_element = interacting_users[interacting_user_cnt].find_element(By.XPATH, "./..")
@@ -360,7 +362,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
               send_by_me = driver.find_elements(By.CLASS_NAME, value="balloon_right")
               if len(send_by_me) == 0:
                 send_message = fst_message
-                mail_img = True
+                interacting_user_list.append(user_name)
               elif len(send_by_me) == 1:
                 send_message = second_message
               elif second_message in send_by_me[0].text:
@@ -400,7 +402,8 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   # ///////////////初めまして送信///////////////////////////////////////////////
   fst_send_limit = 1
   returnfoot_send_limit = 1
-  if try_cnt % 4 == 0:
+  
+  if try_cnt % 3 == 0:
     #メニューをクリック
     menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
     menu_icon[0].click()

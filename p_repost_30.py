@@ -42,7 +42,7 @@ def start_scheduler(schedule_data, sorted_pcmax, headless, detail_area_flug):
     # api_url = "http://127.0.0.1:8000/api/user-data/"
     # スケジュールデータを文字列に変換して保存
     schedule_strings = [f"{hour}:{minute}" for (hour, minute) in schedule_data]
-    print(schedule_data)
+    # print(schedule_data)
     schedule_data = [(6, 0), (20, 0)]
     pcmax.repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug)
     
