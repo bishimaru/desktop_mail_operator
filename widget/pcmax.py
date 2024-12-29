@@ -250,6 +250,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
   if not len(posts):
     return
   skip_cnt = 0
+  repost_cnt = 0
   while len(posts):
     if skip_cnt >= len(posts):
       break
@@ -327,6 +328,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
       write_bulletin_board.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
+
       # 利用制限チェック
       usage_limit = driver.find_elements(By.CLASS_NAME, value="white_box")
       if len(usage_limit):
@@ -362,7 +364,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
             if link_text == "コピーする":
               link = a_element.get_attribute("href")
               link_list.append(link)
-        repost_cnt = 1
+        
         for i in link_list:
           try:
             driver.get(i)
