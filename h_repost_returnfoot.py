@@ -16,6 +16,11 @@ from datetime import timedelta
 import sqlite3
 import base64
 import requests
+import signal
+
+def signal_handler(signum, frame):
+    print("SIGINT")
+    sys.exit()
 
 def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt, headless): 
   name = happy_chara["name"]

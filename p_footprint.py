@@ -15,6 +15,11 @@ import requests
 from requests.exceptions import HTTPError
 import traceback
 import time
+import signal
+
+def signal_handler(signum, frame):
+    print("SIGINT")
+    sys.exit()
 
 conn = sqlite3.connect('user_data.db')
 c = conn.cursor()

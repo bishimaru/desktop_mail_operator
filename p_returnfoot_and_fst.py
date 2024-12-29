@@ -13,6 +13,11 @@ import sqlite3
 from selenium.common.exceptions import WebDriverException
 import requests
 from requests.exceptions import HTTPError
+import signal
+
+def signal_handler(signum, frame):
+    print("SIGINT")
+    sys.exit()
 
 global user_data
 user_data = func.get_user_data()

@@ -18,6 +18,11 @@ from selenium.webdriver.chrome.service import Service
 from datetime import timedelta
 from tkinter import messagebox
 from selenium.common.exceptions import NoSuchWindowException
+import signal
+
+def signal_handler(signum, frame):
+    print("SIGINT")
+    sys.exit()
 
 
 def happymail_footprints(headless, foot_cnt):

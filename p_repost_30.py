@@ -13,6 +13,11 @@ import sqlite3
 from selenium.common.exceptions import WebDriverException
 import requests
 from requests.exceptions import HTTPError
+import signal
+
+def signal_handler(signum, frame):
+    print("SIGINT")
+    sys.exit()
 
 
 conn = sqlite3.connect('user_data.db')
