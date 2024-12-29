@@ -426,6 +426,8 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
         interacting_user_list.append(user_name)
         driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", users_elem[i])
         users_elem[i].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(2)
         # 自己紹介文チェック
         profile = driver.find_elements(By.CLASS_NAME, value="prof_pr")
         if len(profile):
