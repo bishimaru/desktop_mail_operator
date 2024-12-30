@@ -309,11 +309,14 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
         # 詳細地域を選択
         detailed_area = driver.find_element(By.NAME, value="city_id")
         select = Select(detailed_area)
-        try:
-          post_area_dic[last_area].remove(detail_selected)
-        except ValueError:
-          pass
-        detail_area = random.choice(post_area_dic[last_area])
+        if last_area in post_area_dic:
+          try:
+            post_area_dic[last_area].remove(detail_selected)
+          except ValueError:
+            pass
+          detail_area = random.choice(post_area_dic[last_area])
+        else:
+          detail_area = str(detail_selected)
         print('今回の詳細地域 ~' + str(detail_area) + "~")
         select.select_by_visible_text(detail_area)
         time.sleep(1)
