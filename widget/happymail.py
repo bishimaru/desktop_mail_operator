@@ -480,9 +480,14 @@ def return_matching(name, wait, wait_time, driver, user_name_list, duplication_u
     time.sleep(wait_time)
     matching_list = driver.find_element(By.ID , value="list_reciprocal")
     matching_users = matching_list.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
+    matching_users_wait_cnt = 0
     while len(matching_users) == 0:
         time.sleep(2)
         matching_users = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
+        matching_users_wait_cnt += 1
+        if matching_users_wait_cnt == 3:
+           return return_matching_counted
+    
     name_field = matching_users[user_icon].find_element(By.CLASS_NAME, value="ds_like_list_name")
     user_name = name_field.text
     mail_icon = name_field.find_elements(By.TAG_NAME, value="img")
@@ -618,9 +623,13 @@ def return_type(name, wait, wait_time, driver, user_name_list, duplication_user,
     time.sleep(wait_time)
     type_list = driver.find_element(By.ID , value="list_myself")
     type_users = type_list.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
+    type_users_wait_cnt = 0
     while len(type_users) == 0:
         time.sleep(2)
         type_users = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
+        type_users_wait_cnt += 1
+        if type_users_wait_cnt == 3:
+           return return_type_counted
     name_field = type_users[user_icon_type].find_element(By.CLASS_NAME, value="ds_like_list_name")
     user_name = name_field.text
     mail_icon = name_field.find_elements(By.TAG_NAME, value="img")

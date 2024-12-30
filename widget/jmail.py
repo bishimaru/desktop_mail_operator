@@ -190,8 +190,8 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
     # print("ローカルに合致するギャラデータあり")
     submitted_users = sqlite_jmail_result[4] 
   conn.close()
-  print(f"送信履歴ありリスト")
-  print(submitted_users)
+  # print(f"送信履歴ありリスト")
+  # print(submitted_users)
   fst_message = jmail_info['fst_message']
   return_foot_message = jmail_info['return_foot_message']
   second_message = jmail_info['conditions_message']
