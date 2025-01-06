@@ -403,7 +403,7 @@ def check_new_mail(driver, wait, jmail_info, try_cnt):
   fst_send_limit = 1
   returnfoot_send_limit = 1
   
-  if try_cnt % 6 == 0:
+  if try_cnt % 12 == 0:
     #メニューをクリック
     menu_icon = driver.find_elements(By.CLASS_NAME, value="menu-off")
     menu_icon[0].click()
