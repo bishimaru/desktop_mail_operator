@@ -1596,8 +1596,7 @@ def check_new_mail(happy_info, driver, wait):
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
         new_mail = driver.find_elements(By.CLASS_NAME, value="happy_blue_10")
-        print(777)
-        print(len(new_mail))
+        
      
   if len(return_list):
     return return_list

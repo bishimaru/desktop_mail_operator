@@ -22,8 +22,6 @@ from selenium.common.exceptions import WebDriverException, NoSuchElementExceptio
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service as FirefoxService
-# from selenium.webdriver.firefox.options import Options
-# import setting
 import requests
 import shutil
 import unicodedata
@@ -31,6 +29,8 @@ import platform
 from urllib3.exceptions import MaxRetryError
 from webdriver_manager.core.driver_cache import DriverCacheManager
 import tempfile
+from stem import Signal
+from stem.control import Controller
 
 
 def clear_webdriver_cache():
@@ -752,3 +752,9 @@ def get_user_data():
 def normalize_text(text):
     # Unicodeの互換正規化（NFKC）を使って、全角・半角や記号を統一
     return unicodedata.normalize('NFKC', text).replace("\n", "").replace("\r", "").replace(" ", "").replace("　", "").replace("〜", "~")
+
+def change_tor_ip():
+  with Controller.from_port(port=9051) as controller:
+      controller.authenticate()  # デフォルト設定の場合は認証不要
+      controller.signal(Signal.NEWNYM)
+      print("Tor IP has been changed!")

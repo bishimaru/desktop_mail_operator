@@ -3048,6 +3048,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
+        func.change_tor_ip()
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
           send_cnt_list.append(f"{pcmax_chara['name']}: {return_func}")
@@ -3097,7 +3098,7 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
     if 6 <= now.hour < 20:
       driver,wait = func.get_driver(headless)
       for pcmax_chara in sorted_pcmax:
-          
+          func.change_tor_ip()
           # print(len(sorted_pcmax))
           # print(pcmax_chara["name"])
           # if pcmax_chara["name"] != "わかな":

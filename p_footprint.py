@@ -58,6 +58,7 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
         driver,wait = func.get_driver(headless)
         for chara_data in sorted_pcmax:
             # print(chara_data['name'])
+            func.change_tor_ip()
             try:
                 # if chara_data['name'] == "つむぎ":
                     pcmax.make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age, foot_cnt,)

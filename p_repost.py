@@ -102,8 +102,6 @@ def run_scheduler():
 
 def add_form(user_info_list):
     global form_count, form_label_added
-    print(777)
-    print(max_forms)
     if form_count >= max_forms:
         print(999)
         return  

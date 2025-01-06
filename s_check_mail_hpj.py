@@ -22,6 +22,9 @@ from selenium.common.exceptions import WebDriverException
 import urllib3
 import gc
 from requests import exceptions
+import requests
+from stem import Signal
+from stem.control import Controller
 
 
 
@@ -127,7 +130,6 @@ def check_mail(user_data, headless):
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
-                traceback.print_exc() 
                 func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
             wait_if_near_midnight()
             # driver.refresh()
@@ -137,8 +139,8 @@ def check_mail(user_data, headless):
         driver,wait = func.get_driver(headless)
         # pcmax
         print(f"<<<<<<<<<<<<PCMAX:新着メール開始>>>>>>>>>>>>")
-        
         for pcmax_info in pcmax_list:  
+            func.change_tor_ip()  
             new_mail_lists = []
             try:
                 result = pcmax.check_new_mail(pcmax_info, driver, wait)
