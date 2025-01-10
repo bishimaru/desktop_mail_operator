@@ -70,6 +70,8 @@ def get_driver(headless_flag, max_retries=3):
             options.add_argument("--window-size=456,912")
             options.add_experimental_option("detach", True)
             options.add_argument("--disable-cache")
+            options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
+
             # キャッシュディレクトリを変更
             custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
             cache_manager = DriverCacheManager(custom_cache_dir)

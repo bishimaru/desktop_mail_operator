@@ -958,23 +958,26 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
                 time.sleep(wait_time)
                 break
           # 画像があれば送信
-          if image_path:
-            img_conform = driver.find_element(By.ID, value="media-confirm")
-            plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
-            time.sleep(1)
-            driver.execute_script("arguments[0].click();", plus_icon[0])         
-            time.sleep(1)
-            upload_file = driver.find_element(By.ID, "upload_file")
-            # DEBUG
-            # upload_file.send_keys("/Users/yamamotokenta/Desktop/myprojects/mail_operator/widget/picture/kumi_mizugi.jpeg")
-            upload_file.send_keys(image_path)
-            time.sleep(2)
-            submit = driver.find_element(By.ID, value="submit_button")
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submit)
-            driver.execute_script("arguments[0].click();", submit)
-            while img_conform.is_displayed():
+          try:
+            if image_path:
+              img_conform = driver.find_element(By.ID, value="media-confirm")
+              plus_icon = driver.find_elements(By.ID, value="ds_js_media_display_btn")
+              driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", plus_icon[0])
+              time.sleep(1)
+              driver.execute_script("arguments[0].click();", plus_icon[0])         
+              time.sleep(1)
+              upload_file = driver.find_element(By.ID, "upload_file")
+              # DEBUG
+              # upload_file.send_keys("/Users/yamamotokenta/Desktop/myprojects/mail_operator/widget/picture/kumi_mizugi.jpeg")
+              upload_file.send_keys(image_path)
               time.sleep(2)
+              submit = driver.find_element(By.ID, value="submit_button")
+              driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submit)
+              driver.execute_script("arguments[0].click();", submit)
+              while img_conform.is_displayed():
+                time.sleep(2)
+          except Exception as e:
+            print("画像の送信に失敗しました", e)
           return_cnt += 1
           mail_icon_cnt = 0
           user_icon = 0
