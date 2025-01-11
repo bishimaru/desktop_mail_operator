@@ -2,3 +2,4 @@
 d_m_venv/
 *.pyc
 dist/*
+myenv/
