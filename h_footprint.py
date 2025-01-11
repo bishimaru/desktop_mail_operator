@@ -99,7 +99,7 @@ def populate_user_listbox():
 root = tk.Tk()
 root.title("ハピメ足跡付け")
 
-# ユーザーリストの表示
+# キャラリストの表示
 listbox_label = tk.Label(root, text="キャラリスト:")
 listbox_label.pack()
 

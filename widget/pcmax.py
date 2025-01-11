@@ -2537,6 +2537,14 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     # if mail_history == 7:
     #   break
     driver.get(i)
+    ng_pop = driver.find_elements(By.ID, value="ng_dialog")
+    if len(ng_pop):
+      next_no_pop = ng_pop[0].find_elements(By.ID, value="check1")
+      next_no_pop[0].click()
+      time.sleep(1)
+      understand_button = ng_pop[0].find_elements(By.CLASS_NAME, value="ng_dialog_btn")
+      understand_button[0].click()
+      time.sleep(2)
     # //*[@id="profile-box"]/div/div[2]/p/a/span
     sent = driver.find_elements(By.XPATH, value="//*[@id='profile-box']/div/div[2]/p/a/span")
     if len(sent):

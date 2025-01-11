@@ -55,9 +55,9 @@ def get_driver(headless_flag, max_retries=3):
             # キャッシュをクリア
             clear_webdriver_cache()
             options = Options()
-            if headless_flag:
-                options.add_argument('--headless')
-                options.add_argument("--disable-gpu") 
+            # if headless_flag:
+            #     options.add_argument('--headless')
+            #     options.add_argument("--disable-gpu") 
             options.add_argument("--incognito")
             options.add_argument('--enable-unsafe-swiftshader')
             options.add_argument('--log-level=3')  # これでエラーログが抑制されます
@@ -69,7 +69,7 @@ def get_driver(headless_flag, max_retries=3):
             options.add_argument("--no-sandbox")
             options.add_argument("--window-size=456,912")
             options.add_experimental_option("detach", True)
-            options.add_argument("--disable-cache")
+            # options.add_argument("--disable-cache")
             options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
 
             # キャッシュディレクトリを変更
