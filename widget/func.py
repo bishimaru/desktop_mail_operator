@@ -47,7 +47,6 @@ def clear_webdriver_cache():
         except Exception as e:
             print(f"Error clearing webdriver cache: {e}")
 
-
 def get_driver(headless_flag, max_retries=3):
     os_name = platform.system()
     for attempt in range(max_retries):

@@ -31,13 +31,12 @@ root.title("スケジューラ設定")
 driver = None  # グローバルにドライバを定義
 
 def start_scheduler(schedule_data, happy_chara_list, headless):
-    
     if not user_data:
         return
     global driver
     
     mail_info = [
-        user_data["user"][0]["user_email"],
+        user_data["user"][0]["recieve_mailaddress"],
         user_data["user"][0]["gmail_account"],
         user_data["user"][0]["gmail_account_password"],
     ]

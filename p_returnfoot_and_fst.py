@@ -29,7 +29,7 @@ root.title("スケジューラ設定")
 def run_scheduler():
     global user_data  
     mail_info = [
-        user_data["user"][0]["user_email"],
+        user_data["user"][0]["recieve_mailaddress"],
         user_data["user"][0]["gmail_account"],
         user_data["user"][0]["gmail_account_password"],
     ]
