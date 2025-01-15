@@ -36,7 +36,7 @@ def start_scheduler(schedule_data, happy_chara_list, headless):
     global driver
     
     mail_info = [
-        user_data["user"][0]["recieve_mailaddress"],
+        user_data["user"][0]["user_email"],
         user_data["user"][0]["gmail_account"],
         user_data["user"][0]["gmail_account_password"],
     ]

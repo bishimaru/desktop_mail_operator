@@ -44,7 +44,7 @@ def check_mail(user_data, headless):
   jmail_list = user_data['jmail']
   mailaddress = user_data['user'][0]['gmail_account']
   gmail_password = user_data['user'][0]['gmail_account_password']
-  receiving_address = user_data['user'][0]['recieve_mailaddress']
+  receiving_address = user_data['user'][0]['user_email']
   try_cnt = 0
 #   print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
   while True:

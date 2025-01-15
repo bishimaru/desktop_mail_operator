@@ -21,6 +21,6 @@ if __name__ == '__main__':
 
   gmail_account = user_data["user"][0]["gmail_account"]
   gmail_account_password = user_data["user"][0]["gmail_account_password"]
-  recieve_mailaddress =  user_data["user"][0]["recieve_mailaddress"]
+  recieve_mailaddress =  user_data["user"][0]["user_email"]
 
   ikukuru_check_mail(user_data["ikukuru"], gmail_account, gmail_account_password, recieve_mailaddress, headless)
