@@ -1974,7 +1974,10 @@ def send_fst_mail(pcmax_chara, maji_soushin, select_areas, youngest_age, oldest_
       if not len(select_area) and not len(reset_area):
         # /////////////////////////利用制限あり
         print(f"{pcmax_chara['name']}利用制限あり")
-        func.send_error(pcmax_chara['name'], "pcmaxプロフ制限あり")
+        try:
+          func.send_error(pcmax_chara['name'], "pcmaxプロフ制限あり")
+        except Exception:
+          print("エラー送信失敗しました")
         # 地域選択
         if len(select_areas) == 1:
           select_area = driver.find_elements(By.NAME, value="pref_no")
