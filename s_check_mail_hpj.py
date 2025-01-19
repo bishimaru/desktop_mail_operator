@@ -48,6 +48,9 @@ def check_mail(user_data, headless):
   mailaddress = user_data['user'][0]['gmail_account']
   gmail_password = user_data['user'][0]['gmail_account_password']
   receiving_address = user_data['user'][0]['user_email']
+  print(user_data['user'][0])
+  return
+
 
 #   print(f"*****{mailaddress}*****{gmail_password}*****{receiving_address}")
   while True:
