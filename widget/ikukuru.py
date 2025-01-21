@@ -10,6 +10,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from widget import func
 
 def login(driver, wait, login_mail_address, login_pass):
+  if login_mail_address == None or login_pass == None:
+    print(f"ログインに必要な情報がありません。メールアドレスとパスワードを確認してください。")
+    return
   driver.delete_all_cookies()
   driver.get("https://www.194964.com/")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -65,7 +68,7 @@ def set_search_filter(driver, wait):
     return
   green_button[0].click()
 
-def send_fst_message(driver, wait, fst_message, send_cnt):
+def send_fst_message(driver, wait, fst_message, name,send_cnt):
   wait_time = random.uniform(1, 6)
   user_link_list = []
   prof_Look_btns = driver.find_elements(By.CLASS_NAME, value="profLookBtn")
@@ -107,7 +110,7 @@ def send_fst_message(driver, wait, fst_message, send_cnt):
       time.sleep(wait_time)
       history_btn = driver.find_elements(By.ID, value="historyBtn")
     send_cnt += 1
-    print(f"イククル:fstメール送信  ~{send_cnt}~ 件")
+    print(f"イククル:{name} fstメール送信  ~{send_cnt}~ 件")
 
 def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password, recieve_mailaddress):
   return_list = []
@@ -120,7 +123,6 @@ def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password
   condition_message = ikukuru_data["condition_message"]
   mail_img = ""
   print(f"{gmail_account} {gmail_account_password} {recieve_mailaddress}")
-  return
 
   wait_time = random.uniform(2, 3)
   messages_icon = driver.find_elements(By.CLASS_NAME, value="bottom-nav-item")
@@ -153,6 +155,7 @@ def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password
         datetime_object = datetime_object - timedelta(days=1)
       if current_time - datetime_object > timedelta(minutes=4):
         print("4分以上経過しています")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", users_list[i])
         users_list[i].click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
@@ -178,7 +181,7 @@ def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password
           if "icloud.com" in received_mail:
             print("icloud.comが含まれています")
             icloud_text = "メール送ったんですけど、ブロックされちゃって届かないのでこちらのアドレスにお名前添えて送ってもらえますか？"
-            icloud_text = icloud_text + "\n" + mail_address
+            icloud_text = icloud_text + "\n" + gmail_address
             send_message = icloud_text
           else:
             user_name = driver.find_elements(By.CLASS_NAME, value="w60")
@@ -187,10 +190,21 @@ def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password
             for user_address in email_list:
               site = "イククル"
               try:
-                func.send_conditional(user_name, user_address, mail_address, gmail_pass, condition_message, site)
+                func.send_conditional(user_name, user_address, gmail_address, gmail_pass, condition_message, site)
                 print("アドレス内1stメールを送信しました")
+                time.sleep(2)
+                driver.get("https://sp.194964.com/mail/inbox/show_mailbox.html")
+                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                time.sleep(1)
+                users_list = driver.find_elements(By.CLASS_NAME, value="bgMiddle")
+
               except Exception:
                 print(f"{user_name} アドレス内1stメールの送信に失敗しました")
+                time.sleep(2)
+                driver.get("https://sp.194964.com/mail/inbox/show_mailbox.html")
+                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                time.sleep(1)
+                users_list = driver.find_elements(By.CLASS_NAME, value="bgMiddle")
           continue
         elif len(chara_send) == 2: #通知
           print('やり取り中')
@@ -213,26 +227,39 @@ def check_mail(driver, wait, ikukuru_data, gmail_account, gmail_account_password
         send_button[0].click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(1)
-        # submitBtn
         submit_button = driver.find_elements(By.ID, value="submitBtn")
         submit_button[0].click()
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(1)
         popup_text = driver.find_elements(By.CLASS_NAME, value="popupText")
+        popup_text_cnt = 0
+        while not len(popup_text):
+          time.sleep(2)
+          popup_text = driver.find_elements(By.CLASS_NAME, value="popupText")
+          popup_text_cnt += 1
+          if popup_text_cnt == 3:
+            break
+        check_sent_text_1 = "お相手がメッセージを送信されてから3日間以上経過している為、送信ポイントは付きません"
+        check_sent_text_2 = "お返事のない方へ2通以上続けて送信した場合は送信ポイントはつきません"
         print(popup_text[-1].text)
-        if "メッセージを送信しました" in popup_text[-1].text:
+        if "メッセージを送信しました" in popup_text[-1].text or check_sent_text_1 in popup_text[-1].text or check_sent_text_2 in popup_text[-1].text:
           print("メッセージを送信しました")
           time.sleep(2)
           driver.get("https://sp.194964.com/mail/inbox/show_mailbox.html")
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
         else:
           print("メッセージ送信に失敗しました")
           time.sleep(2)
           driver.get("https://sp.194964.com/mail/inbox/show_mailbox.html")
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+        users_list = driver.find_elements(By.CLASS_NAME, value="bgMiddle")
         
-        if len(return_list):
-          return return_list
-        else:
-          return 0
+  if len(return_list):
+    return return_list
+  else:
+    return 0
         
         
         

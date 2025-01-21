@@ -1078,7 +1078,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
         print(f"{name}:警告画面が出ている可能性があります")
         return
       user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
-      no_history_user = False
+      
       #  メールアイコン（送信履歴）があるかチェック
       mail_icon_flag = True
       mail_icon_try_cnt = 0
@@ -1094,7 +1094,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
         if  not len(mail_icon):
           mail_icon_flag = False
           break
-        i += 1
+        # i += 1
         mail_icon_try_cnt += 1
         if mail_icon_try_cnt == 10:
            break
@@ -1151,14 +1151,15 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       # 戻る
       catch_warning_screen(driver)
       back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
-      back[0].click()
+      driver.execute_script("arguments[0].click();", back[0])
+      # back[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)
       # たまに変なページに遷移するのでurl確認
       current_url = driver.current_url
       # 特定の文字列で始まっているか確認
       if not current_url.startswith("https://happymail.co.jp/sp/app/html/profile_list.php"):
-          print("URLは指定した文字列で始まっていません。")
+          # print("URLは指定した文字列で始まっていません。")
           driver.get("https://happymail.co.jp/sp/app/html/profile_list.php")
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(wait_time)
