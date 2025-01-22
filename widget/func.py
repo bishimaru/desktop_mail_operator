@@ -57,13 +57,14 @@ def get_driver(headless_flag, max_retries=3):
             if headless_flag:
                 options.add_argument('--headless')
                 options.add_argument("--disable-gpu") 
+            options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
+            options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
+            options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
             options.add_argument("--incognito")
             options.add_argument('--enable-unsafe-swiftshader')
             options.add_argument('--log-level=3')  # これでエラーログが抑制されます
             options.add_argument('--disable-web-security')
             options.add_argument('--disable-extensions')
-            options.add_argument('--disable-software-rasterizer')
-            options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
             options.add_argument("--no-sandbox")
             options.add_argument("--window-size=456,912")
@@ -75,10 +76,10 @@ def get_driver(headless_flag, max_retries=3):
             custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
             cache_manager = DriverCacheManager(custom_cache_dir)
             if os_name == "Darwin":
-              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0), port=0).install())
             elif os_name == "Windows":
-              service = Service(executable_path=ChromeDriverManager(cache_manager=cache_manager).install())
-            
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0), port=0).install())
+              # service = Service(executable_path=ChromeDriverManager(cache_manager=cache_manager).install())
             driver = webdriver.Chrome(options=options, service=service)
             wait = WebDriverWait(driver, 18)
 
