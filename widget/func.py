@@ -73,12 +73,12 @@ def get_driver(headless_flag, max_retries=3):
             options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
 
             # キャッシュディレクトリを変更
-            custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
-            cache_manager = DriverCacheManager(custom_cache_dir)
+            # custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
+            # cache_manager = DriverCacheManager(custom_cache_dir)
             if os_name == "Darwin":
-              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0), port=0).install())
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
             elif os_name == "Windows":
-              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0), port=0).install())
+              service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
               # service = Service(executable_path=ChromeDriverManager(cache_manager=cache_manager).install())
             driver = webdriver.Chrome(options=options, service=service)
             wait = WebDriverWait(driver, 18)
