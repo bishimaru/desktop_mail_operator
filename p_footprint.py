@@ -68,7 +68,6 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
         shutil.rmtree(temp_dir)
         time.sleep(1)
     
-
 def run_scheduler():
     global user_data  
     schedule_data = []

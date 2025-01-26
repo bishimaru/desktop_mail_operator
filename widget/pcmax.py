@@ -3050,7 +3050,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
   
   while True:
     try:
-      driver,wait = func.get_driver(headless)
+      temp_dir = func.get_the_temporary_folder("p_returnfoot_fst")
+      driver,wait = func.test_get_driver(temp_dir, headless)
       send_cnt_list = []
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
@@ -3073,6 +3074,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
     except Exception as e:
       print(traceback.format_exc())
       driver.quit()
+      shutil.rmtree(temp_dir)
       time.sleep(2)
     
 def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
