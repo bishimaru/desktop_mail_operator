@@ -25,8 +25,7 @@ from requests import exceptions
 import requests
 from stem import Signal
 from stem.control import Controller
-
-
+import shutil
 
 
 def wait_if_near_midnight():
@@ -59,7 +58,8 @@ def check_mail(user_data, headless):
         # ハッピーメール
         print(f'~~~~~~~~~~~~ハピメ:新着メールチェック開始~~~~~~~~~~~~')
         driver = None
-        driver,wait = func.get_driver(headless)
+        temp_dir = func.get_the_temporary_folder("check_mail")
+        driver,wait = func.test_get_driver(temp_dir, headless)
         for happy_info in happymail_list:
             new_mail_lists = []
             # if happy_info["name"] != "ハル":
@@ -117,12 +117,14 @@ def check_mail(user_data, headless):
                 print(f"メール送信中にエラーが発生しました: {e}")
                 print("5分間待機して再試行します...")
                 driver.quit()
+                shutil.rmtree(temp_dir)
                 time.sleep(300) 
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
                 print(f"接続エラーが発生しました: {e}")
                 print("20秒後に再接続します。")
                 driver.quit()
+                shutil.rmtree(temp_dir)
                 time.sleep(20) 
                 check_mail(user_data, headless)
             except exceptions.ConnectionError as e:
@@ -137,8 +139,10 @@ def check_mail(user_data, headless):
             # driver.refresh()
         if driver is not None:
             driver.quit()
+            shutil.rmtree(temp_dir)
         time.sleep(2)
-        driver,wait = func.get_driver(headless)
+        temp_dir = func.get_the_temporary_folder("check_mail")
+        driver,wait = func.test_get_driver(temp_dir, headless)
         # pcmax
         print(f"<<<<<<<<<<<<PCMAX:新着メール開始>>>>>>>>>>>>")
         for pcmax_info in pcmax_list:  
@@ -196,6 +200,7 @@ def check_mail(user_data, headless):
                 print(f"メール送信中にエラーが発生しました: {e}")
                 print("5分間待機して再試行します...")
                 driver.quit()
+                shutil.rmtree(temp_dir)
                 time.sleep(300)  # 300秒（5分）間待機
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
@@ -249,6 +254,7 @@ def check_mail(user_data, headless):
         elapsed_timedelta = timedelta(seconds=elapsed_time)
         elapsed_time_formatted = str(elapsed_timedelta)
         driver.quit()
+        shutil.rmtree(temp_dir)
         time.sleep(1)
         gc.collect()
         # print(f"<<<<<<<<<<<<<<<<<<<<足跡返し総数　　開始時間{current_datetime}, 経過時間{elapsed_time_formatted}>>>>>>>>>>>>>>>>>>>>")
