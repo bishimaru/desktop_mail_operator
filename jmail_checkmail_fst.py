@@ -260,8 +260,7 @@ def check_mail(user_data, headless):
                         smtpobj.starttls()
                         smtpobj.set_debuglevel(0)
                         smtpobj.login(mailaddress, gmail_password)
-                        print(777)
-                        print(text)
+                       
                         msg = MIMEText(text)
                         msg['Subject'] = subject
                         msg['From'] = mailaddress

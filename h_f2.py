@@ -1,24 +1,38 @@
 import tkinter as tk
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
-import random
 import time
-from selenium.webdriver.common.by import By
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from selenium.webdriver.support.ui import WebDriverWait
 import traceback
 from widget import happymail, func
-import sqlite3
-from selenium.webdriver.chrome.service import Service
-from datetime import timedelta
 from tkinter import messagebox
 from selenium.common.exceptions import NoSuchWindowException
+import shutil 
 import signal
+
+
+temp_dirs = []
+# シグナルハンドラ
+def signal_handler(signum, frame):
+    print(f"Signal {signum} received, cleaning up...")
+    for temp_dir in temp_dirs:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+            print(f"Temporary directory {temp_dir} has been removed.")
+    sys.exit(0)
+# すべてのキャッチ可能なシグナルにハンドラを登録
+def setup_signal_handling():
+    try:
+        signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
+        signal.signal(signal.SIGTERM, signal_handler)  # プロセス終了
+    except Exception as e:
+        print(f"Signal setup failed: {e}")
+
+    # Tkinterのイベントループ中でもシグナルをチェック
+    def check_signals():
+        root.after(100, check_signals)
+    check_signals()
+
 
 user_data = func.get_user_data()
 def run_script():
@@ -59,7 +73,10 @@ def happymail_footprints(headless, foot_cnt, selected_users):
         print("選択されたキャラクターに該当するユーザーデータがありません。")
         return
     for i in range(9999):
-      driver,wait = func.get_driver(headless)
+      temp_dir = func.get_the_temporary_folder("h_footprint")
+      driver,wait = func.test_get_driver(temp_dir, headless)
+     
+      temp_dirs.append(temp_dir)  # 一時ディレクトリを追跡
       for user_list in happy_user_list:
           print(f"キャラクター: {user_list[0]} の処理を開始します。")
           if user_list[1] is None or user_list[1] == "":
@@ -69,16 +86,22 @@ def happymail_footprints(headless, foot_cnt, selected_users):
               happymail.make_footprints(user_list[0], user_list[1], user_list[2], driver, wait, foot_cnt)
           except NoSuchWindowException:
               pass
-          
           except Exception as e:
               print(f"{user_list[0]}:")
               print(traceback.format_exc())
           finally:
+              if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
+                print(f"Temporary directory {temp_dir} has been removed.")
               if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
                   print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
                   driver.quit()
+                  shutil.rmtree(temp_dir)
                   sys.exit(0)
-      driver.quit()
+      if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
+        driver.quit()
+        shutil.rmtree(temp_dir)
+        temp_dirs.remove(temp_dir)
       time.sleep(1)        
       
      
@@ -150,9 +173,11 @@ check_button.pack(side="left")
 run_button = tk.Button(root, text="実行", command=run_script)
 run_button.pack()
 
+setup_signal_handling()
 # Tkinterのイベントループ
 try:
     root.mainloop()
 except KeyboardInterrupt:
     print("\nKeyboardInterrupt in mainloop. Exiting...")
     root.quit()
+

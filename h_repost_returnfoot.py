@@ -35,7 +35,8 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
   if not login_id:
     print(f"{name}：ログインIDが正しくありません")
     return
-  driver,wait = func.get_driver(headless)
+  temp_dir = func.get_the_temporary_folder("h_scheduler")
+  driver,wait = func.test_get_driver(temp_dir, headless)
   driver.delete_all_cookies()
   driver.get("https://happymail.jp/login/")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')

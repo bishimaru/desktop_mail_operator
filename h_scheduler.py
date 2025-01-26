@@ -3,10 +3,8 @@ from tkinter import messagebox
 from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 import sys
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from sb_h_day_shift import sb_h_all_do
 from widget import func
 from sb_h_day_shift import sb_h_all_do
 import sqlite3
