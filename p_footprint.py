@@ -1,21 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
-from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 import sys
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from sb_h_day_shift import sb_h_all_do
 from widget import func, pcmax
-from sb_h_day_shift import sb_h_all_do
 import sqlite3
-from selenium.common.exceptions import WebDriverException
-import requests
 from requests.exceptions import HTTPError
 import traceback
 import time
-import signal
+import shutil
 
 def signal_handler(signum, frame):
     print("SIGINT")
@@ -55,7 +48,8 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
     # api_url = "http://127.0.0.1:8000/api/user-data/"
 
     while True:
-        driver,wait = func.get_driver(headless)
+        temp_dir = func.get_the_temporary_folder("p_footprint")
+        driver,wait = func.test_get_driver(temp_dir, headless)
         for chara_data in sorted_pcmax:
             # print(chara_data['name'])
             func.change_tor_ip()
@@ -71,6 +65,7 @@ def start_scheduler(sorted_pcmax, headless, foot_cnt):
                     driver.quit()
                     sys.exit(0)
         driver.quit()
+        shutil.rmtree(temp_dir)
         time.sleep(1)
     
 

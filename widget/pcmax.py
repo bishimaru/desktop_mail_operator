@@ -1,8 +1,4 @@
-from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 import random
 import time
 from selenium.webdriver.common.by import By
@@ -18,15 +14,14 @@ from widget import func
 import re
 from selenium.common.exceptions import TimeoutException
 import sqlite3
-from selenium.webdriver.chrome.service import Service as ChromeService
 from datetime import datetime, timedelta
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 import urllib3
-from selenium.common.exceptions import StaleElementReferenceException
 import threading
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+import shutil
 
 
 
@@ -3108,7 +3103,8 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
 
     # 午前6時から午後8時の間だけ実行
     if 6 <= now.hour < 20:
-      driver,wait = func.get_driver(headless)
+      temp_dir = func.get_the_temporary_folder("p_repost")
+      driver,wait = func.test_get_driver(temp_dir, headless)
       for pcmax_chara in sorted_pcmax:
           func.change_tor_ip()
           # print(len(sorted_pcmax))
@@ -3124,6 +3120,7 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
               print(traceback.format_exc())
               # func.send_error(pcmax_chara, traceback.format_exc())
       driver.quit()
+      shutil.rmtree(temp_dir)
       time.sleep(1)
     else:
         print("現在の時間帯は処理時間外です。午前6時から午後8時まで実行されます。")

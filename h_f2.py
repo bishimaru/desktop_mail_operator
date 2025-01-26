@@ -75,7 +75,6 @@ def happymail_footprints(headless, foot_cnt, selected_users):
     for i in range(9999):
       temp_dir = func.get_the_temporary_folder("h_footprint")
       driver,wait = func.test_get_driver(temp_dir, headless)
-     
       temp_dirs.append(temp_dir)  # 一時ディレクトリを追跡
       for user_list in happy_user_list:
           print(f"キャラクター: {user_list[0]} の処理を開始します。")

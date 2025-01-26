@@ -1,8 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 import random
 import time
 from selenium.webdriver.common.by import By
@@ -10,13 +5,8 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from widget import pcmax, happymail, func
-from selenium.webdriver.support.ui import WebDriverWait
 import traceback
-from datetime import timedelta
-import sqlite3
-import base64
-import requests
-import signal
+import shutil
 
 def signal_handler(signum, frame):
     print("SIGINT")
@@ -68,6 +58,7 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
     print(traceback.format_exc())
     func.send_error(f"足跡返しエラー{name}", traceback.format_exc())
   driver.quit()
+  shutil.rmtree(temp_dir)
   print(f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件\n")
   return f"再投稿：{repost_flug}\nマッチング返し {return_foot_counted[0]}件\nタイプ返し {return_foot_counted[1]}件\n足跡返し {return_foot_counted[2]}件\n"
 
