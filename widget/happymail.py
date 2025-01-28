@@ -980,8 +980,14 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
               submit = driver.find_element(By.ID, value="submit_button")
               driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", submit)
               driver.execute_script("arguments[0].click();", submit)
+              img_wait_cnt = 0
               while img_conform.is_displayed():
                 time.sleep(2)
+                modal_content = driver.find_element(By.CLASS_NAME, value="modal-content")
+                if len(modal_content):
+                   break # modal-content お相手が年齢確認されていない為
+              
+
           except Exception as e:
             print("画像の送信に失敗しました", e)
           return_cnt += 1
