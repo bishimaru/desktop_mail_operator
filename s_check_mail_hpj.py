@@ -139,7 +139,8 @@ def check_mail(user_data, headless):
             # driver.refresh()
         if driver is not None:
             driver.quit()
-            shutil.rmtree(temp_dir)
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
         time.sleep(2)
         temp_dir = func.get_the_temporary_folder("check_mail")
         driver,wait = func.test_get_driver(temp_dir, headless)
