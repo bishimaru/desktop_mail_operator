@@ -2439,16 +2439,17 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   if new_message:
     # if 1 == 1: #dev
     if new_message.text[:2] == "新着":
-      # print('新着があります')
+      print('新着があります')
       message = driver.find_elements(By.CLASS_NAME, value="message")[0]
       message.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(2)
       # 未読だけを表示
       new_message_display = driver.find_elements(By.CLASS_NAME, value="msg-display_change")
-      new_message_display[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
+      if len(new_message_display):
+        new_message_display[0].click()
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(2)
       # 新着ありのユーザーをリストに追加
       message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
       for usr_info in message_list:
