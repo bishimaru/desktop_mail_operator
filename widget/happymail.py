@@ -1448,14 +1448,25 @@ def check_new_mail(happy_info, driver, wait):
             send_text = send_message[-1].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
             if not send_text:
                 send_text = send_message[-2].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
-            print("<<<<<<<<<<<send_text>>>>>>>>>>>>>")
-            print(send_text)
+            # print("<<<<<<<<<<<send_text>>>>>>>>>>>>>")
+            # print(send_text)
             # print("<<<<<<<<<<<fst_message>>>>>>>>>>>>>")
             # print(fst_message)
             # print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
             # print(return_foot_message)
             # 改行と空白を削除
             send_text_clean = func.normalize_text(send_text)
+            # 子要素のテキストを除外して要素Aのテキストを取得
+            script = """
+            var element = arguments[0];
+            var childText = '';
+            element.querySelectorAll('*').forEach(function(child) {
+                childText += child.textContent;
+            });
+            return element.textContent.replace(childText, '').trim();
+            """
+            send_text_clean =  driver.execute_script(script, send_text_clean)
+            send_text_clean = send_text_clean
             fst_message_clean = func.normalize_text(fst_message)
             return_foot_message_clean = func.normalize_text(return_foot_message)
             conditions_message_clean = func.normalize_text(conditions_message)
