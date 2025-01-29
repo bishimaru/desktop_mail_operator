@@ -3072,6 +3072,9 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       # elapsed_time = time.time() - start_one_rap_time  
       # elapsed_timedelta = timedelta(seconds=elapsed_time)
       # elapsed_time_formatted = str(elapsed_timedelta)
+      driver.quit()
+      shutil.rmtree(temp_dir)
+      time.sleep(2)
     except Exception as e:
       print(traceback.format_exc())
       driver.quit()
