@@ -1380,7 +1380,6 @@ def check_new_mail(happy_info, driver, wait):
         message_icon = message_icon_candidate
   if message_icon:
     new_message = message_icon.find_elements(By.CLASS_NAME, value="ds_red_circle")
-    
   else:
      print("message_iconが見つかりません")
      return
@@ -1391,12 +1390,12 @@ def check_new_mail(happy_info, driver, wait):
      link[0].click()
      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
      time.sleep(2)
-     #  未読のみ表示
+     #  未返信のみ表示
     #  only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[2]
+    #  未読のみ表示
      only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[1]
      only_new_message.click()
      time.sleep(1)
-    #  ds_message_list_mini
      new_mail = driver.find_elements(By.CLASS_NAME, value="ds_message_list_mini")  
      if not len(new_mail):
          list_load = driver.find_elements(By.ID, value="load_bL")
@@ -1404,17 +1403,10 @@ def check_new_mail(happy_info, driver, wait):
           list_load[0].click()
          time.sleep(2)
      #新着がある間はループ
-    #  b = 0
-    #  while b == 0:
-    #     b+= 1  
-     
      while len(new_mail):
-        # parent_element = new_mail[0].find_element(By.XPATH, value="..")
-        # next_element = parent_element.find_element(By.XPATH, value="following-sibling::*")
+    #  while True:
         date = new_mail[0].find_elements(By.CLASS_NAME, value="ds_message_date") 
-        # print(date[0].text)       
         date_numbers = re.findall(r'\d+', date[0].text)
-        # print(date_numbers)
         if not len(date_numbers):
            for_minutes_passed = True
         else:
@@ -1435,57 +1427,64 @@ def check_new_mail(happy_info, driver, wait):
           else:
              for_minutes_passed = False
         if for_minutes_passed:
-          print("4分以上経過しているメッセージあり。")
-          # s = driver.find_elements(By.CLASS_NAME, value="ds_message_list_top")
-          # s[0].click()
+        # if True:
+          print("4分以上経過しているメッセージあり。")          
           new_mail[0].click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(2)
           catch_warning_screen(driver)
           send_message = driver.find_elements(By.CLASS_NAME, value="message__block--send")    
-
           if len(send_message):
-            send_text = send_message[-1].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
-            if not send_text:
-                send_text = send_message[-2].find_elements(By.CLASS_NAME, value="message__block__body__text")[0].text
+            chara_img_senf_flug = send_message[-1].find_elements(By.CLASS_NAME, value="attached_photo_link")
+            if len(chara_img_senf_flug):
+              print("画像あり")
+              sent_text_element = send_message[-2]
+            else:
+              sent_text_element = send_message[-1]            
+            script = """
+            var element = arguments[0];
+
+            // 除外するクラスを持つ子要素を取得
+            var elementsToRemove = element.querySelectorAll('.transit_info, .message__block__body__time');
+
+            // 一時的に削除
+            elementsToRemove.forEach(el => el.remove());
+
+            // 要素Aのテキストを取得
+            var textContent = element.textContent.trim();
+
+            // 削除した子要素を元に戻す
+            elementsToRemove.forEach(el => element.appendChild(el));
+
+            return textContent;
+            """
+            text_without_children = driver.execute_script(script, sent_text_element) 
+            send_text = text_without_children
             # print("<<<<<<<<<<<send_text>>>>>>>>>>>>>")
-            # print(send_text)
             # print("<<<<<<<<<<<fst_message>>>>>>>>>>>>>")
             # print(fst_message)
             # print("<<<<<<<<<<<return_foot_message>>>>>>>>>>>>>")
             # print(return_foot_message)
             # 改行と空白を削除
             send_text_clean = func.normalize_text(send_text)
-            # 子要素のテキストを除外して要素Aのテキストを取得
-            script = """
-            var element = arguments[0];
-            var childText = '';
-            element.querySelectorAll('*').forEach(function(child) {
-                childText += child.textContent;
-            });
-            return element.textContent.replace(childText, '').trim();
-            """
-            send_text_clean =  driver.execute_script(script, send_text_clean)
-            send_text_clean = send_text_clean
             fst_message_clean = func.normalize_text(fst_message)
             return_foot_message_clean = func.normalize_text(return_foot_message)
             conditions_message_clean = func.normalize_text(conditions_message)
             
             # 変換後のデバッグ表示
-            print("---------------------------------------")
-            print(f"変換後のsend_text: {repr(send_text_clean)}")
-            print("---------------------------------------")
-            print(f"変換後のfst_message: {repr(fst_message_clean)}")
-            print("---------------------------------------")
-            print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のsend_text: {repr(send_text_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のfst_message: {repr(fst_message_clean)}")
+            # print("---------------------------------------")
+            # print(f"変換後のreturn_foot_message: {repr(return_foot_message_clean)}")
             
-            print("---------------------------------------")
-            print(fst_message_clean == send_text_clean)
-            print("---------------------------------------")
-            print(return_foot_message_clean == send_text_clean)
-            print("---------------------------------------")
-            print("募集メッセージ" in send_text)
-
+            # print("---------------------------------------")
+            # print(fst_message_clean == send_text_clean)
+            # print("---------------------------------------")
+            # print(return_foot_message_clean == send_text_clean)
+            # print("---------------------------------------")
+            # print("募集メッセージ" in send_text)
             if fst_message_clean == send_text_clean or return_foot_message_clean == send_text_clean or "募集メッセージ" in send_text_clean:
               if conditions_message:
                 text_area = driver.find_element(By.ID, value="text-message")

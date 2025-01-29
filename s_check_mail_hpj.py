@@ -26,6 +26,7 @@ import requests
 from stem import Signal
 from stem.control import Controller
 import shutil
+import traceback
 
 
 def wait_if_near_midnight():
@@ -62,8 +63,8 @@ def check_mail(user_data, headless):
         driver,wait = func.test_get_driver(temp_dir, headless)
         for happy_info in happymail_list:
             new_mail_lists = []
-            # if happy_info["name"] != "ハル":
-            #     continue
+            if happy_info["name"] != "ゆっこ":
+                continue
             try:
                 happymail_new = happymail.check_new_mail(happy_info, driver, wait)
                 if happymail_new:
@@ -121,7 +122,9 @@ def check_mail(user_data, headless):
                 time.sleep(300) 
                 check_mail(user_data, headless)
             except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
+                tb = traceback.format_exc()  # トレースバック情報を取得
                 print(f"接続エラーが発生しました: {e}")
+                print(f"エラー発生行: {tb}")
                 print("20秒後に再接続します。")
                 driver.quit()
                 shutil.rmtree(temp_dir)
