@@ -1158,7 +1158,8 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       #     time.sleep(2)
       # print(f'{name}:足跡付け{i+1}件, いいね:{like_flag}、タイプ{type_flag}  {user_name}')
       # print(f'{name}:足跡付け{i+1}件, タイプ{type_flag}  {user_name}')
-      print(f'{name}:足跡付け{i+1}件,  {user_name}')
+      now = datetime.now().strftime('%m-%d %H:%M:%S')
+      print(f'{name}:足跡付け{i+1}件,  {user_name}  {now}')
 
       # 戻る
       catch_warning_screen(driver)
