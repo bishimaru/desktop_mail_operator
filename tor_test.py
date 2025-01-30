@@ -24,7 +24,6 @@ def change_tor_ip():
     with Controller.from_port(port=9051) as controller:
         controller.authenticate()  # デフォルト設定の場合は認証不要
         controller.signal(Signal.NEWNYM)
-        print("Tor IP has been changed!")
 
 # メイン処理
 for i in range(5):  # 5回IPアドレスを変更して確認
