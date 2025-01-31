@@ -145,6 +145,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
   no_post = driver.find_elements(By.CLASS_NAME, value="write_text")
   if len(no_post):
     if no_post[0].text == "まだ掲示板への投稿はありません。":
+      print(f"{name} まだ掲示板への投稿はありません。")
       return
       # print(no_post[0].text)
       # add_post = driver.find_elements(By.CLASS_NAME, value="white_last")

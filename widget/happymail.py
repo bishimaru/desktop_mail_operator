@@ -1167,7 +1167,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       driver.execute_script("arguments[0].click();", back[0])
       # back[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
+      time.sleep(1.5)
       # たまに変なページに遷移するのでurl確認
       current_url = driver.current_url
       # 特定の文字列で始まっているか確認
