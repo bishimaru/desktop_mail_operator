@@ -18,7 +18,7 @@ def signal_handler(signum, frame):
     for temp_dir in temp_dirs:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-            print(f"Temporary directory {temp_dir} has been removed.")
+            # print(f"Temporary directory {temp_dir} has been removed.")
     sys.exit(0)
 # すべてのキャッチ可能なシグナルにハンドラを登録
 def setup_signal_handling():

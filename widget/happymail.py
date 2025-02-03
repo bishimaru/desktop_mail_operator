@@ -1084,7 +1084,8 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
    select.select_by_visible_text("プロフ一覧")
    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
    time.sleep(wait_time)
-   for i in range(foot_count):
+   foot_counted = 0
+   for i in range(50):
       warinig_flug = catch_warning_screen(driver)
       if warinig_flug:
         print(f"{name}:警告画面が出ている可能性があります")
@@ -1110,6 +1111,15 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
         mail_icon_try_cnt += 1
         if mail_icon_try_cnt == 10:
            break
+      # 
+      before_content = driver.execute_script(
+      'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
+      user
+      )
+      
+      if before_content != "none":
+         
+        continue
       user_link = user.find_elements(By.TAG_NAME, value="a")
       user_link[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -1159,8 +1169,10 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       # print(f'{name}:足跡付け{i+1}件, いいね:{like_flag}、タイプ{type_flag}  {user_name}')
       # print(f'{name}:足跡付け{i+1}件, タイプ{type_flag}  {user_name}')
       now = datetime.now().strftime('%m-%d %H:%M:%S')
-      print(f'{name}:足跡付け{i+1}件,  {user_name}  {now}')
-
+      foot_counted += 1
+      print(f'{name}:足跡付け{foot_counted}件,  {user_name}  {now}')
+      if foot_counted >= foot_count:
+         return
       # 戻る
       catch_warning_screen(driver)
       back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
