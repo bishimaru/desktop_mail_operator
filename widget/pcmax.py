@@ -3117,10 +3117,10 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
       for pcmax_chara in sorted_pcmax:
           func.change_tor_ip()
           # print(len(sorted_pcmax))
-          print(pcmax_chara["name"])
-          if pcmax_chara["name"] != "つむぎ":
-            print(666)
-            continue
+          # print(pcmax_chara["name"])
+          # if pcmax_chara["name"] != "つむぎ":
+          #   print(666)
+          #   continue
           try:
               # ループ内で処理を実行
               return_func = timer(wait_cnt, [lambda: re_post(pcmax_chara, driver, wait, detail_area_flug)])
