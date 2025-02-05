@@ -126,8 +126,10 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
   wait_time = random.uniform(3, 4)
   login(driver, wait)
   # MENUをクリック
-  menu = driver.find_element(By.ID, value='sp_nav')
-  menu.click()
+  # menu = driver.find_elements(By.ID, value='sp_nav')
+  # if not len(menu):
+  menu = driver.find_elements(By.ID, value='nav-open')
+  menu[0].click()
   time.sleep(wait_time)
   # 掲示板履歴をクリック　
   bulletin_board_history = driver.find_element(By.CLASS_NAME, value="nav-content-list")
@@ -3118,7 +3120,7 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
           func.change_tor_ip()
           # print(len(sorted_pcmax))
           # print(pcmax_chara["name"])
-          # if pcmax_chara["name"] != "つむぎ":
+          # if pcmax_chara["name"] != "ハル":
           #   print(666)
           #   continue
           try:
