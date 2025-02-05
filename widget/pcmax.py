@@ -308,8 +308,10 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
         if last_area in post_area_dic:
           try:
             post_area_dic[last_area].remove(detail_selected)
-          except ValueError:
+          except Exception:
             pass
+          print(f"🔍 last_area: {last_area}")  # 追加: `last_area` を確認
+          print(f"📌 post_area_dic keys: {list(post_area_dic.keys())}")  # 追加: `post_area_dic` のキーを確認
           detail_area = random.choice(post_area_dic[last_area])
         else:
           detail_area = str(detail_selected)
@@ -3115,10 +3117,10 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
       for pcmax_chara in sorted_pcmax:
           func.change_tor_ip()
           # print(len(sorted_pcmax))
-          # print(pcmax_chara["name"])
-          # if pcmax_chara["name"] != "わかな":
-          #   print(666)
-          #   continue
+          print(pcmax_chara["name"])
+          if pcmax_chara["name"] != "つむぎ":
+            print(666)
+            continue
           try:
               # ループ内で処理を実行
               return_func = timer(wait_cnt, [lambda: re_post(pcmax_chara, driver, wait, detail_area_flug)])
