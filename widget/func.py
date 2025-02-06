@@ -74,19 +74,19 @@ def get_the_temporary_folder(temp_dir):
     
   return dir
 
-# def clear_webdriver_cache():
-#     os_name = platform.system()
-#     if os_name == "Darwin":
-#       cache_dir = os.path.expanduser("~/.wdm/drivers")
-#     elif os_name == "Windows":
-#       cache_dir = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'myprojects', 'desktop_mail_operator', 'driver_cache', '.wdm', 'drivers')
-#     else:
-#         return  # サポートしていないOSの場合は何もしない
-#     if os.path.exists(cache_dir):
-#         try:
-#             shutil.rmtree(cache_dir)
-#         except Exception as e:
-#             print(f"Error clearing webdriver cache: {e}")
+def clear_webdriver_cache():
+    os_name = platform.system()
+    if os_name == "Darwin":
+      cache_dir = os.path.expanduser("~/.wdm/drivers")
+    elif os_name == "Windows":
+      cache_dir = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'myprojects', 'desktop_mail_operator', 'driver_cache', '.wdm', 'drivers')
+    else:
+        return  # サポートしていないOSの場合は何もしない
+    if os.path.exists(cache_dir):
+        try:
+            shutil.rmtree(cache_dir)
+        except Exception as e:
+            print(f"Error clearing webdriver cache: {e}")
 
 def get_driver(headless_flag, max_retries=3):
     os_name = platform.system()
@@ -128,6 +128,7 @@ def get_driver(headless_flag, max_retries=3):
         except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
             print(f"WebDriverException発生: {e}")
             print(f"再試行します ({attempt + 1}/{max_retries})")
+            clear_webdriver_cache()
             time.sleep(5)
             if attempt == max_retries - 1:
                 raise
