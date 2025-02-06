@@ -44,13 +44,13 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
   return_foot_counted = 0
   repost_flug = ""
 
-  # try:
-  #   repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
-  # except Exception as e:
-  #   print(f"ハッピーメール掲示板エラー{name}")
-  #   print(traceback.format_exc())
-  #   func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
-  # time.sleep(2)
+  try:
+    repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
+  except Exception as e:
+    print(f"ハッピーメール掲示板エラー{name}")
+    print(traceback.format_exc())
+    func.send_error(f"ハッピーメール掲示板エラー{name}", traceback.format_exc())
+  time.sleep(2)
   try:
     return_foot_counted = happymail.return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type_cnt, return_foot_cnt, return_foot_img, fst_message)
   except Exception as e:
