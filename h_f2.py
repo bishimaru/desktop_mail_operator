@@ -93,10 +93,11 @@ def happymail_footprints(headless, foot_cnt, selected_users):
                 shutil.rmtree(temp_dir)
                 print(f"Temporary directory {temp_dir} has been removed.")
               if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
-                  print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
-                  driver.quit()
-                  shutil.rmtree(temp_dir)
-                  sys.exit(0)
+                print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
+                driver.quit()
+                shutil.rmtree(temp_dir)
+                sys.exit(0)
+             
       if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
         driver.quit()
         shutil.rmtree(temp_dir)

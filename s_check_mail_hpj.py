@@ -63,7 +63,7 @@ def check_mail(user_data, headless):
         driver,wait = func.test_get_driver(temp_dir, headless)
         for happy_info in happymail_list:
             new_mail_lists = []
-            # if happy_info["name"] != "ゆっこ":
+            # if happy_info["name"] != "えりか":
             #     continue
             try:
                 happymail_new = happymail.check_new_mail(happy_info, driver, wait)
@@ -150,6 +150,8 @@ def check_mail(user_data, headless):
         # pcmax
         print(f"<<<<<<<<<<<<PCMAX:新着メール開始>>>>>>>>>>>>")
         for pcmax_info in pcmax_list:  
+            # if pcmax_info["name"] != "えりか":
+            #     continue
             func.change_tor_ip()  
             new_mail_lists = []
             try:
@@ -180,7 +182,7 @@ def check_mail(user_data, headless):
                             # print(new_mail_list)
                             for new_mail in new_mail_list:
                                 text = text + new_mail + ",\n"
-                                if "警告" in text:
+                                if "警告" in text or "番号" in text:
                                     subject = "メッセージ"
                     try:
                         smtpobj = smtplib.SMTP('smtp.gmail.com', 587)

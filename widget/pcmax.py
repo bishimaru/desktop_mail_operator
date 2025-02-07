@@ -863,6 +863,14 @@ def check_new_mail(pcmax_info, driver, wait):
         driver.execute_script("arguments[0].click();", kiyaku_btn[0])
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(3)
+        # 番号ロック確認　setting-title
+        number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
+        print(len(number_lock_elem))
+        if len(number_lock_elem):
+          print(number_lock_elem[0].text)
+          if "電話番号確認" in number_lock_elem[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+      return_list.append(f"{login_id}:{login_pass} {name}pcmaxに番号ロック画面が出ている可能性があります")
     else:
       print(f"{name}に警告画面が出ている可能性があります")
       return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
