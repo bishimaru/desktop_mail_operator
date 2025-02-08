@@ -889,11 +889,12 @@ def check_new_mail(pcmax_info, driver, wait):
   # sp_footer
   sp_footer = driver.find_elements(By.ID, value="sp_footer")
   if len(sp_footer):
-    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[2]")
+    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[3]")
   else:
     messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
-  
+ 
   new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
+  
   if len(new_message_elem):
       # print('新着があります')
       new_message_elem[0].click()
@@ -906,7 +907,7 @@ def check_new_mail(pcmax_info, driver, wait):
       time.sleep(2)
       message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
       unread = message_list[0].find_elements(By.CLASS_NAME, value="unread1")
-      # メッセージ一覧を取得      
+      # メッセージ一覧を取得   
       while len(unread):
         try:
             message_list = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "receive_user")))   
@@ -2535,7 +2536,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       user_cnt += 1
   # mohu = 0
   for i in link_list:
-    print(888)
     if send_count >= send_limit:
       print("〜〜〜〜送信上限に達しました〜〜〜〜")
       return send_count
@@ -2675,7 +2675,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
       search_profile.click()
     else:
-      print(777)
       footer_icons = driver.find_elements(By.ID, value="sp-floating")
       search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
       search_profile.click()
@@ -3073,6 +3072,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
+        if pcmax_chara['name'] != "ゆっこ":
+          continue
         func.change_tor_ip()
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
