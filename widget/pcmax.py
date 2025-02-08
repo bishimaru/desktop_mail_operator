@@ -3084,8 +3084,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
-        if pcmax_chara['name'] != "りな":
-          continue
+        # if pcmax_chara['name'] != "りな":
+        #   continue
         func.change_tor_ip()
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
