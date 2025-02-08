@@ -150,8 +150,8 @@ def check_mail(user_data, headless):
         # pcmax
         print(f"<<<<<<<<<<<<PCMAX:新着メール開始>>>>>>>>>>>>")
         for pcmax_info in pcmax_list:  
-            if pcmax_info["name"] != "ゆっこ":
-                continue
+            # if pcmax_info["name"] != "ゆっこ":
+            #     continue
             func.change_tor_ip()  
             new_mail_lists = []
             try:
