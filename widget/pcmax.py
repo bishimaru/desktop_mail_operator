@@ -1188,7 +1188,7 @@ def check_new_mail(pcmax_info, driver, wait):
           if len(message_list):
             unread = message_list[0].find_elements(By.CLASS_NAME, value="unread1")
           else:
-            unread = None
+            break
         else:
           break
   # # 足跡返し
