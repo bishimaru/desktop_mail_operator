@@ -886,7 +886,13 @@ def check_new_mail(pcmax_info, driver, wait):
     if "no-image" in top_img_style:
       print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
   # 新着があるかチェック
-  messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
+  # sp_footer
+  sp_footer = driver.find_elements(By.CLASS_NAME, value="sp_footer")
+  if len(sp_footer):
+    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[2]")
+  else:
+    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
+  
   new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
   if len(new_message_elem):
       # print('新着があります')
