@@ -886,20 +886,11 @@ def check_new_mail(pcmax_info, driver, wait):
     if "no-image" in top_img_style:
       print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
   # 新着があるかチェック
-  have_new_massage_users = []
-  new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
+  messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
+  new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
   if len(new_message_elem):
-    new_message = new_message_elem[0]
-  else:
-    new_message = ""
-    # print('新着メール取得に失敗しました')
-  # if 1 == 1: #dev
-  if new_message:
-    # if 1 == 1: #dev
-    if new_message.text[:2] == "新着":
       # print('新着があります')
-      message = driver.find_elements(By.CLASS_NAME, value="message")[0]
-      message.click()
+      new_message_elem[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(2)
       # 未読だけを表示
@@ -907,16 +898,10 @@ def check_new_mail(pcmax_info, driver, wait):
       new_message_display[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(2)
-      # 新着ありのユーザーをリストに追加
       message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
-      for usr_info in message_list:
-          new_mail_user = usr_info.find_element(By.CLASS_NAME, value="name").text
-          if len(new_mail_user) > 7:
-            new_mail_user = new_mail_user[:7] + "…"
-          have_new_massage_users.append(new_mail_user)
-      print(f"新着メッセージ数 {len(message_list)}")
+      unread = message_list[0].find_elements(By.CLASS_NAME, value="unread1")
       # メッセージ一覧を取得      
-      while len(message_list):
+      while len(unread):
         try:
             message_list = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "receive_user")))   
         except TimeoutException:
@@ -1026,12 +1011,10 @@ def check_new_mail(pcmax_info, driver, wait):
           if len(received_mail_elem):
             received_mail = received_mail_elem[-1].text
           else:
-            received_mail = ""
-          
+            received_mail = ""       
           # ＠を@に変換する
           if "＠" in received_mail:
             received_mail = received_mail.replace("＠", "@")
-
           # メールアドレスを抽出する正規表現
           email_pattern = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
           # email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
@@ -1040,7 +1023,6 @@ def check_new_mail(pcmax_info, driver, wait):
             # print("メールアドレスが含まれています")
             # print(email_list)
             # print(name)
-
             # icloudの場合
             if "icloud.com" in received_mail:
               print("icloud.comが含まれています")
@@ -1203,6 +1185,10 @@ def check_new_mail(pcmax_info, driver, wait):
           time.sleep(2)
           # メッセージ一覧を取得
           message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
+          if len(message_list):
+            unread = message_list[0].find_elements(By.CLASS_NAME, value="unread1")
+          else:
+            unread = None
         else:
           break
   # # 足跡返し
@@ -2473,12 +2459,13 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       print(f"新着メッセージ数 {len(message_list)}")
   # 足跡返し
   # 右下のキャラ画像をクリック
-  chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
+  # chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
+  chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[6]")
   reload_cnt = 1
   while not len(chara_img):
     time.sleep(5)
     # print("右下のキャラ画像が見つかりません")
-    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
+    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
     reload_cnt += 1
     if reload_cnt == 5:
       break
@@ -2527,8 +2514,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         user_name = i.text    
     like = div[user_cnt].find_elements(By.CLASS_NAME, value="type1")
     # name = div[user_cnt].find_element(By.CLASS_NAME, value="user-name")
-    # print(1111111111111111)
-    # print(user_name)
     if user_name in have_new_massage_users:
       # print('新着リストのユーザーです')
       user_cnt += 1
@@ -2544,6 +2529,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       user_cnt += 1
   # mohu = 0
   for i in link_list:
+    print(888)
     if send_count >= send_limit:
       print("〜〜〜〜送信上限に達しました〜〜〜〜")
       return send_count
@@ -2596,20 +2582,21 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
           time.sleep(2)
         continue
     # 残ポイントチェック
-    point = driver.find_elements(By.ID, value="point")
-    if len(point):
-      point = point[0].find_element(By.TAG_NAME, value="span").text
-      pattern = r'\d+'
-      match = re.findall(pattern, point)
-      if int(match[0]) > 1:
-        maji_soushin = True
-      else:
-        maji_soushin = False
-    else:
-      time.sleep(4)
-      maji_soushin = False
-      continue
-    time.sleep(1)
+    # point = driver.find_elements(By.ID, value="point")
+    # if len(point):
+    #   point = point[0].find_element(By.TAG_NAME, value="span").text
+    #   pattern = r'\d+'
+    #   match = re.findall(pattern, point)
+    #   if int(match[0]) > 1:
+    #     maji_soushin = True
+    #   else:
+    #     maji_soushin = False
+    # else:
+    #   print(999)
+    #   time.sleep(4)
+    #   maji_soushin = False
+    #   # continue
+    # time.sleep(1)
     # いいねする
     with_like = driver.find_elements(By.CLASS_NAME, value="type1")
     if len(with_like):
@@ -2618,7 +2605,10 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
     # メッセージをクリック
+    print(777)
+
     message = driver.find_elements(By.ID, value="message1")
+    print(len(message))
     if len(message):
       message[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -2639,32 +2629,33 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     script = "arguments[0].value = arguments[1];"
     driver.execute_script(script, text_area, return_foot_message)
     # text_area.send_keys(return_foot_message)
-    time.sleep(6)
+    time.sleep(5)
     # メッセージを送信
-    if maji_soushin:
-      send = driver.find_element(By.CLASS_NAME, value="maji_send")
-      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send)
-      # send.click()
-      driver.execute_script("arguments[0].click();", send)
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      send_link = driver.find_elements(By.ID, value="link_OK")
-      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_link[0])
-      send_link[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      send_count += 1
-      mail_history = 0
-      print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
-      
-    else:
-      send = driver.find_element(By.ID, value="send_n")
-      send.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      send_count += 1
-      mail_history = 0
-      print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
+    # if maji_soushin:
+    #   send = driver.find_element(By.CLASS_NAME, value="maji_send")
+    #   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send)
+    #   # send.click()
+    #   driver.execute_script("arguments[0].click();", send)
+    #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    #   time.sleep(2)
+    #   send_link = driver.find_elements(By.ID, value="link_OK")
+    #   driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_link[0])
+    #   send_link[0].click()
+    #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    #   time.sleep(2)
+    #   send_count += 1
+    #   mail_history = 0
+    #   print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信") 
+    # else:
+    send = driver.find_element(By.ID, value="send_n")
+    send.click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    send_count += 1
+    mail_history = 0
+    # print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
+    print(f"{name}pcmax 足跡返し  {send_count }件送信")
+
   returnfoot_cnt = send_count
   # ////////////fst////////////////////////////
   
@@ -2673,9 +2664,15 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
     #プロフ検索をクリック
-    footer_icons = driver.find_element(By.ID, value="sp_footer")
-    search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
-    search_profile.click()
+    footer_icons = driver.find_elements(By.ID, value="sp-floating")
+    if len(footer_icons):
+      search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
+      search_profile.click()
+    else:
+      print(777)
+      footer_icons = driver.find_elements(By.ID, value="sp-floating")
+      search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
+      search_profile.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(3)
     # 検索条件を設定
