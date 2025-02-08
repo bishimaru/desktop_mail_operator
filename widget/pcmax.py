@@ -2497,9 +2497,11 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   time.sleep(2)
   
   # 足あとをクリック
-  footpoint = driver.find_element(By.CLASS_NAME, value="visit1")
+  footpoint = driver.find_elements(By.CLASS_NAME, value="visit1")
+  if not len(footpoint):
+    footpoint = driver.find_elements(By.CLASS_NAME, value="sp-fl-fprints")
   # footpoint = driver.find_element(By.XPATH, value="//*[@id='contents']/div[2]/div[2]/ul/li[5]/a")
-  footpoint.click()
+  footpoint[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
   # ページの高さを取得
