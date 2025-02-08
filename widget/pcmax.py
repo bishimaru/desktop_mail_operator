@@ -2684,11 +2684,11 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     #プロフ検索をクリック
     footer_icons = driver.find_elements(By.ID, value="sp-floating")
     if len(footer_icons):
-      search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
+      search_profile = footer_icons[0].find_element(By.XPATH, value="./*[1]")
       search_profile.click()
     else:
-      footer_icons = driver.find_elements(By.ID, value="sp-floating")
-      search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
+      footer_icons = driver.find_elements(By.ID, value="sp_footer")
+      search_profile = footer_icons[0].find_element(By.XPATH, value="./*[1]")
       search_profile.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(3)
