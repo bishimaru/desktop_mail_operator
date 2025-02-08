@@ -2434,31 +2434,31 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   login(driver, wait)
   time.sleep(2)
   # 新着があるかチェック
-  have_new_massage_users = []
-  new_message_elem = driver.find_elements(By.CLASS_NAME, value="message")
-  if len(new_message_elem):
-    new_message = new_message_elem[0]
+  # sp_footer
+  sp_footer = driver.find_elements(By.ID, value="sp_footer")
+  if len(sp_footer):
+    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[3]")
   else:
-    new_message = ""
-    # print('新着メール取得に失敗しました')
-  # if 1 == 1: #dev
-  if new_message:
-    # if 1 == 1: #dev
-    if new_message.text[:2] == "新着":
-      print('新着があります')
-      message = driver.find_elements(By.CLASS_NAME, value="message")[0]
-      message.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      # 未読だけを表示
-      new_message_display = driver.find_elements(By.CLASS_NAME, value="msg-display_change")
-      if len(new_message_display):
-        new_message_display[0].click()
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(2)
+    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
+ 
+  new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
+  have_new_massage_users = []
+  if len(new_message_elem):
+    # print('新着があります')
+    new_message_elem[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    # 未読だけを表示
+    new_message_display = driver.find_elements(By.CLASS_NAME, value="msg-display_change")
+    new_message_display[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
+    if len(message_list):
       # 新着ありのユーザーをリストに追加
-      message_list = driver.find_elements(By.CLASS_NAME, value="receive_user")
       for usr_info in message_list:
+        unread = usr_info.find_elements(By.CLASS_NAME, value="unread1")
+        if len(unread):
           new_mail_user = usr_info.find_element(By.CLASS_NAME, value="name").text
           if len(new_mail_user) > 7:
             new_mail_user = new_mail_user[:7] + "…"
@@ -2466,18 +2466,32 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       print(f"新着メッセージ数 {len(message_list)}")
   # 足跡返し
   # 右下のキャラ画像をクリック
-  # chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
-  chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[6]")
+  
+  f_menu = driver.find_elements(By.ID, value="f_menu")
+  if len(f_menu):
+    site_logo = driver.find_element(By.ID, value="site_logo")
+    site_logo.click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
+
+  else:
+    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
+  # chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[6]")
+  # print(chara_img[0].text)
+  print(len(chara_img))
   reload_cnt = 1
   while not len(chara_img):
     time.sleep(5)
-    # print("右下のキャラ画像が見つかりません")
+    print("右下のキャラ画像が見つかりません")
     chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
     reload_cnt += 1
-    if reload_cnt == 5:
-      break
-  if not len(chara_img):
-    return
+    if reload_cnt == 2:
+      site_logo = driver.find_element(By.ID, value="site_logo")
+      site_logo.click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(2)
+      chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
   chara_img[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
@@ -2522,7 +2536,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     like = div[user_cnt].find_elements(By.CLASS_NAME, value="type1")
     # name = div[user_cnt].find_element(By.CLASS_NAME, value="user-name")
     if user_name in have_new_massage_users:
-      # print('新着リストのユーザーです')
+      print('新着リストのユーザーです')
       user_cnt += 1
     elif not len(like):
       user_cnt += 1
@@ -2611,10 +2625,8 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(1)
     # メッセージをクリック
-    print(777)
 
     message = driver.find_elements(By.ID, value="message1")
-    print(len(message))
     if len(message):
       message[0].click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -3072,7 +3084,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
-        if pcmax_chara['name'] != "ゆっこ":
+        if pcmax_chara['name'] != "りな":
           continue
         func.change_tor_ip()
         try:
