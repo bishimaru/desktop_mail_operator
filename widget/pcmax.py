@@ -3132,8 +3132,8 @@ def repost_30minute(schedule_data, sorted_pcmax, headless, detail_area_flug):
       # print(f"待機中~~ {elapsed_time} ")
     
     return return_func
-  # 46分で１周
-  wait_cnt = 2700 / len(sorted_pcmax)
+  # 2時間で１周
+  wait_cnt = 6000 / len(sorted_pcmax)
 
   start_one_rap_time = time.time() 
   
