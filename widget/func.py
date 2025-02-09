@@ -96,8 +96,8 @@ def get_driver(headless_flag, max_retries=3):
           port = random.randint(5000, 9000)
           options = Options()
           if headless_flag:
-              options.add_argument('--headless')
-              options.add_argument("--disable-gpu") 
+            options.add_argument('--headless')
+            options.add_argument("--disable-gpu") 
           options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
           options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
           options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
@@ -135,11 +135,8 @@ def get_driver(headless_flag, max_retries=3):
                 raise
 
 def test_get_driver(tmp_dir, headless_flag, max_retries=3):
-    
     # os_name = platform.system()
     print(tmp_dir)
-    
-
     # tmpフォルダ内に一意のキャッシュディレクトリを作成
     temp_dir = os.path.join(tmp_dir, f"temp_cache_{os.getpid()}")  # 一意のディレクトリを生成（PIDベース）
     os.environ["WDM_CACHE"] = temp_dir
@@ -151,8 +148,8 @@ def test_get_driver(tmp_dir, headless_flag, max_retries=3):
         try:
             options = Options()
             if headless_flag:
-                options.add_argument('--headless')
-                options.add_argument("--disable-gpu") 
+              options.add_argument('--headless')
+              options.add_argument("--disable-gpu") 
             options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
             options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
             options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）

@@ -2675,8 +2675,9 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     time.sleep(2)
     send_count += 1
     mail_history = 0
+    now = datetime.now().strftime('%m-%d %H:%M:%S')
     # print(f"{name}pcmax 足跡返し マジ送信:{maji_soushin} {send_count }件送信")
-    print(f"{name}pcmax 足跡返し  {send_count }件送信")
+    print(f"{name}pcmax 足跡返し  {send_count }件送信  {now}")
 
   returnfoot_cnt = send_count
   # ////////////fst////////////////////////////
