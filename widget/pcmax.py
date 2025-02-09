@@ -870,7 +870,7 @@ def check_new_mail(pcmax_info, driver, wait):
           print(number_lock_elem[0].text)
           if "電話番号確認" in number_lock_elem[0].text:
             print(f"{name}に番号ロック画面が出ている可能性があります")
-      return_list.append(f"{login_id}:{login_pass} {name}pcmaxに番号ロック画面が出ている可能性があります")
+            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに番号ロック画面が出ている可能性があります")
     else:
       print(f"{name}に警告画面が出ている可能性があります")
       return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
@@ -894,7 +894,8 @@ def check_new_mail(pcmax_info, driver, wait):
     messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
  
   new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
-  
+  print(777)
+  print(len(new_message_elem))
   if len(new_message_elem):
       # print('新着があります')
       new_message_elem[0].click()
@@ -2440,7 +2441,8 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[3]")
   else:
     messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
- 
+  if not messagebox_elem:
+    print(f"{name} メッセージBOXアイコンが見つかりません")
   new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
   have_new_massage_users = []
   if len(new_message_elem):

@@ -14,7 +14,7 @@ import signal
 temp_dirs = []
 # シグナルハンドラ
 def signal_handler(signum, frame):
-    print(f"Signal {signum} received, cleaning up...")
+    # print(f"Signal {signum} received, cleaning up...")
     for temp_dir in temp_dirs:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
@@ -91,7 +91,7 @@ def happymail_footprints(headless, foot_cnt, selected_users):
           finally:
               if os.path.exists(temp_dir):
                 shutil.rmtree(temp_dir)
-                print(f"Temporary directory {temp_dir} has been removed.")
+                # print(f"Temporary directory {temp_dir} has been removed.")
               if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
                 print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
                 driver.quit()
