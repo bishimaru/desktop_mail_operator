@@ -1118,7 +1118,6 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       )
       
       if before_content != "none":
-         
         continue
       user_link = user.find_elements(By.TAG_NAME, value="a")
       user_link[0].click()
@@ -1127,7 +1126,10 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       catch_warning_screen(driver)
       # ユーザ名を取得
       user_name = driver.find_elements(By.CLASS_NAME, value="ds_user_display_name")
-      user_name = user_name[0].text
+      if user_name:
+        user_name = user_name[0].text
+      else:
+        user_name = "取得に失敗しました"
       # タイプ
       # ランダムな数値を生成し、実行確率と比較
       type_flag = False
