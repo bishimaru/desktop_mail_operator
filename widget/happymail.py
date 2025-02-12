@@ -1945,6 +1945,7 @@ def re_registration(chara_data, driver, wait):
     cup_text_area = driver.find_elements(By.NAME, value="bust_size")
     driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", cup_text_area[0])
     driver.execute_script("arguments[0].click();", cup_text_area[0])
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(1)
     cup_choicises_elem = driver.find_elements(By.ID, value="bust_size_choice")
     cup_choices = cup_choicises_elem[0].find_elements(By.TAG_NAME, value="span")

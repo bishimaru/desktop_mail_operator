@@ -572,6 +572,9 @@ def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt,
   driver.get("https://pcmax.jp/pcm/index.php")
 
 def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest_age, foot_cnt):
+  name = chara_data["name"]
+  login_id = chara_data["login_id"]
+  login_pass = chara_data["password"]
   driver.delete_all_cookies()
   driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -586,16 +589,50 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
   send_form.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(1)
+  warning = driver.find_elements(By.CLASS_NAME, value="caution-title")
+  warning2 = driver.find_elements(By.CLASS_NAME, value="suspend-title")
+  warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
+  number_lock = driver.find_elements(By.ID, value="content_header2")
+  if len(warning) or len(warning2) or len(warning3) or len(number_lock):
+    kiyaku_btn = driver.find_elements(By.CLASS_NAME, value="kiyaku-btn")
+    if len(kiyaku_btn):
+      kiyaku_btn_text = kiyaku_btn[0].text    
+      if kiyaku_btn_text == "上記を了承する":
+        driver.execute_script("arguments[0].click();", kiyaku_btn[0])
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(3)
+        # 番号ロック確認　setting-title mail-setting-title
+        number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
+        number_lock_elem2 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
+        if len(number_lock_elem):
+          print(number_lock_elem[0].text)
+          if "電話番号確認" in number_lock_elem[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+            return
+        if len(number_lock_elem2):
+          print(number_lock_elem2[0].text)
+          if "電話番号確認" in number_lock_elem2[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+            return
+    else:
+      print(f"{name}に警告画面が出ている可能性があります")
+    
   # 利用制限中
   suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
   if len(suspend):
     print(f"{chara_data['name']}利用制限中です")  
   #プロフ検索をクリック
-  footer_icons = driver.find_element(By.ID, value="sp_footer")
-  search_profile = footer_icons.find_element(By.XPATH, value="./*[1]")
-  search_profile.click()
+  footer_icons = driver.find_elements(By.ID, value="sp-floating")
+  if len(footer_icons):
+    search_profile = footer_icons[0].find_element(By.XPATH, value="./*[2]")
+    print(search_profile.text)
+    search_profile.click()
+  else:
+    footer_icons = driver.find_elements(By.ID, value="sp_footer")
+    search_profile = footer_icons[0].find_element(By.XPATH, value="./*[1]")
+    search_profile.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(1)
+  time.sleep(3)
   # 検索条件を設定
   search_elem = driver.find_element(By.ID, value="search1")
   search_elem.click()
@@ -864,14 +901,20 @@ def check_new_mail(pcmax_info, driver, wait):
         driver.execute_script("arguments[0].click();", kiyaku_btn[0])
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(3)
-        # 番号ロック確認　setting-title
+        # 番号ロック確認　setting-title mail-setting-title
         number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
-        print(len(number_lock_elem))
+        number_lock_elem2 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
         if len(number_lock_elem):
           print(number_lock_elem[0].text)
           if "電話番号確認" in number_lock_elem[0].text:
             print(f"{name}に番号ロック画面が出ている可能性があります")
-            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに番号ロック画面が出ている可能性があります")
+            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
+        if len(number_lock_elem2):
+          print(number_lock_elem2[0].text)
+          if "電話番号確認" in number_lock_elem2[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
+        
     else:
       print(f"{name}に警告画面が出ている可能性があります")
       return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
