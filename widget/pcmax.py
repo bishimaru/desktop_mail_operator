@@ -938,8 +938,7 @@ def check_new_mail(pcmax_info, driver, wait):
     messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
  
   new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
-  print(777)
-  print(len(new_message_elem))
+  
   if len(new_message_elem):
       # print('新着があります')
       new_message_elem[0].click()

@@ -88,15 +88,22 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     return f"ログインに失敗しました"
 
 def nav_item_click(nav_name, driver, wait):
-   nav_list = driver.find_elements(By.ID, value='ds_nav')
-   if not len(nav_list):
-      print(f"ナビゲーターリストの取得に失敗しました")
-      return
-   choice_nav = nav_list[0].find_elements(By.LINK_TEXT, nav_name)
-   choice_nav[0].click()
-   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-   time.sleep(2)
-  
+  nav_list = driver.find_elements(By.ID, value='ds_nav')
+  if not len(nav_list):
+    print(f"ナビゲーターリストの取得に失敗しました")
+    return False
+  choice_nav = nav_list[0].find_elements(By.LINK_TEXT, nav_name)
+  if nav_name == "メッセージ":
+    parent_elem = choice_nav[0].find_element(By.XPATH, "..")
+    new_message = parent_elem.find_elements(By.CLASS_NAME, value="ds_red_circle")
+    if not len(new_message):
+      print('新着メールなし')
+      return False
+  choice_nav[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(2)
+  return True
+
 
 def re_post(name,  driver, wait, title, post_text):
   try:
@@ -1107,111 +1114,112 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
   time.sleep(wait_time)
   foot_counted = 0
   for i in range(50):
-      warinig_flug = catch_warning_screen(driver)
-      if warinig_flug:
-        print(f"{name}:警告画面が出ている可能性があります")
-        return
-      user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
-      print(f"ユーザーリストの数{len(user_list)}")
-      if not len(user_list):
-         print("ユーザーリストの取得に失敗しました")
-         break
-      mail_icon_flag = True
-      mail_icon_try_cnt = 0
-      while mail_icon_flag:
-        # インデックスがリストの範囲外でないか確認
-        if i >= len(user_list):
-          break        
-        user = user_list[i]
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", user)
-        mail_icon_parent = user.find_elements(By.CLASS_NAME, value="text-male")
-        mail_icon = mail_icon_parent[0].find_elements(By.TAG_NAME, value="img")
-        if  not len(mail_icon):
-          mail_icon_flag = False
+    warinig_flug = catch_warning_screen(driver)
+    if warinig_flug:
+      print(f"{name}:警告画面が出ている可能性があります")
+      return
+    user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
+    print(f"ユーザーリストの数{len(user_list)}")
+    if not len(user_list):
+        print("ユーザーリストの取得に失敗しました")
+        break
+    mail_icon_flag = True
+    mail_icon_try_cnt = 0
+    while mail_icon_flag:
+      # インデックスがリストの範囲外でないか確認
+      if i >= len(user_list):
+        break        
+      user = user_list[i]
+      driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", user)
+      mail_icon_parent = user.find_elements(By.CLASS_NAME, value="text-male")
+      mail_icon = mail_icon_parent[0].find_elements(By.TAG_NAME, value="img")
+      if  not len(mail_icon):
+        mail_icon_flag = False
+        break
+      mail_icon_try_cnt += 1
+      if mail_icon_try_cnt == 10:
+          print("送信済ユーザーが10件続いたので終了します")
           break
-        mail_icon_try_cnt += 1
-        if mail_icon_try_cnt == 10:
-           print("送信済ユーザーが10件続いたので終了します")
-           break
-      before_content = driver.execute_script(
-      'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
-      user
-      )
-      print(777)
-      print(before_content)
-      if before_content != "none":
-        continue
-      user_link = user.find_elements(By.TAG_NAME, value="a")
-      user_link[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-      catch_warning_screen(driver)
-      # ユーザ名を取得
-      user_name = driver.find_elements(By.CLASS_NAME, value="ds_user_display_name")
-      if user_name:
-        user_name = user_name[0].text
-      else:
-        user_name = "取得に失敗しました"
-      # タイプ
-      # ランダムな数値を生成し、実行確率と比較
-      type_flag = False
-      # 実行確率
-      probability = 0.01
-      
-      execution_probability = probability
-      if random.random() < execution_probability:
-        type_button = driver.find_element(By.ID, value="btn-type")
-        type_button.click()
-        type_flag = True
-        time.sleep(2)
-      # いいね
-      # # ランダムな数値を生成し、実行確率と比較
-      # like_flag = False
-      # # 実行確率
-      # execution_probability = probability
-      # if random.random() < execution_probability:
-      #   others_icon = driver.find_elements(By.CLASS_NAME, value="icon-profile_other_on")
-      #   others_icon[0].click()
-      #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      #   time.sleep(1)
-      #   like_icon = driver.find_elements(By.ID, value="btn-like")
-      #   like_icon_classes = like_icon[0].get_attribute("class")
-      #   if not "disabled" in like_icon_classes:
-      #     like_flag = True
-      #     # footer_menu-list-item-link
-      #     like = like_icon[0].find_elements(By.CLASS_NAME, value="footer_menu-list-item-link")
-      #     like[0].click()
-      #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      #     time.sleep(2)
-      #     like_cancel = driver.find_elements(By.CLASS_NAME, value="modal-cancel")
-      #     while not len(like_cancel):
-      #        time.sleep(1)
-      #        like_cancel = driver.find_elements(By.CLASS_NAME, value="modal-cancel")
-      #     like_cancel[0].click()
-      #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      #     time.sleep(2)
-      # print(f'{name}:足跡付け{i+1}件, いいね:{like_flag}、タイプ{type_flag}  {user_name}')
-      # print(f'{name}:足跡付け{i+1}件, タイプ{type_flag}  {user_name}')
-      now = datetime.now().strftime('%m-%d %H:%M:%S')
-      foot_counted += 1
-      print(f'{name}:足跡付け{foot_counted}件,  {user_name}  {now}')
-      if foot_counted >= foot_count:
-         return
-      # 戻る
-      catch_warning_screen(driver)
-      back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
-      driver.execute_script("arguments[0].click();", back[0])
-      # back[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(1.5)
-      # たまに変なページに遷移するのでurl確認
-      current_url = driver.current_url
-      # 特定の文字列で始まっているか確認
-      if not current_url.startswith("https://happymail.co.jp/sp/app/html/profile_list.php"):
-          # print("URLは指定した文字列で始まっていません。")
-          driver.get("https://happymail.co.jp/sp/app/html/profile_list.php")
-          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-          time.sleep(wait_time)
+    user = user_list[i]
+    before_content = driver.execute_script(
+    'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
+    user
+    )
+    print(777)
+    print(before_content)
+    if before_content != "none":
+      continue
+    user_link = user.find_elements(By.TAG_NAME, value="a")
+    user_link[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(wait_time)
+    catch_warning_screen(driver)
+    # ユーザ名を取得
+    user_name = driver.find_elements(By.CLASS_NAME, value="ds_user_display_name")
+    if user_name:
+      user_name = user_name[0].text
+    else:
+      user_name = "取得に失敗しました"
+    # タイプ
+    # ランダムな数値を生成し、実行確率と比較
+    type_flag = False
+    # 実行確率
+    probability = 0.01
+    
+    execution_probability = probability
+    if random.random() < execution_probability:
+      type_button = driver.find_element(By.ID, value="btn-type")
+      type_button.click()
+      type_flag = True
+      time.sleep(2)
+    # いいね
+    # # ランダムな数値を生成し、実行確率と比較
+    # like_flag = False
+    # # 実行確率
+    # execution_probability = probability
+    # if random.random() < execution_probability:
+    #   others_icon = driver.find_elements(By.CLASS_NAME, value="icon-profile_other_on")
+    #   others_icon[0].click()
+    #   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    #   time.sleep(1)
+    #   like_icon = driver.find_elements(By.ID, value="btn-like")
+    #   like_icon_classes = like_icon[0].get_attribute("class")
+    #   if not "disabled" in like_icon_classes:
+    #     like_flag = True
+    #     # footer_menu-list-item-link
+    #     like = like_icon[0].find_elements(By.CLASS_NAME, value="footer_menu-list-item-link")
+    #     like[0].click()
+    #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    #     time.sleep(2)
+    #     like_cancel = driver.find_elements(By.CLASS_NAME, value="modal-cancel")
+    #     while not len(like_cancel):
+    #        time.sleep(1)
+    #        like_cancel = driver.find_elements(By.CLASS_NAME, value="modal-cancel")
+    #     like_cancel[0].click()
+    #     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    #     time.sleep(2)
+    # print(f'{name}:足跡付け{i+1}件, いいね:{like_flag}、タイプ{type_flag}  {user_name}')
+    # print(f'{name}:足跡付け{i+1}件, タイプ{type_flag}  {user_name}')
+    now = datetime.now().strftime('%m-%d %H:%M:%S')
+    foot_counted += 1
+    print(f'{name}:足跡付け{foot_counted}件,  {user_name}  {now}')
+    if foot_counted >= foot_count:
+        return
+    # 戻る
+    catch_warning_screen(driver)
+    back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
+    driver.execute_script("arguments[0].click();", back[0])
+    # back[0].click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(1.5)
+    # たまに変なページに遷移するのでurl確認
+    current_url = driver.current_url
+    # 特定の文字列で始まっているか確認
+    if not current_url.startswith("https://happymail.co.jp/sp/app/html/profile_list.php"):
+        # print("URLは指定した文字列で始まっていません。")
+        driver.get("https://happymail.co.jp/sp/app/html/profile_list.php")
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(wait_time)
 
 
 def send_fst_message(happy_user_list, driver, wait):
@@ -1350,85 +1358,25 @@ def check_new_mail(happy_info, driver, wait):
   fst_message = happy_info["fst_message"]
   conditions_message = happy_info["second_message"]   
   return_foot_message = happy_info["return_foot_message"]   
+  # if name != 'ゆっこ':
+  #    return
   print(f"{name} チェック開始")
   if not login_id:
     print(f"{name}のログインIDを取得できませんでした")
     return
-  driver.delete_all_cookies()
-  # driver.implicitly_wait(15)
-  try:
-    driver.get("https://happymail.jp/login/")
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  except TimeoutException:
-    print("Timeout reached, retrying...")
-    driver.refresh()  # ページをリフレッシュして再試行
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    
   wait_time = random.uniform(2, 5)
-  time.sleep(wait_time)
-  id_form = driver.find_element(By.ID, value="TelNo")
-  id_form.send_keys(login_id)
-  pass_form = driver.find_element(By.ID, value="TelPass")
-  pass_form.send_keys(login_pass)
-  time.sleep(wait_time)
-  send_form = driver.find_element(By.ID, value="login_btn")
-  try:
-    send_form.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)
-  except TimeoutException:
-    print("Timeout reached, retrying...")
-    driver.refresh()  # ページをリフレッシュして再試行
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    
-    
-  remodal = driver.find_elements(By.CLASS_NAME,value="remodal-close")
-  if len(remodal):
-     remodal[0].click()
-     time.sleep(1)
-  warning = driver.find_elements(By.CLASS_NAME, value="information__dialog")
-  if len(warning):
-     return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります")
-     return return_list
-  name_elem = ""
-  try:
-    name_elem = driver.find_element(By.CLASS_NAME, "ds_user_display_name")
-  except NoSuchElementException:
-      time.sleep(7)
-      name_elem = driver.find_elements(By.CLASS_NAME, "ds_user_display_name")
-      if len(name_elem):
-        name_elem = name_elem[0]
-      pass
-  if not name_elem:
-     return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールに警告画面が出ている可能性があります.....")
-     return return_list
-  # 画像チェック
-  top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
-  if len(top_img_element):
-     top_img = top_img_element[0].get_attribute("style")
-     if "noimage" in top_img:
-        print(f"{name}のトップ画の設定がNoImageです")
-        return_list.append(f"{name},{login_id}:{login_pass} ハッピーメールのトップ画像がNOIMAGEの可能性があります.....")
-  name = name_elem.text  
-  message_icon_candidates = driver.find_elements(By.CLASS_NAME, value="ds_nav_item")
-  message_icon = ""
-  for message_icon_candidate in message_icon_candidates:
-     if "メッセージ" in message_icon_candidate.text:
-        message_icon = message_icon_candidate
-  if message_icon:
-    new_message = message_icon.find_elements(By.CLASS_NAME, value="ds_red_circle")
-  else:
-     print("message_iconが見つかりません")
+  login(name, login_id, login_pass, driver, wait)
+  warinig_flug = catch_warning_screen(driver)
+  if warinig_flug:
+    print(f"{name}:警告画面が出ている可能性があります")
+    return
+  # プロフ検索をクリック
+  new_message_flug = nav_item_click("メッセージ", driver, wait)
+  if not new_message_flug:
      return
+  else:  
   # 新着があった
   # if True:
-  if len(new_message):
-     link = message_icon.find_elements(By.TAG_NAME, value="a")
-     link[0].click()
-     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-     time.sleep(2)
-     #  未返信のみ表示
-    #  only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[2]
     #  未読のみ表示
      only_new_message = driver.find_elements(By.CLASS_NAME, value="ds_message_tab_item")[1]
      only_new_message.click()
@@ -1465,7 +1413,7 @@ def check_new_mail(happy_info, driver, wait):
              for_minutes_passed = False
         if for_minutes_passed:
         # if True:
-          print("4分以上経過しているメッセージあり。")          
+          print("4分以上経過しているメッセージあり")          
           new_mail[0].click()
           wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
           time.sleep(2)
@@ -1474,7 +1422,7 @@ def check_new_mail(happy_info, driver, wait):
           if len(send_message):
             chara_img_senf_flug = send_message[-1].find_elements(By.CLASS_NAME, value="attached_photo_link")
             if len(chara_img_senf_flug):
-              print("画像あり")
+              # print("画像あり")
               sent_text_element = send_message[-2]
             else:
               sent_text_element = send_message[-1]            
@@ -1605,7 +1553,7 @@ def check_new_mail(happy_info, driver, wait):
               candidate_mityaiya = driver.find_elements(By.CLASS_NAME, value="ds_message_txt_media_text")
               for c_m in candidate_mityaiya:
                 if c_m.text == "見ちゃいや":
-                    mityaiya = c_m
+                  mityaiya = c_m
               if mityaiya:
                 # print('<<<<<<<<<<<<<<<<<みちゃいや登録>>>>>>>>>>>>>>>>>>>')
                 mityaiya.click()
@@ -1616,13 +1564,11 @@ def check_new_mail(happy_info, driver, wait):
                   mityaiya_send[0].click()
                   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
                   time.sleep(1)
-                
           else:
             text_area = driver.find_element(By.ID, value="text-message")
             driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", text_area)
             script = "arguments[0].value = arguments[1];"
             driver.execute_script(script, text_area, fst_message)
-            # text_area.send_keys(fst_message)
             # 送信
             send_mail = driver.find_element(By.ID, value="submitButton")
             driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", send_mail)
@@ -1635,27 +1581,15 @@ def check_new_mail(happy_info, driver, wait):
               driver.refresh()
               wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
               time.sleep(wait_time)
+              # message__block__body__text--female 
               send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
               reload_cnt += 1
               if reload_cnt == 3:
-                  driver.refresh()
-                  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                  time.sleep(wait_time)
-                  break
-            reload_cnt = 0
-            while send_msg_elem[-1].text != fst_message:
-              driver.refresh()
-              wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-              time.sleep(5)
-              send_msg_elem = driver.find_elements(By.CLASS_NAME, value="message__block__body__text--female")
-              # print(send_msg_elem[-1].text)
-              reload_cnt += 1
-              if reload_cnt == 3:
-                  driver.refresh()
-                  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-                  time.sleep(wait_time)
-                  break
-           
+                driver.refresh()
+                wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+                time.sleep(wait_time)
+                break
+            
         else:
           if len(return_list):
               return return_list
@@ -1665,8 +1599,6 @@ def check_new_mail(happy_info, driver, wait):
         wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
         time.sleep(2)
         new_mail = driver.find_elements(By.CLASS_NAME, value="happy_blue_10")
-        
-     
   if len(return_list):
     return return_list
   else:
