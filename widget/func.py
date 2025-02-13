@@ -76,17 +76,36 @@ def get_the_temporary_folder(temp_dir):
 
 def clear_webdriver_cache():
     os_name = platform.system()
+    
+    # スクリプトの実行ディレクトリを取得
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # 削除するキャッシュディレクトリ
+    cache_dirs = []
+
+    # macOS の場合
     if os_name == "Darwin":
-      cache_dir = os.path.expanduser("~/.wdm/drivers")
+        cache_dirs = [
+            os.path.expanduser("~/.wdm/drivers"),  # WebDriverのキャッシュディレクトリ
+            os.path.join(script_dir, "widget", "tmp", "h_footprint")  # スクリプトの実行ディレクトリに基づいたパス
+        ]
+    # Windows の場合
     elif os_name == "Windows":
-      cache_dir = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'myprojects', 'desktop_mail_operator', 'driver_cache', '.wdm', 'drivers')
+        cache_dirs = [
+            os.path.join(os.getenv('USERPROFILE'), '.wdm', 'drivers'),
+            os.path.join(script_dir, "widget", "tmp", "h_footprint")
+        ]
     else:
         return  # サポートしていないOSの場合は何もしない
-    if os.path.exists(cache_dir):
-        try:
-            shutil.rmtree(cache_dir)
-        except Exception as e:
-            print(f"Error clearing webdriver cache: {e}")
+
+    # キャッシュディレクトリの削除
+    for cache_dir in cache_dirs:
+        if os.path.exists(cache_dir):
+            try:
+                shutil.rmtree(cache_dir)
+                print(f"Deleted: {cache_dir}")
+            except Exception as e:
+                print(f"Error clearing cache {cache_dir}: {e}")
 
 def get_driver(headless_flag, max_retries=3):
     os_name = platform.system()

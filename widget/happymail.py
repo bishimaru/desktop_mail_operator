@@ -1097,9 +1097,14 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       mail_icon_try_cnt = 0
       while mail_icon_flag:
         # インデックスがリストの範囲外でないか確認
+        user_list_try_cnt = 0
         if i >= len(user_list):
-            print("ユーザーリストの終わりに達しました。")
-            break
+          print("ユーザーリストの取得に失敗しました")
+          user_list_try_cnt += 1
+          if user_list_try_cnt  > 3:
+             break
+          continue
+          
         user = user_list[i]
         driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", user)
         mail_icon_parent = user.find_elements(By.CLASS_NAME, value="text-male")
@@ -1107,7 +1112,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
         if  not len(mail_icon):
           mail_icon_flag = False
           break
-        # i += 1
+        
         mail_icon_try_cnt += 1
         if mail_icon_try_cnt == 10:
            break
@@ -1953,7 +1958,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["cup"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     # menu_modal_cancel
@@ -2012,7 +2018,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["holiday"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2107,7 +2114,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["sake"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2126,7 +2134,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["car_ownership"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2145,7 +2154,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["roommate"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2164,7 +2174,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["brothers_and_sisters"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2183,7 +2194,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["until_we_met"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
@@ -2202,7 +2214,8 @@ def re_registration(chara_data, driver, wait):
       if i.text == chara_data["date_expenses"]:
           classes = i.get_attribute("class")
           if not "chose" in classes.split():
-            i.click()
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", i)
+            driver.execute_script("arguments[0].click();", i)
             time.sleep(2)
             wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     modal_cancel = driver.find_elements(By.CLASS_NAME, value="menu_modal_cancel")
