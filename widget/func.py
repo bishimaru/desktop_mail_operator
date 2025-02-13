@@ -53,7 +53,6 @@ def get_the_temporary_folder(temp_dir):
   entries = os.listdir(dir)  # ディレクトリ内のエントリを取得
   # print(entries)
   # print(len(entries))  # エントリの数を
-  # print(77777)
   # time.sleep(10)
   if len(entries) >= 10:
     print("キャッシュが複数存在するため、クリアします。起動中のマクロは再起動してください。。。")
@@ -63,15 +62,13 @@ def get_the_temporary_folder(temp_dir):
         # エントリがファイルの場合
         if os.path.isfile(entry_path) or os.path.islink(entry_path):
             os.remove(entry_path)
-            print(f"Deleted file: {entry_path}")
+            # print(f"Deleted file: {entry_path}")
         # エントリがフォルダの場合
         elif os.path.isdir(entry_path):
             shutil.rmtree(entry_path)
-            print(f"Deleted folder: {entry_path}")
+            # print(f"Deleted folder: {entry_path}")
       except Exception as e:
           print(f"Failed to delete {entry_path}: {e}")
-    
-    
   return dir
 
 def clear_webdriver_cache():

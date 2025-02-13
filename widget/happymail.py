@@ -1117,6 +1117,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
          print("ユーザーリストの取得に失敗しました")
          break
       mail_icon_flag = True
+      mail_icon_try_cnt = 0
       while mail_icon_flag:
         # インデックスがリストの範囲外でないか確認
         if i >= len(user_list):
@@ -1136,7 +1137,8 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
       user
       )
-      
+      print(777)
+      print(before_content)
       if before_content != "none":
         continue
       user_link = user.find_elements(By.TAG_NAME, value="a")

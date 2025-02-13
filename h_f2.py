@@ -38,7 +38,7 @@ user_data = func.get_user_data()
 def run_script():
     # 選択されたキャラクターを取得
     selected_users = [name for name, var in check_vars.items() if var.get()]
-    print(selected_users)
+    # print(selected_users)
     if not selected_users:
         messagebox.showwarning("警告", "キャラクターを選択してください。")
         return
