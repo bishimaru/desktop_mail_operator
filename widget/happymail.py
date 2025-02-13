@@ -30,6 +30,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
 
+   
 # 警告画面
 def catch_warning_screen(driver):
   wait = WebDriverWait(driver, 15)
@@ -53,6 +54,50 @@ def catch_warning_screen(driver):
        return True
   return False
    
+def login(name, happymail_id, happymail_pass, driver, wait,):
+  try:
+    driver.delete_all_cookies()
+    driver.get("https://happymail.jp/login/")
+    # loaderが消えるのを待つ
+    WebDriverWait(driver, 10).until(
+      EC.invisibility_of_element_located((By.CLASS_NAME, "loader"))
+    )
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    wait_time = random.uniform(2, 5)
+    time.sleep(2)
+    id_form = driver.find_element(By.ID, value="TelNo") 
+    id_form.send_keys(happymail_id)
+    pass_form = driver.find_element(By.ID, value="TelPass")
+    pass_form.send_keys(happymail_pass)
+    time.sleep(wait_time)
+    send_form = driver.find_element(By.ID, value="login_btn")
+    send_form.click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    # 画像チェック
+    top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
+    if len(top_img_element):
+      top_img = top_img_element[0].get_attribute("style")
+      if "noimage" in top_img:
+        print(f"{name}のトップ画の設定がNoImageです")
+        return f"{name}のトップ画の設定がNoImageです"
+    return f"ログインに成功しました"
+  except Exception as e:  
+    print(f"ログインに失敗しました")
+    # print(traceback.format_exc())
+    return f"ログインに失敗しました"
+
+def nav_item_click(nav_name, driver, wait):
+   nav_list = driver.find_elements(By.ID, value='ds_nav')
+   if not len(nav_list):
+      print(f"ナビゲーターリストの取得に失敗しました")
+      return
+   choice_nav = nav_list[0].find_elements(By.LINK_TEXT, nav_name)
+   choice_nav[0].click()
+   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+   time.sleep(2)
+  
+
 def re_post(name,  driver, wait, title, post_text):
   try:
     area_list = ["東京都", "千葉県", "埼玉県", "神奈川県", "栃木県", "静岡県"]
@@ -1046,65 +1091,36 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
        
 
 def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count):
-   driver.delete_all_cookies()
-   driver.get("https://happymail.jp/login/")
-   # loaderが消えるのを待つ
-   WebDriverWait(driver, 10).until(
-      EC.invisibility_of_element_located((By.CLASS_NAME, "loader"))
-   )
-   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-   wait_time = random.uniform(2, 5)
-   time.sleep(2)
-   id_form = driver.find_element(By.ID, value="TelNo") 
-   id_form.send_keys(happymail_id)
-   pass_form = driver.find_element(By.ID, value="TelPass")
-   pass_form.send_keys(happymail_pass)
-   time.sleep(wait_time)
-   send_form = driver.find_element(By.ID, value="login_btn")
-   send_form.click()
-   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-   time.sleep(2)
-   #リモーダル画面が開いていれば閉じる
-   warinig_flug = catch_warning_screen(driver)
-   if warinig_flug:
-      print(f"{name}:警告画面が出ている可能性があります")
-      return
-   # プロフ検索をクリック
-   nav_list = driver.find_elements(By.ID, value='ds_nav')
-   if not len(nav_list):
-      print(f"{name}: 警告画面が出ている可能性があります。")
-      return
-   mypage = nav_list[0].find_element(By.LINK_TEXT, "プロフ検索")
-   mypage.click()
-   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-   time.sleep(wait_time)
-   # 並びの表示を設定
-   sort_order = driver.find_elements(By.ID, value="kind_select")
-   select = Select(sort_order[0])
-   select.select_by_visible_text("プロフ一覧")
-   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-   time.sleep(wait_time)
-   foot_counted = 0
-   for i in range(50):
+  wait_time = random.uniform(2, 5)
+  login(name, happymail_id, happymail_pass, driver, wait)
+  warinig_flug = catch_warning_screen(driver)
+  if warinig_flug:
+    print(f"{name}:警告画面が出ている可能性があります")
+    return
+  # プロフ検索をクリック
+  nav_item_click("プロフ検索", driver, wait)
+  # 並びの表示を設定
+  sort_order = driver.find_elements(By.ID, value="kind_select")
+  select = Select(sort_order[0])
+  select.select_by_visible_text("プロフ一覧")
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(wait_time)
+  foot_counted = 0
+  for i in range(50):
       warinig_flug = catch_warning_screen(driver)
       if warinig_flug:
         print(f"{name}:警告画面が出ている可能性があります")
         return
       user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
-      
-      #  メールアイコン（送信履歴）があるかチェック
+      print(f"ユーザーリストの数{len(user_list)}")
+      if not len(user_list):
+         print("ユーザーリストの取得に失敗しました")
+         break
       mail_icon_flag = True
-      mail_icon_try_cnt = 0
       while mail_icon_flag:
         # インデックスがリストの範囲外でないか確認
-        user_list_try_cnt = 0
         if i >= len(user_list):
-          print("ユーザーリストの取得に失敗しました")
-          user_list_try_cnt += 1
-          if user_list_try_cnt  > 3:
-             break
-          continue
-          
+          break        
         user = user_list[i]
         driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", user)
         mail_icon_parent = user.find_elements(By.CLASS_NAME, value="text-male")
@@ -1112,11 +1128,10 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
         if  not len(mail_icon):
           mail_icon_flag = False
           break
-        
         mail_icon_try_cnt += 1
         if mail_icon_try_cnt == 10:
+           print("送信済ユーザーが10件続いたので終了します")
            break
-      # 
       before_content = driver.execute_script(
       'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
       user
