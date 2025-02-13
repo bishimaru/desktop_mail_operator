@@ -37,8 +37,7 @@ def get_the_temporary_folder(temp_dir):
   script_dir = os.path.dirname(os.path.abspath(__file__)) 
   tmp_dir = os.path.join(script_dir, "tmp")  # tmpフォルダのパスを作成
   if not os.path.exists(tmp_dir):
-    os.makedirs(tmp_dir)  # tmpフォルダが存在しない場合は作成
-
+    os.makedirs(tmp_dir)
   # tmpフォルダ内に 引数で受け取った フォルダを作成
   dir = os.path.join(tmp_dir, temp_dir)  # h_footprintフォルダのパスを作成
   if not os.path.exists(dir):
@@ -104,95 +103,96 @@ def clear_webdriver_cache():
             except Exception as e:
                 print(f"Error clearing cache {cache_dir}: {e}")
 
-def get_driver(headless_flag, max_retries=3):
-    os_name = platform.system()
-    for attempt in range(max_retries):
-        try:
-          # ランダムなポートを割り当てる
-          port = random.randint(5000, 9000)
-          options = Options()
-          if headless_flag:
-            options.add_argument('--headless')
-            options.add_argument("--disable-gpu") 
-          options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
-          options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
-          options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
-          options.add_argument("--incognito")
-          options.add_argument('--enable-unsafe-swiftshader')
-          options.add_argument('--log-level=3')  # これでエラーログが抑制されます
-          options.add_argument('--disable-web-security')
-          options.add_argument('--disable-extensions')
-          options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
-          options.add_argument("--no-sandbox")
-          options.add_argument("--window-size=456,912")
-          options.add_experimental_option("detach", True)
-          options.add_argument("--disable-cache")
-          options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
+# def get_driver(headless_flag, max_retries=3):
+#     os_name = platform.system()
+#     for attempt in range(max_retries):
+#         try:
+#           # ランダムなポートを割り当てる
+#           port = random.randint(5000, 9000)
+#           options = Options()
+#           if headless_flag:
+#             options.add_argument('--headless')
+#             options.add_argument("--disable-gpu") 
+#           options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
+#           options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
+#           options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
+#           options.add_argument("--incognito")
+#           options.add_argument('--enable-unsafe-swiftshader')
+#           options.add_argument('--log-level=3')  # これでエラーログが抑制されます
+#           options.add_argument('--disable-web-security')
+#           options.add_argument('--disable-extensions')
+#           options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+#           options.add_argument("--no-sandbox")
+#           options.add_argument("--window-size=456,912")
+#           options.add_experimental_option("detach", True)
+#           options.add_argument("--disable-cache")
+#           options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
 
-          # キャッシュディレクトリを変更
-          # custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
-          # cache_manager = DriverCacheManager(custom_cache_dir)
-          if os_name == "Darwin":
-            service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
-          elif os_name == "Windows":
-            service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
-          service.command_line_args().append(f"--port={port}")
-          driver = webdriver.Chrome(options=options, service=service)
-          wait = WebDriverWait(driver, 18)
+#           # キャッシュディレクトリを変更
+#           # custom_cache_dir = os.path.join(os.getcwd(), "driver_cache")
+#           # cache_manager = DriverCacheManager(custom_cache_dir)
+#           if os_name == "Darwin":
+#             service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
+#           elif os_name == "Windows":
+#             service = Service(executable_path=ChromeDriverManager(cache_manager=DriverCacheManager(valid_range=0)).install())
+#           service.command_line_args().append(f"--port={port}")
+#           driver = webdriver.Chrome(options=options, service=service)
+#           wait = WebDriverWait(driver, 18)
 
-          return driver, wait
+#           return driver, wait
 
-        except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
-            print(f"WebDriverException発生: {e}")
-            print(f"再試行します ({attempt + 1}/{max_retries})")
-            clear_webdriver_cache()
-            time.sleep(5)
-            if attempt == max_retries - 1:
-                raise
+#         except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
+#             print(f"WebDriverException発生: {e}")
+#             print(f"再試行します ({attempt + 1}/{max_retries})")
+#             clear_webdriver_cache()
+#             time.sleep(5)
+#             if attempt == max_retries - 1:
+#                 raise
 
 def test_get_driver(tmp_dir, headless_flag, max_retries=3):
     # os_name = platform.system()
-    print(tmp_dir)
+    # print(tmp_dir)
     # tmpフォルダ内に一意のキャッシュディレクトリを作成
     temp_dir = os.path.join(tmp_dir, f"temp_cache_{os.getpid()}")  # 一意のディレクトリを生成（PIDベース）
     os.environ["WDM_CACHE"] = temp_dir
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)  # キャッシュディレクトリが存在しない場合は作成
-    print(f"WDM_CACHE is set to: {os.environ['WDM_CACHE']}")
+    # print(f"WDM_CACHE is set to: {os.environ['WDM_CACHE']}")
 
     for attempt in range(max_retries):
-        try:
-            options = Options()
-            if headless_flag:
-              options.add_argument('--headless')
-              options.add_argument("--disable-gpu") 
-            options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
-            options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
-            options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
-            options.add_argument("--incognito")
-            options.add_argument('--enable-unsafe-swiftshader')
-            options.add_argument('--log-level=3')  # これでエラーログが抑制されます
-            options.add_argument('--disable-web-security')
-            options.add_argument('--disable-extensions')
-            options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
-            options.add_argument("--no-sandbox")
-            options.add_argument("--window-size=456,912")
-            options.add_experimental_option("detach", True)
-            options.add_argument("--disable-cache")
-            options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
-            
-            service = Service(executable_path=ChromeDriverManager().install())
-            driver = webdriver.Chrome(options=options, service=service)
-            wait = WebDriverWait(driver, 18)
+      try:
+        options = Options()
+        if headless_flag:
+          options.add_argument('--headless')
+          options.add_argument("--disable-gpu") 
+        options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
+        options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
+        options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
+        options.add_argument("--incognito")
+        options.add_argument('--enable-unsafe-swiftshader')
+        options.add_argument('--log-level=3')  # これでエラーログが抑制されます
+        options.add_argument('--disable-web-security')
+        options.add_argument('--disable-extensions')
+        options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--window-size=456,912")
+        options.add_experimental_option("detach", True)
+        options.add_argument("--disable-cache")
+        options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
+        
+        service = Service(executable_path=ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=options, service=service)
+        wait = WebDriverWait(driver, 18)
 
-            return driver, wait
+        return driver, wait
 
-        except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
-            print(f"WebDriverException発生: {e}")
-            print(f"再試行します ({attempt + 1}/{max_retries})")
-            time.sleep(5)
-            if attempt == max_retries - 1:
-                raise
+      except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
+        print(f"WebDriverException発生: {e}")
+        print(f"再試行します ({attempt + 1}/{max_retries})")
+        clear_webdriver_cache()
+        time.sleep(5)
+        if attempt == max_retries - 1:
+            raise
 
 def timer(fnc, seconds, h_cnt, p_cnt):  
   start_time = time.time() 
