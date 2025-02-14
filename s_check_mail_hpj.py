@@ -137,7 +137,15 @@ def check_mail(user_data, headless):
             except Exception as e:
                 print(f"<<<<<<<<<<メールチェックエラー：ハッピーメール{happy_info['name']}>>>>>>>>>>>")
                 print(traceback.format_exc())
-                func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
+                try:
+                    func.send_error(f"メールチェックエラー：ハッピーメール{happy_info['name']}", traceback.format_exc())    
+                except smtplib.SMTPDataError as e:
+                    print(f"SMTPDataError: {e}")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                finally:
+                    if smtpobj: 
+                        smtpobj.close()   
             wait_if_near_midnight()
             # driver.refresh()
         if driver is not None:
