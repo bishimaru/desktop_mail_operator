@@ -85,6 +85,11 @@ def happymail_footprints(headless, foot_cnt, selected_users):
               happymail.make_footprints(user_list[0], user_list[1], user_list[2], driver, wait, foot_cnt)
           except NoSuchWindowException:
               pass
+              if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
+                print("ブラウザウィンドウが閉じられました。プロセスを終了します。")
+                driver.quit()
+                shutil.rmtree(temp_dir)
+                sys.exit(0)
           except Exception as e:
               print(f"{user_list[0]}:")
               print(traceback.format_exc())
