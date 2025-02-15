@@ -1145,8 +1145,6 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
     'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
     user
     )
-    print(777)
-    print(before_content)
     if before_content != "none":
       continue
     user_link = user.find_elements(By.TAG_NAME, value="a")
