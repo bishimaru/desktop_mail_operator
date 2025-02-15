@@ -833,12 +833,12 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
       link_list.insert(random_index, link)
 
   print(f'リンクリストの数{len(link_list)}')
-  # メール送信
   for idx, link_url in enumerate(link_list, 1):
     driver.get(link_url)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(wait_time)
-    print(f"{chara_data['name']} 足跡　{idx}件")
+    now = datetime.now().strftime('%m-%d %H:%M:%S')
+    print(f"{chara_data['name']} 足跡　{idx}件  {now}")
     if int(idx) == int(foot_cnt):
       break
 
