@@ -894,68 +894,13 @@ def check_new_mail(pcmax_info, driver, wait):
   if login_id == None or login_id == "":
     print(f"{name}のpcmaxキャラ情報を取得できませんでした")
     return 1, 0
-  try:
-    driver.delete_all_cookies()
-    driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  except TimeoutException as e:
-    print("TimeoutException")
-    driver.refresh()
-  except (WebDriverException, urllib3.exceptions.MaxRetryError) as e:
-    print(f"接続エラーが発生しました: {e}")
-    print("10秒後に再接続します。")
-    print(driver.session_id)
-    driver.quit()
-    time.sleep(10)  # 10秒待機して再試行
-    driver, wait = func.get_driver(1)
-    
-  time.sleep(2)
-  id_form = driver.find_element(By.ID, value="login_id")
-  id_form.send_keys(login_id)
-  pass_form = driver.find_element(By.ID, value="login_pw")
-  pass_form.send_keys(login_pass)
-  time.sleep(1)
-  send_form = driver.find_element(By.NAME, value="login")
-  try:
-    send_form.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(3)
-  except TimeoutException as e:
-    print("TimeoutException")
-    driver.refresh()
-  warning = driver.find_elements(By.CLASS_NAME, value="caution-title")
-  warning2 = driver.find_elements(By.CLASS_NAME, value="suspend-title")
-  warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
-  number_lock = driver.find_elements(By.ID, value="content_header2")
-  if len(warning) or len(warning2) or len(warning3) or len(number_lock):
-    kiyaku_btn = driver.find_elements(By.CLASS_NAME, value="kiyaku-btn")
-    if len(kiyaku_btn):
-      kiyaku_btn_text = kiyaku_btn[0].text    
-      if kiyaku_btn_text == "上記を了承する":
-        driver.execute_script("arguments[0].click();", kiyaku_btn[0])
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(3)
-        # 番号ロック確認　setting-title mail-setting-title
-        number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
-        number_lock_elem2 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
-        if len(number_lock_elem):
-          print(number_lock_elem[0].text)
-          if "電話番号確認" in number_lock_elem[0].text:
-            print(f"{name}に番号ロック画面が出ている可能性があります")
-            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
-        if len(number_lock_elem2):
-          print(number_lock_elem2[0].text)
-          if "電話番号確認" in number_lock_elem2[0].text:
-            print(f"{name}に番号ロック画面が出ている可能性があります")
-            return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
-        
-    else:
-      print(f"{name}に警告画面が出ている可能性があります")
-      return_list.append(f"{login_id}:{login_pass} {name}pcmaxに警告画面が出ている可能性があります")
-    if len(return_list):
-      return return_list, 0
-    else:
-      return 1, 0
+  login_flug = login(name, login_id, login_pass, driver, wait)
+  if not login_flug:
+    return 1, 0
+  warning_flug = catch_warning_pop(name, driver, wait)
+  if warning_flug:
+    return_list.append(warning_flug)
+    return return_list, 0    
   print(f"{name}のメールチェック開始")
   # トップ画像の確認
   top_img_elem = driver.find_elements(By.CLASS_NAME, value="p_img")
@@ -964,20 +909,9 @@ def check_new_mail(pcmax_info, driver, wait):
     if "no-image" in top_img_style:
       print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
   # 新着があるかチェック
-  # sp_footer
-  sp_footer = driver.find_elements(By.ID, value="sp_footer")
-  if len(sp_footer):
-    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[3]")
-  else:
-    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
- 
-  new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
-  
-  if len(new_message_elem):
-      # print('新着があります')
-      new_message_elem[0].click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
+  nav_flug = nav_item_click("メッセージ", driver, wait)
+  if nav_flug == "new_message":
+      print('新着があります')
       # 未読だけを表示
       new_message_display = driver.find_elements(By.CLASS_NAME, value="msg-display_change")
       new_message_display[0].click()
@@ -2484,8 +2418,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   time.sleep(2)
   # 新着があるかチェック
   nav_flug = nav_item_click("メッセージ", driver, wait)
-  print(666)
-  print(nav_flug)
   have_new_massage_users = []
   if nav_flug == "new_message":
     print('新着があります')

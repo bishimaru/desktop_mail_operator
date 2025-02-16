@@ -63,7 +63,7 @@ def check_mail(user_data, headless):
         driver,wait = func.test_get_driver(temp_dir, headless)
         for happy_info in happymail_list:
             new_mail_lists = []
-            # if happy_info["name"] != "さな":
+            # if happy_info["name"] != "わかな":
             #     continue
             try:
                 happymail_new = happymail.check_new_mail(happy_info, driver, wait)
