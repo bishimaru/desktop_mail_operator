@@ -127,6 +127,10 @@ def nav_item_click(nav_item, driver, wait):
       if nav_item == "メッセージ":
         new_icon = nav_text_elem.find_elements(By.CLASS_NAME, value="badge1")
         if len(new_icon):
+          driver.execute_script("arguments[0].click();", nav_text_elem)
+          wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+          time.sleep(1)
+          
           return "new_message"
       driver.execute_script("arguments[0].click();", nav_text_elem)
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
@@ -909,6 +913,7 @@ def check_new_mail(pcmax_info, driver, wait):
       print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
   # 新着があるかチェック
   nav_flug = nav_item_click("メッセージ", driver, wait)
+  print(nav_flug == "new_message")
   if nav_flug == "new_message":
       print('新着があります')
       # 未読だけを表示
