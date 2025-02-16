@@ -1149,7 +1149,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
           print("送信済ユーザーが10件続きました")
           break
     if i >= len(user_list):
-      driver.quit()
+      print(88888)
       break
     user = user_list[i]
     before_content = driver.execute_script(
