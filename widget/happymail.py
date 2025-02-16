@@ -1150,7 +1150,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
           break
     if i >= len(user_list):
       print(88888)
-      break
+      return
     user = user_list[i]
     before_content = driver.execute_script(
     'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
