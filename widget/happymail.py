@@ -68,10 +68,11 @@ def catch_warning_screen(driver):
   anno = driver.find_elements(By.CLASS_NAME, value="anno")
   warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
   dialog = driver.find_elements(By.ID, value="_information_dialog")
+  dialog2 = driver.find_elements(By.ID, value="_information_dialog")
   remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
   remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
   warinig_cnt =0
-  while len(warning) or len(anno) or len(dialog) or len(remodal) or len(remodal_wrapper):
+  while len(warning) or len(anno) or len(dialog) or len(dialog2) or len(remodal) or len(remodal_wrapper):
     driver.refresh()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
@@ -1377,7 +1378,8 @@ def check_new_mail(happy_info, driver, wait):
   warinig_flug = catch_warning_screen(driver)
   if warinig_flug:
     print(f"{name}:警告画面が出ている可能性があります")
-    return
+    return_list.append(f"ハッピーメール　{name}:警告画面が出ている可能性があります")
+    return return_list
   # プロフ検索をクリック
   new_message_flug = nav_item_click("メッセージ", driver, wait)
   if not new_message_flug:
