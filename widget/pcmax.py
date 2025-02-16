@@ -47,7 +47,94 @@ post_area_chiba = ["千葉市中央区", "千葉市花見川区", "千葉市稲�
 post_area_dic = {"東京都":post_area_tokyo, "神奈川県":post_area_kanagawa, "埼玉県":post_area_saitama, "千葉県":post_area_chiba}
 # detail_post_area_list = [post_area_tokyo, post_area_kanagawa, post_area_saitama, post_area_chiba]
 
-def login(driver, wait):
+def catch_warning_pop(name, driver, wait):
+  warning = driver.find_elements(By.CLASS_NAME, value="caution-title")
+  warning2 = driver.find_elements(By.CLASS_NAME, value="suspend-title")
+  warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
+  number_lock = driver.find_elements(By.ID, value="content_header2")
+  if len(warning) or len(warning2) or len(warning3) or len(number_lock):
+    kiyaku_btn = driver.find_elements(By.CLASS_NAME, value="kiyaku-btn")
+    if len(kiyaku_btn):
+      kiyaku_btn_text = kiyaku_btn[0].text    
+      if kiyaku_btn_text == "上記を了承する":
+        driver.execute_script("arguments[0].click();", kiyaku_btn[0])
+        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+        time.sleep(3)
+        # 番号ロック確認　setting-title mail-setting-title
+        number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
+        number_lock_elem2 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
+        if len(number_lock_elem):
+          print(number_lock_elem[0].text)
+          if "電話番号確認" in number_lock_elem[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+            return f"{name}に番号ロック画面が出ている可能性があります"
+        if len(number_lock_elem2):
+          print(number_lock_elem2[0].text)
+          if "電話番号確認" in number_lock_elem2[0].text:
+            print(f"{name}に番号ロック画面が出ている可能性があります")
+            return f"{name}に番号ロック画面が出ている可能性があります"
+        return None
+    else:
+      print(f"{name}に警告画面が出ている可能性があります")
+      return f"{name}に警告画面が出ている可能性があります"
+
+
+def login(name, login_id, login_pass, driver, wait):
+  driver.delete_all_cookies()
+  driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  wait_time = random.uniform(2, 5)
+  time.sleep(2)
+  id_form = driver.find_element(By.ID, value="login_id")
+  id_form.send_keys(login_id)
+  pass_form = driver.find_element(By.ID, value="login_pw")
+  pass_form.send_keys(login_pass)
+  time.sleep(1)
+  send_form = driver.find_element(By.NAME, value="login")
+  try:
+    send_form.click()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(1)
+  except TimeoutException as e:
+    print("TimeoutException")
+    driver.refresh()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    id_form = driver.find_element(By.ID, value="login_id")
+    id_form.send_keys(login_id)
+    pass_form = driver.find_element(By.ID, value="login_pw")
+    pass_form.send_keys(login_pass)
+    time.sleep(1)
+    send_form = driver.find_element(By.NAME, value="login")
+    send_form.click()
+  # 利用制限中
+  suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
+  if len(suspend):
+    print(f"{name}pcmax利用制限中です")
+    return False
+  return True
+  
+def nav_item_click(nav_item, driver, wait):
+  nav_list = driver.find_elements(By.ID, value='sp-floating')
+  if not len(nav_list):
+    nav_list = driver.find_elements(By.ID, value='sp_footer')
+    if not len(nav_list):
+      print("ナビゲーターリストが見つかりません")
+      return
+  nav_text_elems = nav_list[0].find_elements(By.TAG_NAME, value='a')
+  for nav_text_elem in nav_text_elems:
+    # print(nav_text_elem.text)
+    if nav_text_elem.text == nav_item:
+      if nav_item == "メッセージ":
+        new_icon = nav_text_elem.find_elements(By.CLASS_NAME, value="badge1")
+        if len(new_icon):
+          return "new_message"
+      driver.execute_script("arguments[0].click();", nav_text_elem)
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(1)
+      return None
+
+def re_login(driver, wait):
   login = None  # login変数の初期化
   try:
     try:
@@ -83,7 +170,7 @@ def login(driver, wait):
     driver.refresh()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
-    return login(driver, wait)
+    return re_login(driver, wait)
   
     
 def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
@@ -125,7 +212,7 @@ def re_post(pcmax_chara_dict, driver, wait, detail_area_flug):
     print(f"{pcmax_chara_dict['name']}pcmax利用制限中です")
     return  
   wait_time = random.uniform(3, 4)
-  login(driver, wait)
+  re_login(driver, wait)
   # MENUをクリック
   # menu = driver.find_elements(By.ID, value='sp_nav')
   # if not len(menu):
@@ -412,7 +499,7 @@ def return_footpoint(name, pcmax_windowhandle, driver, return_foot_message, cnt,
   driver.switch_to.window(pcmax_windowhandle)
   wait_time = random.uniform(2, 3)
   time.sleep(1)
-  login(driver, wait)
+  re_login(driver, wait)
   # 新着メッセージの確認
   have_new_massage_users = []
   new_message = driver.find_element(By.CLASS_NAME, value="message")
@@ -575,75 +662,22 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
   name = chara_data["name"]
   login_id = chara_data["login_id"]
   login_pass = chara_data["password"]
-  driver.delete_all_cookies()
-  driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(4, 9)
-  time.sleep(2)
-  id_form = driver.find_element(By.ID, value="login_id")
-  id_form.send_keys(str(chara_data['login_id']))
-  pass_form = driver.find_element(By.ID, value="login_pw")
-  pass_form.send_keys(str(chara_data['password']))
-  time.sleep(1)
-  send_form = driver.find_element(By.NAME, value="login")
-  send_form.click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(1)
-  warning = driver.find_elements(By.CLASS_NAME, value="caution-title")
-  warning2 = driver.find_elements(By.CLASS_NAME, value="suspend-title")
-  warning3 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
-  number_lock = driver.find_elements(By.ID, value="content_header2")
-  if len(warning) or len(warning2) or len(warning3) or len(number_lock):
-    kiyaku_btn = driver.find_elements(By.CLASS_NAME, value="kiyaku-btn")
-    if len(kiyaku_btn):
-      kiyaku_btn_text = kiyaku_btn[0].text    
-      if kiyaku_btn_text == "上記を了承する":
-        driver.execute_script("arguments[0].click();", kiyaku_btn[0])
-        wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-        time.sleep(3)
-        # 番号ロック確認　setting-title mail-setting-title
-        number_lock_elem = driver.find_elements(By.CLASS_NAME, value="setting-title")
-        number_lock_elem2 = driver.find_elements(By.CLASS_NAME, value="mail-setting-title")
-        if len(number_lock_elem):
-          print(number_lock_elem[0].text)
-          if "電話番号確認" in number_lock_elem[0].text:
-            print(f"{name}に番号ロック画面が出ている可能性があります")
-            return
-        if len(number_lock_elem2):
-          print(number_lock_elem2[0].text)
-          if "電話番号確認" in number_lock_elem2[0].text:
-            print(f"{name}に番号ロック画面が出ている可能性があります")
-            return
-    else:
-      print(f"{name}に警告画面が出ている可能性があります")
-    
-  # 利用制限中
-  suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
-  if len(suspend):
-    print(f"{chara_data['name']}利用制限中です")  
-  #プロフ検索をクリック
-  footer_icons = driver.find_elements(By.ID, value="sp-floating")
-  if len(footer_icons):
-    search_profile = footer_icons[0].find_element(By.XPATH, value="./*[2]")
-    print(search_profile.text)
-    search_profile.click()
-  else:
-    footer_icons = driver.find_elements(By.ID, value="sp_footer")
-    search_profile = footer_icons[0].find_element(By.XPATH, value="./*[1]")
-    search_profile.click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(3)
+  wait_time = random.uniform(3, 6)
+  login_flug = login(name, login_id, login_pass, driver, wait)
+  if not login_flug:
+    return
+  warning_flug = catch_warning_pop(name, driver, wait)
+  if warning_flug:
+    return
+  nav_item_click("プロフ検索", driver, wait)
   # 検索条件を設定
   search_elem = driver.find_element(By.ID, value="search1")
   search_elem.click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(1)
   # /////////////////////////詳細検索画面/////////////////////////
-  
   select_area = driver.find_elements(By.CLASS_NAME, value="pref-select-link")
   reset_area = driver.find_elements(By.CLASS_NAME, value="reference_btn")
-  
- 
   user_sort_list = [
     "ログイン順",
     # "登録順", 
@@ -1510,7 +1544,7 @@ def re_registration(chara_data, driver, wait):
     print(f'{name}pcmax利用制限中です')
     return  
   wait_time = random.uniform(4,5)
-  login(driver, wait)
+  re_login(driver, wait)
   # MENUをクリック
   menu = driver.find_element(By.ID, value='sp_nav')
   menu.click()
@@ -2442,57 +2476,19 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   return_foot_message = sorted_pcmax["return_foot_message"]
   fst_message = sorted_pcmax["fst_mail"]
   mail_img = sorted_pcmax["mail_img"]
-  driver.delete_all_cookies()
-  driver.get("https://pcmax.jp/pcm/file.php?f=login_form")
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(3, 6)
-  time.sleep(2)
-  id_form = driver.find_element(By.ID, value="login_id")
-  id_form.send_keys(login_id)
-  pass_form = driver.find_element(By.ID, value="login_pw")
-  pass_form.send_keys(login_pass)
-  time.sleep(1)
-  send_form = driver.find_element(By.NAME, value="login")
-  try:
-    send_form.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(1)
-  except TimeoutException as e:
-    print("TimeoutException")
-    driver.refresh()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)
-    id_form = driver.find_element(By.ID, value="login_id")
-    id_form.send_keys(login_id)
-    pass_form = driver.find_element(By.ID, value="login_pw")
-    pass_form.send_keys(login_pass)
-    time.sleep(1)
-    send_form = driver.find_element(By.NAME, value="login")
-    send_form.click()
-  # 利用制限中
-  suspend = driver.find_elements(By.CLASS_NAME, value="suspend-title")
-  if len(suspend):
-    print(f"{sorted_pcmax['name']}pcmax利用制限中です")
-    return  
+  login_flug = login(name, login_id, login_pass, driver, wait)
+  if not login_flug:
+    return
   wait_time = random.uniform(3, 4)
-  login(driver, wait)
+  re_login(driver, wait)
   time.sleep(2)
   # 新着があるかチェック
-  # sp_footer
-  sp_footer = driver.find_elements(By.ID, value="sp_footer")
-  if len(sp_footer):
-    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[3]")
-  else:
-    messagebox_elem = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
-  if not messagebox_elem:
-    print(f"{name} メッセージBOXアイコンが見つかりません")
-  new_message_elem = messagebox_elem[0].find_elements(By.CLASS_NAME, value="badge1")
+  nav_flug = nav_item_click("メッセージ", driver, wait)
+  print(666)
+  print(nav_flug)
   have_new_massage_users = []
-  if len(new_message_elem):
-    # print('新着があります')
-    new_message_elem[0].click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)
+  if nav_flug == "new_message":
+    print('新着があります')
     # 未読だけを表示
     new_message_display = driver.find_elements(By.CLASS_NAME, value="msg-display_change")
     new_message_display[0].click()
@@ -2510,45 +2506,8 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
           have_new_massage_users.append(new_mail_user)
       print(f"新着メッセージ数 {len(message_list)}")
   # 足跡返し
-  # 右下のキャラ画像をクリック
+  nav_item_click("足あと", driver, wait)
   
-  f_menu = driver.find_elements(By.ID, value="f_menu")
-  if len(f_menu):
-    site_logo = driver.find_element(By.ID, value="site_logo")
-    site_logo.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)
-    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
-
-  else:
-    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
-  # chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[6]")
-  # print(chara_img[0].text)
-  print(len(chara_img))
-  reload_cnt = 1
-  while not len(chara_img):
-    time.sleep(5)
-    print("右下のキャラ画像が見つかりません")
-    chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
-    reload_cnt += 1
-    if reload_cnt == 2:
-      site_logo = driver.find_element(By.ID, value="site_logo")
-      site_logo.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(2)
-      chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
-  chara_img[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(2)
-  
-  # 足あとをクリック
-  footpoint = driver.find_elements(By.CLASS_NAME, value="visit1")
-  if not len(footpoint):
-    footpoint = driver.find_elements(By.CLASS_NAME, value="sp-fl-fprints")
-  # footpoint = driver.find_element(By.XPATH, value="//*[@id='contents']/div[2]/div[2]/ul/li[5]/a")
-  footpoint[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(2)
   # ページの高さを取得
   last_height = driver.execute_script("return document.body.scrollHeight")
   while True:
@@ -2728,7 +2687,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   returnfoot_cnt = send_count
   
   if send_count <= send_limit:
-    login(driver, wait)
+    re_login(driver, wait)
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
     #プロフ検索をクリック
