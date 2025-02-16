@@ -59,7 +59,7 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     return f"ログインに成功しました"
   except Exception as e:  
     print(f"ログインに失敗しました")
-    # print(traceback.format_exc())
+    print(traceback.format_exc())
     return f"ログインに失敗しました"
    
 # 警告画面
