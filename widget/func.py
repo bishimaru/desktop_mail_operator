@@ -186,13 +186,21 @@ def test_get_driver(tmp_dir, headless_flag, max_retries=3):
 
         return driver, wait
 
-      except (WebDriverException, NoSuchElementException, MaxRetryError) as e:
+      except (WebDriverException, NoSuchElementException, MaxRetryError, ConnectionError) as e:
         print(f"WebDriverException発生: {e}")
         print(f"再試行します ({attempt + 1}/{max_retries})")
         clear_webdriver_cache()
         time.sleep(5)
         if attempt == max_retries - 1:
             raise
+      except ConnectionError as e:
+        print(f"⚠️ ネットワークエラーが発生しました: {e}")
+        print("3分後に再接続します...")
+        clear_webdriver_cache()
+        time.sleep(180)
+        if attempt == max_retries - 1:
+            raise
+
 
 def timer(fnc, seconds, h_cnt, p_cnt):  
   start_time = time.time() 
