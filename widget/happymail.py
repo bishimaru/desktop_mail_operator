@@ -1119,7 +1119,7 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       print(f"{name}:警告画面が出ている可能性があります")
       return
     user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
-    print(f"ユーザーリストの数{len(user_list)}")
+    # print(f"ユーザーリストの数{len(user_list)}")
     if not len(user_list):
         print("ユーザーリストの取得に失敗しました")
         break

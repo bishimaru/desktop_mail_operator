@@ -2536,7 +2536,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       site_logo.click()
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(2)
-      chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp_footer']/a[5]")
+      chara_img = driver.find_elements(By.XPATH, value="//*[@id='sp-floating']/a[5]")
   chara_img[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
   time.sleep(2)
