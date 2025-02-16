@@ -29,31 +29,6 @@ import gc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
-
-   
-# 警告画面
-def catch_warning_screen(driver):
-  wait = WebDriverWait(driver, 15)
-  anno = driver.find_elements(By.CLASS_NAME, value="anno")
-  warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
-  dialog = driver.find_elements(By.ID, value="_information_dialog")
-  remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
-  remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
-  warinig_cnt =0
-  while len(warning) or len(anno) or len(dialog) or len(remodal) or len(remodal_wrapper):
-    driver.refresh()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)
-    warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
-    anno = driver.find_elements(By.CLASS_NAME, value="anno")
-    dialog = driver.find_elements(By.ID, value="_information_dialog")
-    remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
-    remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
-    warinig_cnt += 1
-    if warinig_cnt > 2:
-       return True
-  return False
-   
 def login(name, happymail_id, happymail_pass, driver, wait,):
   try:
     driver.delete_all_cookies()
@@ -86,7 +61,39 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     print(f"ログインに失敗しました")
     # print(traceback.format_exc())
     return f"ログインに失敗しました"
+   
+# 警告画面
+def catch_warning_screen(driver):
+  wait = WebDriverWait(driver, 15)
+  anno = driver.find_elements(By.CLASS_NAME, value="anno")
+  warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
+  dialog = driver.find_elements(By.ID, value="_information_dialog")
+  remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
+  remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
+  warinig_cnt =0
+  while len(warning) or len(anno) or len(dialog) or len(remodal) or len(remodal_wrapper):
+    driver.refresh()
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)
+    warning = driver.find_elements(By.CLASS_NAME, value="warning screen")
+    anno = driver.find_elements(By.CLASS_NAME, value="anno")
+    dialog = driver.find_elements(By.ID, value="_information_dialog")
+    remodal = driver.find_elements(By.CLASS_NAME, value="remodal-image")
+    remodal_wrapper = driver.find_elements(By.CLASS_NAME, value="remodal-wrapper")
+    warinig_cnt += 1
+    if warinig_cnt > 2:
+       return True
+  acceptance = driver.find_elements(By.CLASS_NAME, value="ds_round_btn")
+  if len(acceptance):
+    # print(acceptance[0].text)
+    if acceptance[0].text == "承諾":
+      acceptance[0].click()
+      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      time.sleep(2)
+      print("警告画面に承諾しました。一度ログアウトします")
 
+  return False
+   
 def nav_item_click(nav_name, driver, wait):
   nav_list = driver.find_elements(By.ID, value='ds_nav')
   if not len(nav_list):
