@@ -123,8 +123,7 @@ def nav_item_click(nav_item, driver, wait):
       return
   nav_text_elems = nav_list[0].find_elements(By.TAG_NAME, value='a')
   for nav_text_elem in nav_text_elems:
-    # print(nav_text_elem.text)
-    if nav_text_elem.text == nav_item:
+    if nav_item in nav_text_elem.text:
       if nav_item == "メッセージ":
         new_icon = nav_text_elem.find_elements(By.CLASS_NAME, value="badge1")
         if len(new_icon):
@@ -2437,6 +2436,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
             new_mail_user = new_mail_user[:7] + "…"
           have_new_massage_users.append(new_mail_user)
       print(f"新着メッセージ数 {len(message_list)}")
+  
   # 足跡返し
   nav_item_click("足あと", driver, wait)
   
