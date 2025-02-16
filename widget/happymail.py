@@ -1140,6 +1140,9 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       if mail_icon_try_cnt == 10:
           print("送信済ユーザーが10件続いたので終了します")
           break
+    if i >= len(user_list):
+      print(999)
+      break
     user = user_list[i]
     before_content = driver.execute_script(
     'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
