@@ -49,6 +49,8 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     send_form.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
+    print(888)
+    time.sleep(100)
     # 画像チェック
     top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
     if len(top_img_element):

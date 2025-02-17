@@ -164,9 +164,8 @@ def test_get_driver(tmp_dir, headless_flag, max_retries=3):
         options = Options()
         if headless_flag:
           options.add_argument('--headless')
-          options.add_argument("--disable-gpu") 
-        options.add_argument("--disable-gpu")  # GPUアクセラレーションを無効化
-        options.add_argument("--disable-software-rasterizer")  # ソフトウェアラスタライズを無効化
+        options.add_argument("--disable-gpu") 
+        options.add_argument("--disable-software-rasterizer")
         options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
         options.add_argument("--incognito")
         options.add_argument('--enable-unsafe-swiftshader')
