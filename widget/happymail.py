@@ -1149,15 +1149,16 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
           print("送信済ユーザーが10件続きました")
           break
     if i >= len(user_list):
-      print(88888)
       return
     user = user_list[i]
-    before_content = driver.execute_script(
-    'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
-    user
-    )
-    if before_content != "none":
-      continue
+    # 閲覧済みユーザーをスキップ
+    # before_content = driver.execute_script(
+    # 'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
+    # user
+    # )
+    # if before_content != "none":
+    #   continue
+
     user_link = user.find_elements(By.TAG_NAME, value="a")
     user_link[0].click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')

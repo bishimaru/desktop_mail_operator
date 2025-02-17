@@ -72,17 +72,21 @@ def happymail_footprints(headless, foot_cnt, selected_users):
     if not happy_user_list:
         print("選択されたキャラクターに該当するユーザーデータがありません。")
         return
+    driver = ""
     for i in range(9999):
       temp_dir = func.get_the_temporary_folder("h_footprint")
       driver,wait = func.test_get_driver(temp_dir, headless)
       temp_dirs.append(temp_dir)  # 一時ディレクトリを追跡
       for user_list in happy_user_list:
+          if user_list[0] != "あやか":
+              continue
           print(f"キャラクター: {user_list[0]} の処理を開始します。")
           if user_list[1] is None or user_list[1] == "":
               print(f"{user_list[0]}:ログインIDが正しくありません")
               continue
+          
           try:      
-              happymail.make_footprints(user_list[0], user_list[1], user_list[2], driver, wait, foot_cnt)
+            happymail.make_footprints(user_list[0], user_list[1], user_list[2], driver, wait, foot_cnt)
           except NoSuchWindowException:
               pass
               if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
@@ -102,11 +106,10 @@ def happymail_footprints(headless, foot_cnt, selected_users):
                 driver.quit()
                 shutil.rmtree(temp_dir)
                 sys.exit(0)
-             
-      if len(driver.window_handles) == 0:  # ウィンドウが閉じられたか確認
+          
+      if len(driver.window_handles) != 0:  # ウィンドウが閉じられたか確認
         driver.quit()
-        shutil.rmtree(temp_dir)
-        temp_dirs.remove(temp_dir)
+        
       time.sleep(1)        
       
      
