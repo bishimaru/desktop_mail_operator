@@ -902,7 +902,8 @@ def check_new_mail(pcmax_info, driver, wait):
     return 1, 0
   warning_flug = catch_warning_pop(name, driver, wait)
   if warning_flug:
-    return_list.append(warning_flug)
+    warning_text = f"PCMAX {login_id}:{login_pass} {warning_flug}"
+    return_list.append(warning_text)
     return return_list, 0    
   print(f"{name}のメールチェック開始")
   # トップ画像の確認
@@ -2444,7 +2445,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   
   # 足跡返し
   nav_item_click("足あと", driver, wait)
-  
   # ページの高さを取得
   last_height = driver.execute_script("return document.body.scrollHeight")
   while True:
@@ -2491,7 +2491,6 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
         # print(link)
         link_list.append(link)
       user_cnt += 1
-  # mohu = 0
   for i in link_list:
     if send_count >= send_limit:
       print("〜〜〜〜送信上限に達しました〜〜〜〜")

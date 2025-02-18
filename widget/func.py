@@ -868,3 +868,42 @@ def change_tor_ip():
   with Controller.from_port(port=9051) as controller:
       controller.authenticate()  # デフォルト設定の場合は認証不要
       controller.signal(Signal.NEWNYM)
+
+def resolve_reCAPTCHA(login_url, site_key):
+  API_KEY = "1bc4af1c018d3882d89bae813594befb"  
+  PAGE_URL = login_url
+  SITE_KEY = site_key  
+
+  # 🔹 2Captcha にリクエストを送信
+  print("🛠️ 2Captcha にリクエスト送信中...")
+  response = requests.post("http://2captcha.com/in.php", {
+      "key": API_KEY,
+      "method": "userrecaptcha",
+      "googlekey": SITE_KEY,
+      "pageurl": PAGE_URL,
+      "json": 1
+  }).json()
+
+  # 🔹 APIエラー処理
+  if response["status"] != 1:
+      print("❌ 2Captcha リクエスト失敗:", response)
+      exit()
+
+  # 🔹 reCAPTCHA の解決待ち
+  captcha_id = response["request"]
+  print("⏳ reCAPTCHA の解決中...")
+
+  for i in range(30):  # 最大30秒待つ
+      time.sleep(3)  # 5秒ごとにチェック
+      result = requests.get(f"http://2captcha.com/res.php?key={API_KEY}&action=get&id={captcha_id}&json=1").json()
+      
+      if result["status"] == 1:
+          captcha_solution = result["request"]
+          print("✅ reCAPTCHA 解決成功！")
+          print(captcha_solution)
+
+          return captcha_solution
+  else:
+      print("❌ reCAPTCHA の解決に失敗しました")
+      exit()
+      return False

@@ -28,10 +28,14 @@ from selenium.common.exceptions import TimeoutException
 import gc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from twocaptcha import TwoCaptcha
+
+
 
 def login(name, happymail_id, happymail_pass, driver, wait,):
   try:
     driver.delete_all_cookies()
+    
     driver.get("https://happymail.jp/login/")
     # loaderが消えるのを待つ
     WebDriverWait(driver, 10).until(
@@ -50,7 +54,89 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
     print(888)
-    time.sleep(100)
+    # ds_header
+    login_judge_flug = driver.find_elements(By.ID, value="ds_header")
+    print(len(login_judge_flug))
+    print("------------")
+    if not len(login_judge_flug):
+      login_url = "https://happymail.jp/login/"
+      site_key = "6Lctr88qAAAAAJtvi_1IhWBSdmMcV8k23_lb63xf"
+      API_KEY = "1bc4af1c018d3882d89bae813594befb"  
+      solver = TwoCaptcha(API_KEY)
+      captcha_solution = solver.recaptcha(
+          sitekey=site_key,
+          url=driver.current_url
+      )
+      print(f"✅ reCAPTCHA 解決成功: {captcha_solution}")
+      # `form` 内の `g-recaptcha-response` を取得
+      response_input = WebDriverWait(driver, 10).until(
+          EC.presence_of_element_located((By.NAME, "g-recaptcha-response"))
+      )
+      driver.execute_script(f"arguments[0].value = '{captcha_solution}';", response_input)
+      print("✅ `g-recaptcha-response` を `form` にセットしました！")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+      # # captcha_solution = func.resolve_reCAPTCHA(login_url, site_key)
+      # # if captcha_solution:
+      # time.sleep(2)
+      # login_url = "https://happymail.jp/login/"
+      # site_key = "6Lctr88qAAAAAJtvi_1IhWBSdmMcV8k23_lb63xf"
+      # captcha_solution = func.resolve_reCAPTCHA(login_url, site_key)
+      # # `iframe` の要素を取得
+      # bframe_iframe = WebDriverWait(driver, 10).until(
+      #   EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, 'recaptcha/api2/bframe')]"))
+      # )
+      
+      # print("✅ `iframe` を取得しました:", bframe_iframe)
+
+      # # `iframe` に切り替え
+      # driver.switch_to.frame(bframe_iframe)
+      # print("✅ `iframe` に切り替えました！")
+      # bframe_iframe.send_keys(captcha_solution)
+
+      
+
+      
+      return
+      
+      # verify-button-holder
+      i = driver.find_elements(By.CLASS_NAME, value="verify-button-holder")
+      print(f"{len(i)} ~~~~")
+      time.sleep(2)
+
+        # # reCAPTCHA の `g-recaptcha-response` に `captcha_solution` をセット
+      # 元のページに戻る
+      driver.switch_to.default_content()
+
+      time.sleep(2)
+      send_form.click()
+      time.sleep(2)
+      
+        
+      # driver.execute_script('arguments[0].click();', send_form)
+
+      # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+      # time.sleep(2)
+     
+      
+    print(777)
+    
     # 画像チェック
     top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
     if len(top_img_element):
@@ -1383,6 +1469,13 @@ def check_new_mail(happy_info, driver, wait):
     print(f"{name}:警告画面が出ている可能性があります")
     return_list.append(f"ハッピーメール　{name}:警告画面が出ている可能性があります")
     return return_list
+  # 画像チェック
+  top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
+  if len(top_img_element):
+     top_img = top_img_element[0].get_attribute("style")
+     if "noimage" in top_img:
+        print(f"ハッピーメール、{name}のトップ画の設定がNoImageです")
+        return_list.append(f"ハッピーメール、{name}のトップ画の設定がNoImageです")
   # プロフ検索をクリック
   new_message_flug = nav_item_click("メッセージ", driver, wait)
   if not new_message_flug:
