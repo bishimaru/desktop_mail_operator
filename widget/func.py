@@ -148,6 +148,52 @@ def clear_webdriver_cache():
 #             time.sleep(5)
 #             if attempt == max_retries - 1:
 #                 raise
+def get_multi_driver(profile_path, headless_flag, max_retries=3):
+    
+    for attempt in range(max_retries):
+      try:
+        options = Options()
+        if headless_flag:
+          options.add_argument('--headless')
+        options.add_argument(f"--user-data-dir={profile_path}")  # 個別のユーザーデータ
+        options.add_argument("--no-first-run")
+        options.add_argument("--disable-popup-blocking")
+        options.add_argument("--disable-gpu") 
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--disable-dev-shm-usage")  # 共有メモリの使用を無効化（仮想環境で役立つ）
+        options.add_argument("--incognito")
+        options.add_argument('--enable-unsafe-swiftshader')
+        options.add_argument('--log-level=3')  # これでエラーログが抑制されます
+        options.add_argument('--disable-web-security')
+        options.add_argument('--disable-extensions')
+        options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--window-size=456,912")
+        options.add_experimental_option("detach", True)
+        options.add_argument("--disable-cache")
+        options.add_argument("--disable-blink-features=AutomationControlled")  # 自動化検出回避のためのオプション
+        
+        service = Service(executable_path=ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=options, service=service)
+        wait = WebDriverWait(driver, 18)
+
+        return driver, wait
+
+      except (WebDriverException, NoSuchElementException, MaxRetryError, ConnectionError) as e:
+        print(f"WebDriverException発生: {e}")
+        print(f"再試行します ({attempt + 1}/{max_retries})")
+        clear_webdriver_cache()
+        time.sleep(5)
+        if attempt == max_retries - 1:
+            raise
+      except ConnectionError as e:
+        print(f"⚠️ ネットワークエラーが発生しました: {e}")
+        print("3分後に再接続します...")
+        clear_webdriver_cache()
+        time.sleep(180)
+        if attempt == max_retries - 1:
+            raise
+
 
 def test_get_driver(tmp_dir, headless_flag, max_retries=3):
     # os_name = platform.system()

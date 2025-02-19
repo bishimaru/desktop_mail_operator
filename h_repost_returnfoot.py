@@ -27,14 +27,18 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
     return
   temp_dir = func.get_the_temporary_folder("h_scheduler")
   driver,wait = func.test_get_driver(temp_dir, headless)
-  login_flug = happymail.login(name, login_id, login_pass, driver, wait)
-  if "失敗" in login_flug:
-    print(login_flug)
-    return
   return_foot_counted = 0
   repost_flug = ""
 
   try:
+    login_flug = happymail.login(name, login_id, login_pass, driver, wait)
+    if "失敗" in login_flug:
+      print(login_flug)
+      return
+    warning_flug = happymail.catch_warning_screen(driver)
+    if warning_flug:
+      print(f"{name}：警告画面が出ている可能性があります")
+      return 
     repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
   except Exception as e:
     print(f"ハッピーメール掲示板エラー{name}")
