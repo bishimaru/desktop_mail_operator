@@ -114,12 +114,12 @@ def login(name, login_id, login_pass, driver, wait):
     return False
   return True
   
-def nav_item_click(nav_item, driver, wait):
+def nav_item_click(name, nav_item, driver, wait):
   nav_list = driver.find_elements(By.ID, value='sp-floating')
   if not len(nav_list):
     nav_list = driver.find_elements(By.ID, value='sp_footer')
     if not len(nav_list):
-      print("ナビゲーターリストが見つかりません")
+      print(f"{name}ナビゲーターリストが見つかりません")
       return
   nav_text_elems = nav_list[0].find_elements(By.TAG_NAME, value='a')
   for nav_text_elem in nav_text_elems:
@@ -672,7 +672,7 @@ def make_footprints(chara_data, driver, wait, select_areas, youngest_age, oldest
   warning_flug = catch_warning_pop(name, driver, wait)
   if warning_flug:
     return
-  nav_item_click("プロフ検索", driver, wait)
+  nav_item_click(name, "プロフ検索", driver, wait)
   # 検索条件を設定
   search_elem = driver.find_element(By.ID, value="search1")
   search_elem.click()
@@ -913,7 +913,7 @@ def check_new_mail(pcmax_info, driver, wait):
     if "no-image" in top_img_style:
       print(f"{name}のトップ画像がNOIMAGEになっている可能性があります。")
   # 新着があるかチェック
-  nav_flug = nav_item_click("メッセージ", driver, wait)
+  nav_flug = nav_item_click(name,"メッセージ", driver, wait)
   print(nav_flug == "new_message")
   if nav_flug == "new_message":
       print('新着があります')
@@ -2422,7 +2422,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
   re_login(driver, wait)
   time.sleep(2)
   # 新着があるかチェック
-  nav_flug = nav_item_click("メッセージ", driver, wait)
+  nav_flug = nav_item_click(name, "メッセージ", driver, wait)
   have_new_massage_users = []
   if nav_flug == "new_message":
     print('新着があります')
@@ -2444,7 +2444,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
       print(f"新着メッセージ数 {len(message_list)}")
   
   # 足跡返し
-  nav_item_click("足あと", driver, wait)
+  nav_item_click(name, "足あと", driver, wait)
   # ページの高さを取得
   last_height = driver.execute_script("return document.body.scrollHeight")
   while True:
