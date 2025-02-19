@@ -27,20 +27,10 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
     return
   temp_dir = func.get_the_temporary_folder("h_scheduler")
   driver,wait = func.test_get_driver(temp_dir, headless)
-  driver.delete_all_cookies()
-  driver.get("https://happymail.jp/login/")
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  wait_time = random.uniform(2, 5)
-  time.sleep(2)
-  id_form = driver.find_element(By.ID, value="TelNo")
-  id_form.send_keys(login_id)
-  pass_form = driver.find_element(By.ID, value="TelPass")
-  pass_form.send_keys(login_pass)
-  time.sleep(1)
-  send_form = driver.find_element(By.ID, value="login_btn")
-  send_form.click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(2)
+  login_flug = happymail.login(name, login_id, login_pass, driver, wait)
+  if "失敗" in login_flug:
+    print(login_flug)
+    return
   return_foot_counted = 0
   repost_flug = ""
 

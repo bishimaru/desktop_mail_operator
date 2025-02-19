@@ -158,7 +158,6 @@ def test_get_driver(tmp_dir, headless_flag, max_retries=3):
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)  # キャッシュディレクトリが存在しない場合は作成
     # print(f"WDM_CACHE is set to: {os.environ['WDM_CACHE']}")
-
     for attempt in range(max_retries):
       try:
         options = Options()

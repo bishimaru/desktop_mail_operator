@@ -31,11 +31,26 @@ from selenium.webdriver.common.action_chains import ActionChains
 from twocaptcha import TwoCaptcha
 
 
+def nav_item_click(nav_name, driver, wait):
+  nav_list = driver.find_elements(By.ID, value='ds_nav')
+  if not len(nav_list):
+    print(f"ナビゲーターリストの取得に失敗しました")
+    return False
+  choice_nav = nav_list[0].find_elements(By.LINK_TEXT, nav_name)
+  if nav_name == "メッセージ":
+    parent_elem = choice_nav[0].find_element(By.XPATH, "..")
+    new_message = parent_elem.find_elements(By.CLASS_NAME, value="ds_red_circle")
+    if not len(new_message):
+      print('新着メールなし')
+      return False
+  choice_nav[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(2)
+  return True
 
 def login(name, happymail_id, happymail_pass, driver, wait,):
   try:
     driver.delete_all_cookies()
-    
     driver.get("https://happymail.jp/login/")
     # loaderが消えるのを待つ
     WebDriverWait(driver, 10).until(
@@ -53,103 +68,64 @@ def login(name, happymail_id, happymail_pass, driver, wait,):
     send_form.click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
-    print(888)
-    # ds_header
     login_judge_flug = driver.find_elements(By.ID, value="ds_header")
-    print(len(login_judge_flug))
-    print("------------")
     if not len(login_judge_flug):
+      print("reCAPTCHA認証中。。。")
       login_url = "https://happymail.jp/login/"
       site_key = "6Lctr88qAAAAAJtvi_1IhWBSdmMcV8k23_lb63xf"
       API_KEY = "1bc4af1c018d3882d89bae813594befb"  
       solver = TwoCaptcha(API_KEY)
-      captcha_solution = solver.recaptcha(
+      try:
+        result = solver.recaptcha(
           sitekey=site_key,
-          url=driver.current_url
-      )
-      print(f"✅ reCAPTCHA 解決成功: {captcha_solution}")
-      # `form` 内の `g-recaptcha-response` を取得
-      response_input = WebDriverWait(driver, 10).until(
-          EC.presence_of_element_located((By.NAME, "g-recaptcha-response"))
-      )
-      driver.execute_script(f"arguments[0].value = '{captcha_solution}';", response_input)
-      print("✅ `g-recaptcha-response` を `form` にセットしました！")
+          url=login_url,
+          invisible=1)
+      except Exception as e:
+        sys.exit(e)
+      else:
+        # print('solved: ' + str(result))
+        print("reCAPTCHA認証に成功しました")
+        g_recaptcha_response = driver.find_elements(By.ID, value="g-recaptcha-response")    
+        # print(len(g_recaptcha_response))
+        # print('===========')
+        if len(g_recaptcha_response):
+          try:
+            driver.execute_script("""
+                let recaptchaInput = document.getElementById("g-recaptcha-response");
+                recaptchaInput.style.display = "block"; // 一時的に表示
+                recaptchaInput.value = arguments[0]; // 値をセット
+                recaptchaInput.style.display = "none"; // 再度非表示
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-      # # captcha_solution = func.resolve_reCAPTCHA(login_url, site_key)
-      # # if captcha_solution:
-      # time.sleep(2)
-      # login_url = "https://happymail.jp/login/"
-      # site_key = "6Lctr88qAAAAAJtvi_1IhWBSdmMcV8k23_lb63xf"
-      # captcha_solution = func.resolve_reCAPTCHA(login_url, site_key)
-      # # `iframe` の要素を取得
-      # bframe_iframe = WebDriverWait(driver, 10).until(
-      #   EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, 'recaptcha/api2/bframe')]"))
-      # )
-      
-      # print("✅ `iframe` を取得しました:", bframe_iframe)
-
-      # # `iframe` に切り替え
-      # driver.switch_to.frame(bframe_iframe)
-      # print("✅ `iframe` に切り替えました！")
-      # bframe_iframe.send_keys(captcha_solution)
-
-      
-
-      
-      return
-      
-      # verify-button-holder
-      i = driver.find_elements(By.CLASS_NAME, value="verify-button-holder")
-      print(f"{len(i)} ~~~~")
-      time.sleep(2)
-
-        # # reCAPTCHA の `g-recaptcha-response` に `captcha_solution` をセット
-      # 元のページに戻る
-      driver.switch_to.default_content()
-
-      time.sleep(2)
-      send_form.click()
-      time.sleep(2)
-      
-        
-      # driver.execute_script('arguments[0].click();', send_form)
-
-      # wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      # time.sleep(2)
-     
-      
-    print(777)
+                // grecaptcha を強制実行
+                if (typeof(grecaptcha) !== 'undefined') {
+                    let recaptchaResponse = recaptchaInput.value;
+                    grecaptcha.getResponse = function() { return recaptchaResponse; };
+                    document.querySelector('form').submit();
+                }
+            """, result["code"])
+          except Exception as e:
+              print(f"❌ reCAPTCHA の解決に失敗: {e}")
     
-    # 画像チェック
-    top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
-    if len(top_img_element):
-      top_img = top_img_element[0].get_attribute("style")
-      if "noimage" in top_img:
-        print(f"{name}のトップ画の設定がNoImageです")
-        return f"{name}のトップ画の設定がNoImageです"
     return f"ログインに成功しました"
   except Exception as e:  
     print(f"ログインに失敗しました")
     print(traceback.format_exc())
     return f"ログインに失敗しました"
-   
+
+def check_top_image(name, driver, wait):
+  # 画像チェック　
+    nav_item_click("マイページ", driver, wait)
+    top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
+    if len(top_img_element):
+      top_img = top_img_element[0].get_attribute("style")
+      if "noimage" in top_img:
+        print(f"{name}のトップ画の設定がNoImageです")
+        return f"ハッピーメール{name}のトップ画の設定がNoImageです"
+      else:
+        return False
+    else:
+      return f"ハッピーメール{name}のTOP画像が見つかりません"
+    
 # 警告画面
 def catch_warning_screen(driver):
   wait = WebDriverWait(driver, 15)
@@ -182,24 +158,6 @@ def catch_warning_screen(driver):
       print("警告画面に承諾しました。一度ログアウトします")
 
   return False
-   
-def nav_item_click(nav_name, driver, wait):
-  nav_list = driver.find_elements(By.ID, value='ds_nav')
-  if not len(nav_list):
-    print(f"ナビゲーターリストの取得に失敗しました")
-    return False
-  choice_nav = nav_list[0].find_elements(By.LINK_TEXT, nav_name)
-  if nav_name == "メッセージ":
-    parent_elem = choice_nav[0].find_element(By.XPATH, "..")
-    new_message = parent_elem.find_elements(By.CLASS_NAME, value="ds_red_circle")
-    if not len(new_message):
-      print('新着メールなし')
-      return False
-  choice_nav[0].click()
-  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(2)
-  return True
-
 
 def re_post(name,  driver, wait, title, post_text):
   try:
@@ -214,26 +172,8 @@ def re_post(name,  driver, wait, title, post_text):
     if warning_flug:
       print(f"{name}：警告画面が出ている可能性があります")
       return False
-    
     # マイページをクリック
-    nav_list = driver.find_elements(By.ID, value='ds_nav')
-    if not len(nav_list):
-      print(f"{name}: 警告画面が出ている可能性があります。")
-      return False
-    mypage = nav_list[0].find_element(By.LINK_TEXT, "マイページ")
-    try:
-      mypage.click()
-      wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-      time.sleep(wait_time)
-    except ElementClickInterceptedException as e:
-      print(f"{name}:警告画面が出ている可能性があります")
-      return
-    # 画像チェック
-    top_img_element = driver.find_elements(By.CLASS_NAME, value="ds_mypage_user_image")
-    if len(top_img_element):
-      top_img = top_img_element[0].get_attribute("style")
-      if "noimage" in top_img:
-          print(f"{name}のトップ画がNoImageの可能性があります。。。")
+    nav_item_click("マイページ", driver, wait)
     # マイリストをクリック
     common_list = driver.find_element(By.CLASS_NAME, "ds_common_table")
     common_table = common_list.find_elements(By.CLASS_NAME, "ds_mypage_text")
@@ -395,7 +335,6 @@ def re_post(name,  driver, wait, title, post_text):
       area_texts_list.append(area)
     area_cnt = 0
     list = []
-    
     for area_text in area_texts_list:
       for area in area_list:
         if area in area_text:
@@ -965,7 +904,7 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
       print(f"タイプ返し総数 {type_counted}")
     except Exception as e:  
       print("タイプ返しエラー")
-      # print(traceback.format_exc())
+      print(traceback.format_exc())
       driver.get("https://happymail.co.jp/sp/app/html/mbmenu.php")
       wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
       time.sleep(wait_time)      
@@ -1240,12 +1179,12 @@ def make_footprints(name, happymail_id, happymail_pass, driver, wait, foot_count
       return
     user = user_list[i]
     # 閲覧済みユーザーをスキップ
-    # before_content = driver.execute_script(
-    # 'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
-    # user
-    # )
-    # if before_content != "none":
-    #   continue
+    before_content = driver.execute_script(
+    'return window.getComputedStyle(arguments[0], "::before").getPropertyValue("content");',
+    user
+    )
+    if before_content != "none":
+      continue
 
     user_link = user.find_elements(By.TAG_NAME, value="a")
     user_link[0].click()
@@ -1476,7 +1415,6 @@ def check_new_mail(happy_info, driver, wait):
      if "noimage" in top_img:
         print(f"ハッピーメール、{name}のトップ画の設定がNoImageです")
         return_list.append(f"ハッピーメール、{name}のトップ画の設定がNoImageです")
-  # プロフ検索をクリック
   new_message_flug = nav_item_click("メッセージ", driver, wait)
   if not new_message_flug:
      return

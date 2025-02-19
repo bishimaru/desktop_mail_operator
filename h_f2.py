@@ -78,8 +78,8 @@ def happymail_footprints(headless, foot_cnt, selected_users):
       driver,wait = func.test_get_driver(temp_dir, headless)
       temp_dirs.append(temp_dir)  # 一時ディレクトリを追跡
       for user_list in happy_user_list:
-          if user_list[0] != "あやか":
-              continue
+        #   if user_list[0] != "あやか":
+        #       continue
           print(f"キャラクター: {user_list[0]} の処理を開始します。")
           if user_list[1] is None or user_list[1] == "":
               print(f"{user_list[0]}:ログインIDが正しくありません")

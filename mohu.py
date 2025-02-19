@@ -25,6 +25,7 @@ temp_dir = func.get_the_temporary_folder("h_footprint")
 headless = False
 driver, wait = func.test_get_driver(temp_dir,headless)
 
-happymail.login(user_data["name"], user_data["login_id"], user_data["password"], driver, wait)
-
+mohu = happymail.login(user_data["name"], user_data["login_id"], user_data["password"], driver, wait)
+print(777)
+print(mohu)
 
