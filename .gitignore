@@ -4,3 +4,4 @@ d_m_venv/
 dist/*
 myenv/
 /tmp/
+chrome_profiles/
