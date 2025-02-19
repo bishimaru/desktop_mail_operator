@@ -5,3 +5,4 @@ dist/*
 myenv/
 /tmp/
 chrome_profiles/
+widget/__pycache__/

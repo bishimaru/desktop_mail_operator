@@ -2627,20 +2627,14 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)
     #プロフ検索をクリック
-    footer_icons = driver.find_elements(By.ID, value="sp-floating")
-    if len(footer_icons):
-      search_profile = footer_icons[0].find_element(By.XPATH, value="./*[2]")
-      print(search_profile.text)
-      search_profile.click()
-    else:
-      footer_icons = driver.find_elements(By.ID, value="sp_footer")
-      search_profile = footer_icons[0].find_element(By.XPATH, value="./*[1]")
-      search_profile.click()
-    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-    time.sleep(3)
+    nav_item_click("プロフ検索", driver, wait)
     # 検索条件を設定
-    search_elem = driver.find_element(By.ID, value="search1")
-    search_elem.click()
+    
+    search_elem = driver.find_elements(By.ID, value="search1")
+    if not len(search_elem):
+      print(f"{name} プロフィール検索に利用制限あり")
+      return
+    search_elem[0].click()
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(1)
     # /////////////////////////詳細検索画面/////////////////////////
@@ -3033,7 +3027,7 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
-        # if pcmax_chara['name'] != "りな":
+        # if pcmax_chara['name'] == "ゆっこ":
         #   continue
         func.change_tor_ip()
         try:

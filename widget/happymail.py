@@ -1132,33 +1132,53 @@ def return_footpoint(name, driver, wait, return_foot_message, matching_cnt, type
       if return_cnt == None:
         return_cnt = 0
       return [matching_counted, type_counted, return_cnt]
-       
-def mutidriver_make_footprints(name, driver,wait,):
-  wait_time = random.uniform(2, 3)
-  
-  
-  warinig_flug = catch_warning_screen(driver)
-  if warinig_flug:
-    print(f"{name}:警告画面が出ている可能性があります")
-    return
+
+def set_mutidriver_make_footprints(driver,wait):
+  # 並びの表示を設定
+  sort_order = driver.find_elements(By.ID, value="kind_select")
+  select = Select(sort_order[0])
+  select.select_by_visible_text("プロフ一覧")
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(1)
   user_list = driver.find_elements(By.CLASS_NAME, value="ds_user_post_link_item_r")
   user_link = user_list[0].find_elements(By.TAG_NAME, value="a")
   user_link[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
-  time.sleep(wait_time)
+  time.sleep(2)
+  
+
+
+def mutidriver_make_footprints(name, driver,wait):
+  wait_time = random.uniform(1.5, 3)
   catch_warning_screen(driver)
-  foot_count = 0
   # ユーザ名を取得
   user_name = driver.find_elements(By.CLASS_NAME, value="ds_user_display_name")
   if user_name:
     user_name = user_name[0].text
   else:
     user_name = "取得に失敗しました"
+  mail_button = driver.find_elements(By.CLASS_NAME, value="ds_profile_target_btn")
+  if not len(mail_button):
+    print("メールをするボタンが見つかりません")
+    return
+  mail_button[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(wait_time)
+  driver.back()
+  now = datetime.now().strftime('%m-%d %H:%M:%S')
+  print(f'{name}:足跡付け,  {user_name}  {now}')
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(wait_time)
+  
+  swiper_button = driver.find_elements(By.CLASS_NAME, value="swiper-button-next")
+  swiper_button[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(wait_time)
+  
+  
   
 
-  now = datetime.now().strftime('%m-%d %H:%M:%S')
-  foot_count += 1
-  print(f'{name}:足跡付け{foot_count}件,  {user_name}  {now}')
+  
   
     
     # back = driver.find_elements(By.CLASS_NAME, value="ds_prev_arrow")
