@@ -2442,9 +2442,16 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
             new_mail_user = new_mail_user[:7] + "…"
           have_new_massage_users.append(new_mail_user)
       print(f"新着メッセージ数 {len(message_list)}")
-  
+  else:
+    driver.get("https://pcmax.jp/pcm/member.php")
+    wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+    time.sleep(2)  
   # 足跡返し
-  nav_item_click(name, "足あと", driver, wait)
+  nav_item_click(name, name, driver, wait)
+  visit = driver.find_elements(By.CLASS_NAME, value="visit1")
+  visit[0].click()
+  wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
+  time.sleep(1)
   # ページの高さを取得
   last_height = driver.execute_script("return document.body.scrollHeight")
   while True:
@@ -3027,8 +3034,8 @@ def returnfoot_fst_one_rap(sorted_pcmax, headless, send_limit, one_four_flug, ma
       print("~~キャラリスト数~~~~~")
       print(len(sorted_pcmax))
       for pcmax_chara in sorted_pcmax:
-        # if pcmax_chara['name'] == "ゆっこ":
-        #   continue
+        if pcmax_chara['name'] != "ハル":
+          continue
         func.change_tor_ip()
         try:
           return_func = timer(wait_cnt, [lambda: returnfoot_fst(pcmax_chara, driver, wait, send_limit)])
