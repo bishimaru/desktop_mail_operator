@@ -49,8 +49,8 @@ signal.signal(signal.SIGINT, signal_handler)
 try:
   # driver起動,ログイン
   for i in user_data:
-    if i["name"] != "アスカ" and i["name"] != "めあり":
-      continue
+    # if i["name"] != "アスカ" and i["name"] != "めあり":
+    #   continue
     profile_path = os.path.join(base_path, i["name"])
     if os.path.exists(profile_path):
       shutil.rmtree(profile_path)  # フォルダごと削除

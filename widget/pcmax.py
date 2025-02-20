@@ -2447,7 +2447,7 @@ def returnfoot_fst(sorted_pcmax, driver, wait,send_limit, ):
     wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
     time.sleep(2)  
   # 足跡返し
-  nav_item_click(name, name, driver, wait)
+  nav_item_click(name, "マイメニュー", driver, wait)
   visit = driver.find_elements(By.CLASS_NAME, value="visit1")
   visit[0].click()
   wait.until(lambda driver: driver.execute_script('return document.readyState') == 'complete')
