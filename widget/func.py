@@ -31,6 +31,8 @@ from webdriver_manager.core.driver_cache import DriverCacheManager
 import tempfile
 from stem import Signal
 from stem.control import Controller
+import psutil
+import signal
 
 def get_the_temporary_folder(temp_dir):
   # スクリプトのディレクトリを基準にディレクトリを作成
@@ -151,6 +153,9 @@ def clear_webdriver_cache():
 def get_multi_driver(profile_path, headless_flag, max_retries=3):
     
     for attempt in range(max_retries):
+      # iPhone14
+      user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/537.36"
+
       try:
         options = Options()
         if headless_flag:
@@ -166,7 +171,7 @@ def get_multi_driver(profile_path, headless_flag, max_retries=3):
         options.add_argument('--log-level=3')  # これでエラーログが抑制されます
         options.add_argument('--disable-web-security')
         options.add_argument('--disable-extensions')
-        options.add_argument("--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1")
+        options.add_argument(f"--user-agent={user_agent}")
         options.add_argument("--no-sandbox")
         options.add_argument("--window-size=456,912")
         options.add_experimental_option("detach", True)
@@ -194,6 +199,22 @@ def get_multi_driver(profile_path, headless_flag, max_retries=3):
         if attempt == max_retries - 1:
             raise
 
+def close_all_drivers(drivers_dict):
+  for name, data in list(drivers_dict.items()):
+    try:
+      print(data["driver"])
+      data["driver"].quit()
+      # print(f"{name} のブラウザを正常に閉じました")
+      pid = data["driver"].service.process.pid
+      print(f"🔴 {name} の ChromeDriver を終了 (PID: {pid})...")
+      
+      if psutil.pid_exists(pid):
+          print(f"💀 {name} の ChromeDriver プロセスがまだ生存しているため、強制終了します")
+          os.kill(pid, signal.SIGTERM)
+      # print(f"✅ {name} の ChromeDriver (PID: {pid}) を終了しました")
+    except WebDriverException as e:
+      print(f"{name} のブラウザを閉じる際にエラーが発生: {e}")
+  drivers_dict.clear() 
 
 def test_get_driver(tmp_dir, headless_flag, max_retries=3):
     # os_name = platform.system()
@@ -303,7 +324,7 @@ def send_error(chara, error_message):
     print(f"An error occurred: {e}")
   
   smtpobj.close()
-
+   
 def send_mail(message, mail_info, title):
   mailaddress = mail_info[1]
   password = mail_info[2]

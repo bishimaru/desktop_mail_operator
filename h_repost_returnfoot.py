@@ -39,7 +39,7 @@ def sb_h_repost_returnfoot(happy_chara, matching_cnt, type_cnt, return_foot_cnt,
     if warning_flug:
       print(f"{name}：警告画面が出ている可能性があります")
       return 
-    repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
+    # repost_flug = happymail.re_post(name, driver, wait, post_title, post_contents)
   except Exception as e:
     print(f"ハッピーメール掲示板エラー{name}")
     print(traceback.format_exc())
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # type_cnt = int(sys.argv[4])
   happy_chara_list = func.get_user_data()["happymail"]
   for i in happy_chara_list:
-    if i['name'] == "アスカ":
+    if i['name'] == "はづき":
       happy_chara_list = i
   print(happy_chara_list)
 
